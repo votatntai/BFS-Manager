@@ -1,26 +1,23 @@
-import i18next from 'i18next';
 import { FuseNavigationType } from '@fuse/core/FuseNavigation/types/FuseNavigationType';
-import ar from './navigation-i18n/ar';
-import en from './navigation-i18n/en';
-import tr from './navigation-i18n/tr';
-import vn from './navigation-i18n/vn';
-
-i18next.addResourceBundle('vn', 'navigation', vn);
-i18next.addResourceBundle('en', 'navigation', en);
-i18next.addResourceBundle('tr', 'navigation', tr);
-i18next.addResourceBundle('ar', 'navigation', ar);
 
 /**
  * The navigationConfig object is an array of navigation items for the Fuse application.
  */
 const navigationConfig: FuseNavigationType = [
 	{
-		id: 'example-component',
-		title: 'Example',
-		translate: 'EXAMPLE',
-		type: 'item',
-		icon: 'heroicons-outline:star',
-		url: 'example'
+		id: 'apps',
+		type: 'group',
+		icon: 'heroicons-outline:cube',
+		title: 'MODULES',
+		children: [
+			{
+				id: 'task-management',  
+				title: 'Task management',
+				type: 'item',
+				url: '/task-management',
+				icon: 'heroicons-outline:view-boards'
+			},
+		]
 	},
 ];
 

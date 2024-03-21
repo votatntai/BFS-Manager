@@ -1,7 +1,7 @@
-import DemoContent from '@fuse/core/DemoContent';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import { styled } from '@mui/material/styles';
-
+import TaskManagementContent from './TaskManagementContent'
+import TaskManagementHeader from './TaskManagementHeader';
 const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& .FusePageSimple-header': {
 		backgroundColor: theme.palette.background.paper,
@@ -14,24 +14,14 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& .FusePageSimple-sidebarContent': {}
 }));
 
-function Example() {
+function TaskManagement() {
 
-	return (
-		<Root
-			// header={
-			// 	<div className="p-24">
-			// 		<h4>{t('TITLE')}</h4>
-			// 	</div>
-			// }
-			content={
-				<div className="p-24">
-					<h4>Content</h4>
-					<br />
-					<DemoContent />
-				</div>
-			}
-		/>
-	);
+	return (<Root
+	header={<TaskManagementHeader/>}
+	content={
+			<TaskManagementContent />
+	}
+/>)
 }
 
-export default Example;
+export default TaskManagement;

@@ -9,8 +9,11 @@ import SignOutConfig from '../main/sign-out/SignOutConfig';
 import Error404Page from '../main/404/Error404Page';
 import ExampleConfig from '../main/example/ExampleConfig';
 import Error404Config from '../main/404/Error404Config';
-
-const routeConfigs: FuseRouteConfigsType = [ExampleConfig, SignOutConfig, SignInConfig, SignUpConfig, Error404Config];
+import TaskManagementConfig from '../main/task-management/TaskManagementConfig';
+const routeConfigs: FuseRouteConfigsType = [ExampleConfig, TaskManagementConfig, 
+	SignOutConfig, SignInConfig,
+	 SignUpConfig, Error404Config,
+	];
 
 /**
  * The routes of the application.
@@ -20,6 +23,11 @@ const routes: FuseRoutesType = [
 	{
 		path: '/',
 		element: <Navigate to="/example" />,
+		auth: settingsConfig.defaultAuth
+	},
+	{
+		path: '/test',
+		element: <Navigate to="/test" />,
 		auth: settingsConfig.defaultAuth
 	},
 	{
