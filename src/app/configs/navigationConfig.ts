@@ -17,6 +17,13 @@ const navigationConfig: FuseNavigationType = [
 				url: '/task-management',
 				icon: 'heroicons-outline:view-boards'
 			},
+			{
+				id: 'ticket',  
+				title: 'Ticket',
+				type: 'item',
+				url: '/ticket',
+				icon: 'heroicons-outline:document-report'
+			},
 		]
 	},
 ];

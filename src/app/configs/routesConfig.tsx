@@ -10,9 +10,10 @@ import Error404Page from '../main/404/Error404Page';
 import ExampleConfig from '../main/example/ExampleConfig';
 import Error404Config from '../main/404/Error404Config';
 import TaskManagementConfig from '../main/task-management/TaskManagementConfig';
+import TicketConfig from '../main/ticket/TicketConfig';
 const routeConfigs: FuseRouteConfigsType = [ExampleConfig, TaskManagementConfig, 
 	SignOutConfig, SignInConfig,
-	 SignUpConfig, Error404Config,
+	 SignUpConfig, Error404Config, TicketConfig
 	];
 
 /**
@@ -22,7 +23,7 @@ const routes: FuseRoutesType = [
 	...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
 	{
 		path: '/',
-		element: <Navigate to="/example" />,
+		element: <Navigate to="/task-management" />,
 		auth: settingsConfig.defaultAuth
 	},
 	{

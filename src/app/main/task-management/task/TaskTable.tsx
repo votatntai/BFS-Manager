@@ -19,7 +19,7 @@ export default function TaskTable({cageId}){
     const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)
     const totalRow =  useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.totalRow)
     useEffect(()=>{
-        dispatch(getTaskData({cageId: cageId, pageNumber: pageNumber, pageSize: pageSize}))
+        dispatch(getTaskData({status: 'To do', cageId: cageId, pageNumber: pageNumber, pageSize: pageSize}))
     },[pageNumber, pageSize])
     return <div className="w-full flex flex-col min-h-full bg-white">
         <FuseScrollbars className="grow overflow-x-auto">

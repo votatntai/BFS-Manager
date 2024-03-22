@@ -4,33 +4,33 @@
 // import DialogActions from '@mui/material/DialogActions';
 // import DialogContent from '@mui/material/DialogContent';
 // import DialogTitle from '@mui/material/DialogTitle';
-// import { useEffect, useState } from 'react';
+// import { useEffect,useState } from 'react';
 // import TextField from '@mui/material/TextField';
-// import { ObjectMenuSampleToCreate } from '../../type/menu-sample.type';
-// import { useAppDispatch,useAppSelector } from 'app/store';
-// import { addMenuSample, menuSampleReducerState, getMenuSampleData } from './slice/menuSampleSlice';
-// import axios from 'src/app/auth/services/api/customAxios';
+// import { ObjectMenuSampleToEdit } from '../../type/menu-sample.type';
+// import { useAppDispatch, useAppSelector } from 'app/store';
+// import { editMenuSample, menuSampleReducerState, getMenuSampleData } from './slice/menuSampleSlice';
 // import Autocomplete from '@mui/material/Autocomplete';
+// import axios from 'src/app/auth/services/api/customAxios';
 
-// const CreateModal=({handleClose, show, setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
-//     const [menuSample, setMenuSample] =useState<ObjectMenuSampleToCreate>({
-//       "name": '',
-//       "speciesId": {
-//         "label": "",
-//         "value": ""
-//       },
-//       "careModeId": {
-//         "label": "",
-//         "value": ""
-//       }
-//     })
-//     const formData = new FormData()
+// const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFailSnackbar})=>{
+//   const [menuSample, setMenuSample] =useState<ObjectMenuSampleToEdit>({
+//     id: object.id,      
+//     name: object.name,
+//     speciesId: {
+//       "label": object.species.name,
+//       "value": object.species.id
+//     },
+//     careModeId: {
+//       "label": object.careMode.name,
+//       "value": object.careMode.id
+//     },
+//   }) 
 //     const [checkName, setCheckName] = useState(false)
 //     const [checkSpecies, setCheckSpecies] = useState(false)
 //     const [checkCareMode, setCheckCareMode] = useState(false)
-//     const dispatch = useAppDispatch()
 //     const pageNumber  = useAppSelector((state: menuSampleReducerState) => state.menuSampleReducer.menuSampleSlice.menuSamples.pagination.pageNumber)
 //     const pageSize  = useAppSelector((state: menuSampleReducerState) => state.menuSampleReducer.menuSampleSlice.menuSamples.pagination.pageSize)
+//     const dispatch = useAppDispatch()
 //     const checkValid= () =>{
 //       let check: boolean = true
 //       if(menuSample.name.trim() === '') {setCheckName(true)} else setCheckName(false)
@@ -42,17 +42,19 @@
 //       return check;
 //     }
   
-//     const add = async() => {
+//     const edit = async() => {
 //       const validate = checkValid()
+//       const formData = new FormData()
 //       if(validate) {
-//         formData.append('name',menuSample.name)
+//         const id:string = menuSample.id
+//         formData.append('name', menuSample.name.trim())
 //         formData.append('speciesId',menuSample.speciesId.value)
 //         formData.append('careModeId',menuSample.careModeId.value)
-//         await dispatch(addMenuSample(formData))
+//         await dispatch(editMenuSample({id, formData}))
 //         await dispatch(getMenuSampleData({pageNumber: pageNumber, pageSize: pageSize}))
 //         setOpenSuccessSnackbar(true)
 //         handleClose()
-//       } else setOpenFailSnackbar(true)
+//       }else setOpenFailSnackbar(true)
 //     }  
 
 //     const [comboboxSpecies,setComboboxSpecies] = useState([]);
@@ -84,13 +86,13 @@
 //     onClose={handleClose}
 //     aria-labelledby="alert-dialog-title"
 //     aria-describedby="alert-dialog-description"
-//     >
+//   >
 //     <DialogTitle id="alert-dialog-title">
-//       Create
+//       Edit
 //     </DialogTitle>
 //     <DialogContent>
 //         <Stack direction='column' spacing={2} className='pt-5'>
-//       {comboboxSpecies.length>0 &&<Autocomplete
+//         {comboboxSpecies.length>0 &&<Autocomplete
 //                   disablePortal  value={menuSample.speciesId}
 //                   onChange={(event: any, newValue: any) => {
 //                     setMenuSample(prev => ({...prev, speciesId: newValue}))
@@ -111,22 +113,19 @@
 //                   renderInput={(params) => <TextField {...params} label={'Care mode'} helperText={checkCareMode ? "This field is required" : false}  
 //                   error={checkCareMode ? true : false}/>}
 //                 />}
-     
-//      <TextField 
-//      //disabled={(menuSample.careModeId === null || menuSample.careModeId.value === '' || menuSample.speciesId === null || menuSample.speciesId.value === '') ? true : false }
-//       helperText={checkName ? "This field is required" : false} 
+
+//       <TextField helperText={checkName ? "This field is required" : false} 
 //       error={checkName ? true : false} value={menuSample.name}
 //       onChange={e => setMenuSample(prev => ({...prev, name: e.target.value}))} label='Name' 
 //       placeholder='Enter name' size='small' variant="outlined" />
-//       </Stack>
-
+//         </Stack>
 //     </DialogContent>
 //     <DialogActions>
-//       <Button variant='contained' onClick={handleClose}>cancel</Button>
-//       <Button variant='contained' color='secondary' onClick={add} >Add</Button>
+//       <Button variant='contained' onClick={handleClose}>Cancel</Button>
+//       <Button variant='contained' color='success' onClick={edit} >Edit</Button>
 //     </DialogActions>
+    
 //   </Dialog>
-
 // }
 
-// export default CreateModal
+// export default EditModal
