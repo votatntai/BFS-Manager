@@ -1,131 +1,248 @@
-// import Button from '@mui/material/Button';
-// import Dialog from '@mui/material/Dialog';
-// import Stack from '@mui/material/Stack';
-// import DialogActions from '@mui/material/DialogActions';
-// import DialogContent from '@mui/material/DialogContent';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import { useEffect,useState } from 'react';
-// import TextField from '@mui/material/TextField';
-// import { ObjectMenuSampleToEdit } from '../../type/menu-sample.type';
-// import { useAppDispatch, useAppSelector } from 'app/store';
-// import { editMenuSample, menuSampleReducerState, getMenuSampleData } from './slice/menuSampleSlice';
-// import Autocomplete from '@mui/material/Autocomplete';
-// import axios from 'src/app/auth/services/api/customAxios';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Stack from '@mui/material/Stack';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useEffect,useState } from 'react';
+import TextField from '@mui/material/TextField';
+import { useAppDispatch, useAppSelector } from 'app/store';
+import Autocomplete from '@mui/material/Autocomplete';
+import axios from 'src/app/auth/services/api/customAxios';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { editTask,getTaskData,assignStaff,removeStaff,updateStaffForChecklist } from '../slice/taskManagementSlice';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
-// const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFailSnackbar})=>{
-//   const [menuSample, setMenuSample] =useState<ObjectMenuSampleToEdit>({
-//     id: object.id,      
-//     name: object.name,
-//     speciesId: {
-//       "label": object.species.name,
-//       "value": object.species.id
-//     },
-//     careModeId: {
-//       "label": object.careMode.name,
-//       "value": object.careMode.id
-//     },
-//   }) 
-//     const [checkName, setCheckName] = useState(false)
-//     const [checkSpecies, setCheckSpecies] = useState(false)
-//     const [checkCareMode, setCheckCareMode] = useState(false)
-//     const pageNumber  = useAppSelector((state: menuSampleReducerState) => state.menuSampleReducer.menuSampleSlice.menuSamples.pagination.pageNumber)
-//     const pageSize  = useAppSelector((state: menuSampleReducerState) => state.menuSampleReducer.menuSampleSlice.menuSamples.pagination.pageSize)
-//     const dispatch = useAppDispatch()
-//     const checkValid= () =>{
-//       let check: boolean = true
-//       if(menuSample.name.trim() === '') {setCheckName(true)} else setCheckName(false)
-//       if(menuSample.speciesId === null || menuSample.speciesId.value === '') {setCheckSpecies(true)} else setCheckSpecies(false)
-//       if(menuSample.careModeId === null || menuSample.careModeId.value === '') {setCheckCareMode(true)} else setCheckCareMode(false)
-//       if(menuSample.name.trim() === ''){
-//           check = false
-//       }
-//       return check;
-//     }
+const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFailSnackbar})=>{
+  const [assignee, setAssignee] = useState(object.assignStaffs.map(item => item.staff))
+  const [checklists, setChecklists] =useState(object.checkLists)
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showAssignToChecklistNotification, setShowAssignToChecklistNotification] = useState(false);
+  const [task, setTask] =useState({
+    cageId: object.cage.id,      
+    title: object.title,
+    description: object.description,
+    deadline: object.deadline,
+    status: object.status,
+  }) 
+  // console.log(object)
   
-//     const edit = async() => {
-//       const validate = checkValid()
-//       const formData = new FormData()
-//       if(validate) {
-//         const id:string = menuSample.id
-//         formData.append('name', menuSample.name.trim())
-//         formData.append('speciesId',menuSample.speciesId.value)
-//         formData.append('careModeId',menuSample.careModeId.value)
-//         await dispatch(editMenuSample({id, formData}))
-//         await dispatch(getMenuSampleData({pageNumber: pageNumber, pageSize: pageSize}))
-//         setOpenSuccessSnackbar(true)
-//         handleClose()
-//       }else setOpenFailSnackbar(true)
-//     }  
-
-//     const [comboboxSpecies,setComboboxSpecies] = useState([]);
-//     const [comboboxCaremode,setComboboxCaremode] = useState([]);
-//     const loadCombobox = async () => {
-//       const res = await axios.get(`/species`)
-//       const res1 = await axios.get(`/care-modes`)
-//       if (res.data.length > 0) {
-//         const updatedComboboxList = res.data.map((item) => ({
-//           label: item.name,
-//           value: item.id,
-//         }));
-//         setComboboxSpecies(updatedComboboxList);
-//       }
-//       if (res1.data.length > 0) {
-//         const updatedComboboxList = res1.data.map((item) => ({
-//           label: item.name,
-//           value: item.id,
-//         }));
-//         setComboboxCaremode(updatedComboboxList);
-//       }
-//     };
-
-//     useEffect(() => {
-//       loadCombobox();
-//     }, []);
-//     return <Dialog fullWidth
-//     open={show}
-//     onClose={handleClose}
-//     aria-labelledby="alert-dialog-title"
-//     aria-describedby="alert-dialog-description"
-//   >
-//     <DialogTitle id="alert-dialog-title">
-//       Edit
-//     </DialogTitle>
-//     <DialogContent>
-//         <Stack direction='column' spacing={2} className='pt-5'>
-//         {comboboxSpecies.length>0 &&<Autocomplete
-//                   disablePortal  value={menuSample.speciesId}
-//                   onChange={(event: any, newValue: any) => {
-//                     setMenuSample(prev => ({...prev, speciesId: newValue}))
-//                   }}
-//                   options={comboboxSpecies} size='small'
-//                   fullWidth
-//                   renderInput={(params) => <TextField {...params} label={'Species'} helperText={checkSpecies ? "This field is required" : false}  
-//                   error={checkSpecies ? true : false}/>}
-//                 />}
-
-//       {comboboxCaremode.length>0 &&<Autocomplete
-//                   disablePortal  value={menuSample.careModeId}
-//                   onChange={(event: any, newValue: any) => {
-//                     setMenuSample(prev => ({...prev, careModeId: newValue}))
-//                   }}
-//                   options={comboboxCaremode} size='small'
-//                   fullWidth
-//                   renderInput={(params) => <TextField {...params} label={'Care mode'} helperText={checkCareMode ? "This field is required" : false}  
-//                   error={checkCareMode ? true : false}/>}
-//                 />}
-
-//       <TextField helperText={checkName ? "This field is required" : false} 
-//       error={checkName ? true : false} value={menuSample.name}
-//       onChange={e => setMenuSample(prev => ({...prev, name: e.target.value}))} label='Name' 
-//       placeholder='Enter name' size='small' variant="outlined" />
-//         </Stack>
-//     </DialogContent>
-//     <DialogActions>
-//       <Button variant='contained' onClick={handleClose}>Cancel</Button>
-//       <Button variant='contained' color='success' onClick={edit} >Edit</Button>
-//     </DialogActions>
+  const [value, setValue] =useState(object.status)
+    const [checkName, setCheckName] = useState(false)
+    const [checkTaskStatus, setCheckTaskStatus] = useState(false)
+    const pageNumber  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageNumber)
+    const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)
+    const dispatch = useAppDispatch()
+    const checkValid= () =>{
+      let check: boolean = true
+      if(task.title.trim() === '') {setCheckName(true)} else setCheckName(false)
+      if(task.status === '' || task.status === null) {setCheckTaskStatus(true)} else setCheckTaskStatus(false)
+      if(task.title.trim() === '' || task.status === '' || task.status === null){
+          check = false
+      }
+      return check;
+    }
+  
+    const edit = async() => {
+      const validate = checkValid()
+      if(validate) {
+        await dispatch(editTask({id: object.id, object: task}))
+        await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+        setOpenSuccessSnackbar(true)
+        handleClose()
+      }else setOpenFailSnackbar(true)
+    }  
     
-//   </Dialog>
-// }
+    const checkReadOnly = () =>{
+      let bool = true
+      if(task.status === 'To do'){
+         bool = false
+        }else if(task.status === 'Inprogress') {
+          bool = false
+        }else if(task.status === 'Done') {
+          bool = true
+        }else bool = true
+      return bool
+    }
+    const comboboxList = ['To do', 'Inprogress', 'Work finished', 'Done', 'Cancel']
+    const [staffs, setStaffs] = useState([])
+    const loadStaffs = async() => {
+      const res = await axios.get('/staffs')
+      if (res.data.length > 0) {
+        setStaffs(res.data);
+      }
+    }
+    useEffect(()=>{loadStaffs()},[])
+    
+    return <Dialog fullWidth
+    open={show}
+    onClose={handleClose}
+    aria-labelledby="alert-dialog-title"
+    aria-describedby="alert-dialog-description"
+  >
+    <DialogTitle id="alert-dialog-title">
+      <Stack direction='row' className='justify-between	'>
+      Edit
+      <Autocomplete disablePortal value={value} onChange={(event: any, newValue: string | null) => {
+          setValue(newValue);
+        }} size='small'
+        inputValue={task.status}
+        onInputChange={(event, newInputValue) => {
+            setTask(prev => ({...prev, status: newInputValue}))
+        }}
+        options={comboboxList}
+      sx={{ width: 200 }}
+      renderInput={(params) => <TextField {...params} label="Status" error={checkTaskStatus} helperText={checkTaskStatus ? "This field can not empty" : null} />}
+    />
+      </Stack>
+    </DialogTitle>
+    <DialogContent>
+    <Stack direction='row' spacing={2} className='pt-5'>
+      <TextField value={task.title} onChange={e => setTask(prev => ({...prev, name: e.target.value}))} helperText={checkName ? "This field is required" : false} 
+      error={checkName} 
+       style={{width:'70%'}} placeholder='Enter task title' label="Title" variant="outlined" />
+      <DateTimePicker
+              minDate={new Date()}
+							value={new Date(task.deadline)}
+							format="Pp"
+							onChange={(value) => setTask(prev => ({...prev, deadline: value}))}
+							className="w-full sm:w-auto"
+							slotProps={{
+								textField: {
+									label: 'Due date',
+									placeholder: 'Choose a due date',
+									InputLabelProps: {
+										shrink: true
+									},
+									variant: 'outlined'
+								}
+							}}
+						/>
+      </Stack>
+      <TextField value={task.description} onChange={e => setTask(prev => ({...prev, description: e.target.value}))} className='mb-8 mt-14' label="Description" multiline rows="4" variant="outlined" fullWidth />
+      <div className="flex-1 mb-24">
+						<div className="flex items-center mt-16 mb-12">
+							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
+							<Typography className="font-semibold text-16">Staffs</Typography>
+						</div>
+						{staffs.length>0 && <Autocomplete multiple options={staffs.filter(staff => !assignee.some(a => a.id === staff.id))}
+            defaultValue={assignee} getOptionLabel={(option) => option.name}
+              filterSelectedOptions readOnly={checkReadOnly()}
+              onChange={async(event, value) => {
+                if (value.length > assignee.length) {
+                  // If a staff is added
+                  const addedStaff = value.find(item => !assignee.some(a => a.id === item.id));
+                  if (addedStaff) {
+                    await dispatch(assignStaff({
+                      "taskId": object.id, 
+                      "staffId": addedStaff.id
+                    })); // Dispatch assignStaff action with the added staff
+                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    setShowSuccessNotification(true);
+                  }
+                } else if (value.length < assignee.length) {
+                  // If a staff is removed
+                  const removedStaff = assignee.find(item => !value.some(a => a.id === item.id));
+                  if (removedStaff) {
+                    await dispatch(removeStaff({id: object.id, staffId: removedStaff.id})); // Dispatch removeStaff action with the removed staff's id
+                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    setShowSuccessNotification(true);
+                  }
+                }
+                setAssignee(value); // Update local state with the new value
+              }}
+              renderInput={(params) => (
+                <TextField 
+                  {...params}
+                  label="Staffs"
+                  placeholder={checkReadOnly() ? "Select multiple staffs" : null}
+                />
+              )}
+            />}
+					</div>
+      <div className="flex-1 mb-24">
+						<div className="flex items-center mt-16 mb-12">
+							<FuseSvgIcon size={20}>heroicons-outline:check</FuseSvgIcon>
+							<Typography className="font-semibold text-16">Checklists</Typography>
+						</div>			
+      {checklists.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+       {checklists.map((item) => <ListItem key={item.id}>
+        <Stack direction='row' spacing={4} >
+        <Checkbox disabled checked={item.status} />
+        <Typography className="text-14" style={{marginTop:'10px'}}>
+          {item.title}
+          </Typography>
+        <Autocomplete options={assignee} size='small'  sx={{ width: 200 }}
+              getOptionLabel={(option:any) => option.name} 
+              defaultValue={item.asignee} onChange={async(event, value) => {
+                try {
+                  if(value !== null){
+                    console.log('có chạy')
+                    // console.log({checklistId: item.id, updateInfo: {asigneeId: value.id,status: item.status}})
+                    await dispatch(updateStaffForChecklist({checklistId: item.id, updateInfo: {"asigneeId": value.id, "status": true}}))
+                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    setShowAssignToChecklistNotification(true);
+                  }
+                } catch (error) {
+                  console.log(error)                  
+                }
+              }}
+              readOnly={task.status !== 'To do' ? true : false}
+              renderInput={(params) => (
+                <TextField 
+                  {...params}
+                  placeholder={task.status !== 'To do' ? null : "Select a staff"}
+                />
+              )}
+            />
+        </Stack>
+      </ListItem>) }
+    </List>}
+    </div>
+    </DialogContent>
+    <DialogActions>
+    <Stack direction='row' spacing={2} className='me-14 mb-5'>
+    <Button variant='contained' onClick={handleClose}>Cancel</Button>
+      <Button variant='contained' color='success' onClick={edit} >Edit</Button>
+      </Stack>
+    </DialogActions>
+    <Snackbar 
+  open={showSuccessNotification} 
+  autoHideDuration={3000} 
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+  onClose={() => setShowSuccessNotification(false)}
+>
+  <Alert 
+    onClose={() => setShowSuccessNotification(false)}
+    severity="success" 
+    variant="filled" 
+    sx={{ width: '100%' }}
+  >
+    {`Staff ${assignee.length > assignee.length ? 'added' : 'removed'} successfully`}
+  </Alert>
+</Snackbar>
+    <Snackbar 
+  open={showAssignToChecklistNotification} 
+  autoHideDuration={3000} 
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+  onClose={() => setShowAssignToChecklistNotification(false)}
+>
+  <Alert 
+    onClose={() => setShowAssignToChecklistNotification(false)}
+    severity="success" 
+    variant="filled" 
+    sx={{ width: '100%' }}
+  >
+    Staff assigned to checkklist successfully
+  </Alert>
+</Snackbar>
+  </Dialog>
+}
 
-// export default EditModal
+export default EditModal

@@ -5,7 +5,7 @@ const Task =()=>{
     const routeParams = useParams();
 	const { cageId, cageName } = routeParams;
     return <div className='bg-white'>
-    <TaskHeader title={cageName}/>
+    <TaskHeader title={cageName} cageId={cageId}/>
     <TaskTable cageId={cageId}/>
     </div>
 }

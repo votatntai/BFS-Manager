@@ -12,18 +12,21 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CreateModal from './CreateModal';
 import { useAppDispatch, useAppSelector } from 'app/store';
-import { getTaskData} from '../slice/taskManagementSlice';
-
-const TaskHeader = ({title})=>{
+import { getTaskData, setFilterStatus} from '../slice/taskManagementSlice';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+const TaskHeader = ({title,cageId})=>{
     const dispatch= useAppDispatch()
+    const navigation = useNavigate()
     const [show,setShow]=useState(false)
+    const [openCreateSuccessNotify, setOpenCreateSuccessNotify] = useState(false);
+    const [openCreateFailNotify, setOpenCreateFailNotify] = useState(false);
     const comboboxList = ['To do', 'Inprogress', 'Work finished', 'Done']
     const [value, setValue] = useState<string | null>(comboboxList[0]);
-    const [inputValue, setInputValue] = useState('To do');
-    const navigation = useNavigate()
+    const inputValue = useAppSelector(state  => state.taskManagementReducer.taskManagement.filterStatus)
     const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)
     useEffect(()=>{
-        dispatch(getTaskData({status: inputValue, pageNumber: 0, pageSize: pageSize}))
+        dispatch(getTaskData({cageId: cageId, status: inputValue, pageNumber: 0, pageSize: pageSize}))
     },[inputValue])
     return <div style={{background:'rgb(241, 245, 249)'}} className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
     <motion.span
@@ -41,7 +44,7 @@ const TaskHeader = ({title})=>{
         }}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
+            dispatch(setFilterStatus(newInputValue))
         }}
         options={comboboxList}
         sx={{ width: 200 }}
@@ -56,13 +59,25 @@ const TaskHeader = ({title})=>{
             </Button>
             <Tooltip title="Back">
             <Button
-                variant="contained" onClick={()=>navigation(-1)}
+                variant="contained" onClick={()=>{navigation(-1)}}
                 color="secondary"
                 ><FuseSvgIcon>heroicons-outline:arrow-left</FuseSvgIcon>
             </Button></Tooltip>
         </Stack>
         </motion.div>
-{show && <CreateModal setOpenSuccessSnackbar={()=>{}} setOpenFailSnackbar={()=>{}} show={show} handleClose={()=>{setShow(false)}}/>}
+        <Snackbar open={openCreateSuccessNotify} autoHideDuration={3000} onClose={()=>{setOpenCreateSuccessNotify(false)}} anchorOrigin={{vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={()=>{setOpenCreateSuccessNotify(false)}}
+          severity="success" variant="filled" sx={{ width: '100%' }}>
+          Add successfully
+        </Alert>
+      </Snackbar>
+    <Snackbar open={openCreateFailNotify} autoHideDuration={3000} onClose={()=>{setOpenCreateFailNotify(false)}} anchorOrigin={{vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={()=>{setOpenCreateFailNotify(false)}}
+          severity="error" variant="filled" sx={{ width: '100%' }}>
+          Add failed
+        </Alert>
+      </Snackbar>
+{show && <CreateModal cageId={cageId} setOpenSuccessSnackbar={setOpenCreateSuccessNotify} setOpenFailSnackbar={setOpenCreateFailNotify} show={show} handleClose={()=>{setShow(false)}}/>}
 </div>
 }
 export default TaskHeader   

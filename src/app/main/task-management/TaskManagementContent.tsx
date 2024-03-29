@@ -13,6 +13,7 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { motion } from 'framer-motion';
 import { useAppDispatch,useAppSelector } from 'app/store';
 import { getCageData } from './slice/taskManagementSlice';
+import { setTaskDataToEmpty } from './slice/taskManagementSlice';
 const container = {
 	show: {
 		transition: {
