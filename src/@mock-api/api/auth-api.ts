@@ -185,7 +185,7 @@ function generateJWTToken(tokenPayload: { [key:string]: unknown } ) {
 	// Calculate the issued at and expiration dates
 	const date = new Date();
 	const iat = Math.floor(date.getTime() / 1000);
-	const exp = Math.floor(date.setDate(date.getDate() + 7) / 1000);
+	const exp = Math.floor(date.setDate(date.getDate() + 300) / 1000);
 
 	// Define token payload
 	const payload: unknown = {

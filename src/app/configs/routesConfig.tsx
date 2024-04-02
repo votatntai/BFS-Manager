@@ -7,14 +7,18 @@ import SignInConfig from '../main/sign-in/SignInConfig';
 import SignUpConfig from '../main/sign-up/SignUpConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
 import Error404Page from '../main/404/Error404Page';
-import ExampleConfig from '../main/example/ExampleConfig';
 import Error404Config from '../main/404/Error404Config';
 import TaskManagementConfig from '../main/task-management/TaskManagementConfig';
 import TicketConfig from '../main/ticket/TicketConfig';
-const routeConfigs: FuseRouteConfigsType = [ExampleConfig, TaskManagementConfig, 
-	SignOutConfig, SignInConfig,
-	 SignUpConfig, Error404Config, TicketConfig
-	];
+import MealPlanConfig from '../main/meal-plan/MealPlanConfig';
+
+const routeConfigs: FuseRouteConfigsType = [
+	MealPlanConfig,
+	TaskManagementConfig,
+	 SignOutConfig, 
+	 SignInConfig,
+	  SignUpConfig, 
+	  Error404Config];
 
 /**
  * The routes of the application.
@@ -23,12 +27,7 @@ const routes: FuseRoutesType = [
 	...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
 	{
 		path: '/',
-		element: <Navigate to="/task-management" />,
-		auth: settingsConfig.defaultAuth
-	},
-	{
-		path: '/test',
-		element: <Navigate to="/test" />,
+		element: <Navigate to="/meal-plan" />,
 		auth: settingsConfig.defaultAuth
 	},
 	{

@@ -50,8 +50,8 @@ function SignInPage() {
 	const { isValid, dirtyFields, errors } = formState;
 
 	useEffect(() => {
-		setValue('email', 'admin@fusetheme.com', { shouldDirty: true, shouldValidate: true });
-		setValue('password', 'admin', { shouldDirty: true, shouldValidate: true });
+		setValue('email', 'sonic@gmail.com', { shouldDirty: true, shouldValidate: true });
+		setValue('password', '123456', { shouldDirty: true, shouldValidate: true });
 	}, [setValue]);
 
 	function onSubmit({ email, password }: InferType<typeof schema>) {

@@ -11,6 +11,14 @@ const navigationConfig: FuseNavigationType = [
 		title: 'MODULES',
 		children: [
 			{
+				id: 'meal-plan.Cages',
+				title: 'Meal-plan',
+				type: 'item',
+				icon: 'heroicons-outline:calendar',
+				url: '/meal-plan/cages',
+				end: true,
+			},
+			{
 				id: 'task-management',  
 				title: 'Task management',
 				type: 'item',
@@ -26,6 +34,7 @@ const navigationConfig: FuseNavigationType = [
 			},
 		]
 	},
+
 ];
 
 export default navigationConfig;
