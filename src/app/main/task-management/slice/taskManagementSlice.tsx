@@ -54,7 +54,6 @@ export const removeStaff = createAsyncThunk('taskReducer/removeStaff', async ({i
   });
 export const updateStaffForChecklist = createAsyncThunk('taskReducer/updateStaffForChecklist', async ({checklistId, updateInfo}:{checklistId:string, updateInfo:Object}) => {
 	try {
-		console.log(checklistId, updateInfo)
 	  await updateStaffToChecklist(checklistId, updateInfo);
 	} catch (error) {
 	  console.log(error);

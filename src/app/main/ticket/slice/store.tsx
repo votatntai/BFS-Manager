@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import taskManagement from './taskManagementSlice';
+import ticket from './ticketSlice';
 const reducer = combineReducers({
-    taskManagement
+    ticket
 })
 
 export default reducer

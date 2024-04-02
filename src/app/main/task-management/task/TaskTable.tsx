@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import EditModal from './EditModal';
+import ViewModal from './ViewModal';
 export default function TaskTable({cageId}){
     const dispatch = useAppDispatch()
     const tasks = useAppSelector(state=> state.taskManagementReducer.taskManagement.taskList.data)
@@ -24,6 +25,7 @@ export default function TaskTable({cageId}){
     const [openEditSuccessNotify, setOpenEditSuccessNotify] = useState(false);
     const [openEditFailNotify, setOpenEditFailNotify] = useState(false);
 	const [showEdit, setShowEdit] =useState(false)
+	const [showView, setShowView] =useState(false)
 	const [editValue, setEditValue] =useState({})
     // console.log(tasks)
     useEffect(()=>{
@@ -53,18 +55,15 @@ export default function TaskTable({cageId}){
             <TableCell align='left'>{item.status}</TableCell>
             <TableCell align='left'>{new Date(item.createAt).toLocaleDateString('en-Gb')}</TableCell>
             <TableCell>
-                <Stack direction='row' spacing={3}>
-                <Tooltip title='View detail'>
+                {item.status !== 'To do' ? <Tooltip title='View detail'>
                 <FuseSvgIcon className="text-48 ms-10" size={24} color="action" style={{cursor:'pointer'}} 
-                //onClick={()=>{setShowEdit(true); setEditValue(item)}}
+                onClick={()=>{setShowView(true); setEditValue(item)}}
                 >heroicons-solid:eye</FuseSvgIcon>
-                </Tooltip>
-                <Tooltip title='Edit'>
+                </Tooltip> : <Tooltip title='Edit'>
                 <FuseSvgIcon className="text-48 ms-10" size={24} color="action" style={{cursor:'pointer'}} 
                 onClick={()=>{setShowEdit(true); setEditValue(item)}}
                 >heroicons-solid:pencil-alt</FuseSvgIcon>
-                </Tooltip>
-                </Stack>
+                </Tooltip>}
             </TableCell>
         </TableRow>))}
         </TableBody>}
@@ -106,5 +105,6 @@ export default function TaskTable({cageId}){
         </Alert>
       </Snackbar>
       {showEdit && <EditModal setOpenFailSnackbar={setOpenEditFailNotify} setOpenSuccessSnackbar={setOpenEditSuccessNotify} object={editValue} show={showEdit} handleClose={() => setShowEdit(false)} />}
+      {showView && <ViewModal object={editValue} show={showView} handleClose={() => setShowView(false)} />}
 </div>
 }

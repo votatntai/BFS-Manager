@@ -24,6 +24,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
   const [checklists, setChecklists] =useState(object.checkLists)
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showAssignToChecklistNotification, setShowAssignToChecklistNotification] = useState(false);
+  const [msgCheck, setMsgCheck] = useState(false)
   const [task, setTask] =useState({
     cageId: object.cage.id,      
     title: object.title,
@@ -59,17 +60,6 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
       }else setOpenFailSnackbar(true)
     }  
     
-    const checkReadOnly = () =>{
-      let bool = true
-      if(task.status === 'To do'){
-         bool = false
-        }else if(task.status === 'Inprogress') {
-          bool = false
-        }else if(task.status === 'Done') {
-          bool = true
-        }else bool = true
-      return bool
-    }
     const comboboxList = ['To do', 'Inprogress', 'Work finished', 'Done', 'Cancel']
     const [staffs, setStaffs] = useState([])
     const loadStaffs = async() => {
@@ -133,12 +123,13 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
 						</div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs.filter(staff => !assignee.some(a => a.id === staff.id))}
             defaultValue={assignee} getOptionLabel={(option) => option.name}
-              filterSelectedOptions readOnly={checkReadOnly()}
+              filterSelectedOptions
               onChange={async(event, value) => {
                 if (value.length > assignee.length) {
                   // If a staff is added
                   const addedStaff = value.find(item => !assignee.some(a => a.id === item.id));
                   if (addedStaff) {
+                    setMsgCheck(true)
                     await dispatch(assignStaff({
                       "taskId": object.id, 
                       "staffId": addedStaff.id
@@ -150,6 +141,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
                   // If a staff is removed
                   const removedStaff = assignee.find(item => !value.some(a => a.id === item.id));
                   if (removedStaff) {
+                    setMsgCheck(false)
                     await dispatch(removeStaff({id: object.id, staffId: removedStaff.id})); // Dispatch removeStaff action with the removed staff's id
                     await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
                     setShowSuccessNotification(true);
@@ -161,7 +153,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
                 <TextField 
                   {...params}
                   label="Staffs"
-                  placeholder={checkReadOnly() ? "Select multiple staffs" : null}
+                  placeholder={"Select multiple staffs" }
                 />
               )}
             />}
@@ -183,9 +175,8 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
               defaultValue={item.asignee} onChange={async(event, value) => {
                 try {
                   if(value !== null){
-                    console.log('có chạy')
                     // console.log({checklistId: item.id, updateInfo: {asigneeId: value.id,status: item.status}})
-                    await dispatch(updateStaffForChecklist({checklistId: item.id, updateInfo: {"asigneeId": value.id, "status": true}}))
+                    await dispatch(updateStaffForChecklist({checklistId: item.id, updateInfo: {"asigneeId": value.id, "status": item.status}}))
                     await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
                     setShowAssignToChecklistNotification(true);
                   }
@@ -224,7 +215,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     variant="filled" 
     sx={{ width: '100%' }}
   >
-    {`Staff ${assignee.length > assignee.length ? 'added' : 'removed'} successfully`}
+    {`Staff ${msgCheck ? 'added' : 'removed'} successfully`}
   </Alert>
 </Snackbar>
     <Snackbar 
@@ -239,7 +230,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     variant="filled" 
     sx={{ width: '100%' }}
   >
-    Staff assigned to checkklist successfully
+    Staff assigned to checklist successfully
   </Alert>
 </Snackbar>
   </Dialog>

@@ -17,6 +17,8 @@ import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Fab from '@mui/material/Fab';
 import { addTask, getTaskData,setFilterStatus } from '../slice/taskManagementSlice';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
     const [taskName, setTaskName] =useState('')
@@ -24,8 +26,13 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
     const [taskDeadline, setTaskDeadline] = useState(new Date())
     const [inputChecklistValue, setInputChecklistValue] =useState('')
     const [checklists, setChecklists] =useState([])
+    const [feedbacks, setFeedbacks] =useState([])
+    const [inputFeedbackValue, setInputFeedbackValue] =useState({
+      question: '',
+      positive: false,
+      severity: 0
+    })
     const [staffList, setStaffList] =useState([])
-    const formData = new FormData()
     const [checkName, setCheckName] = useState(false)
     const [checkStaffList, setCheckStaffList] = useState(false)
     const dispatch = useAppDispatch()
@@ -71,17 +78,33 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
       } else setOpenFailSnackbar(true)
       
     }  
+
+    const [orderCount, setOrderCount] = useState(0);
     const handleAddChecklistItem =()=>{
       setChecklists(prevChecklists => [...prevChecklists, {
         "title": inputChecklistValue,
-        // "asigneeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        // "order": 0
+        "asigneeId": null,
+        "order": orderCount 
       }]);
       setInputChecklistValue('')
+      setOrderCount(prevOrderCount => prevOrderCount + 1)
+    }
+    const handleAddFeedbackItem =()=>{
+      setFeedbacks(prevLists => [...prevLists, inputFeedbackValue]);
+      setInputFeedbackValue({
+        question: '',
+        positive: false,
+        severity: 0
+      })
     }
     const handleDeleteChecklistItem =(indexToRemove)=>{
       setChecklists(prevChecklists =>
         prevChecklists.filter((_, index) => index !== indexToRemove)
+      );
+    }
+    const handleDeleteFeedbakItem =(indexToRemove)=>{
+      setFeedbacks(prevLists =>
+        prevLists.filter((_, index) => index !== indexToRemove)
       );
     }
 
@@ -168,6 +191,40 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
 					size="small"
 					color="secondary" onClick={handleAddChecklistItem}
 					disabled={inputChecklistValue === '' ? true : false}
+				>
+					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
+				</Fab>
+    </Stack>
+    
+    <div className="flex items-center mt-16 mb-12">
+							<FuseSvgIcon size={20}>heroicons-outline:annotation</FuseSvgIcon>
+							<Typography className="font-semibold text-16">Feedback</Typography>
+						</div>
+            {feedbacks.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+       {feedbacks.map((item,index) => <ListItem key={index}>
+                    <Stack direction='row' spacing={5} alignItems="center">
+                      <Typography sx={{width:'28rem'}} className="text-14">{item.question}</Typography>
+                      <Typography sx={{width:'15rem'}} className="text-14">{item.positive ? 'Positive question' : 'Negative question'}</Typography>
+                      <Typography sx={{width:'13rem'}} className="text-14">Severity level {item.severity}</Typography>
+                      <IconButton onClick={()=>handleDeleteFeedbakItem(index)}>
+                     <FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
+                    </IconButton>
+                    </Stack>
+      </ListItem>)}
+    </List>}
+    <Stack direction='row' spacing={4}>
+    <TextField sx={{width:'40rem'}} value={inputFeedbackValue.question} onKeyPress={e => {if(e.key === 'Enter' && inputFeedbackValue.question.trim() !== '') handleAddFeedbackItem()}}
+    onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, question: e.target.value })} size='small' placeholder='Add question' variant="outlined" />
+    <FormControlLabel control={<Checkbox checked={inputFeedbackValue.positive} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, positive: e.target.checked })}  />} label="Positive" />
+    <FormControlLabel control={<TextField value={inputFeedbackValue.severity} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, severity: parseInt(e.target.value) })} 
+     type={'number'} size='small' inputProps={{ min: 0, max: 5 }}
+     sx={{width:'6rem', marginRight:'1rem'}}/>} label="Severity" labelPlacement='end' />
+    <Fab
+					className="mx-4"
+					aria-label="Add"
+					size="small"
+					color="secondary" onClick={handleAddFeedbackItem}
+					disabled={inputFeedbackValue.question.trim() === '' ? true : false}
 				>
 					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
 				</Fab>
