@@ -17,11 +17,29 @@ const navigationConfig: FuseNavigationType = [
 	{
 		id: 'example-component',
 		title: 'Example',
-		translate: 'EXAMPLE',
+		translate: 'SHOPPING',
 		type: 'item',
 		icon: 'heroicons-outline:star',
 		url: 'example'
 	},
+	{
+		id: 'meal-plan',
+		title: 'Meal-Plan',
+		translate: 'Meal-Plan',
+		type: 'group',
+		icon: 'heroicons-outline:star',
+		children: [
+			{
+				id: 'meal-plan.Cages',
+				title: 'New meal-plan',
+				type: 'item',
+				icon: 'heroicons-outline:rectangle-stack',
+				url: '/meal-plan/cages',
+				end: true,
+			}
+		]
+	},
+
 ];
 
 export default navigationConfig;

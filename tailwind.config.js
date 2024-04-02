@@ -674,6 +674,7 @@ module.exports = {
 				'"Segoe UI Emoji"',
 				'"Segoe UI Symbol"',
 				'"Noto Color Emoji"',
+			
 			],
 			serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
 			mono: [
@@ -686,6 +687,7 @@ module.exports = {
 				'"Courier New"',
 				'monospace',
 			],
+			oleoScript: ['"Oleo Script"', 'system-ui']
 		},
 		fontSize: {
 			xs: '1rem',
