@@ -12,7 +12,7 @@ const navigationConfig: FuseNavigationType = [
 		children: [
 			{
 				id: 'meal-plan.Cages',
-				title: 'Meal-plan',
+				title: 'Meal plan',
 				type: 'item',
 				icon: 'heroicons-outline:calendar',
 				url: '/meal-plan/cages',

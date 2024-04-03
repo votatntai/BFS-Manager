@@ -23,8 +23,18 @@ import Checkbox from '@mui/material/Checkbox';
 const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
     const [taskName, setTaskName] =useState('')
     const [taskDescription, setTaskDescription] = useState('')
-    const [taskDeadline, setTaskDeadline] = useState(new Date())
+    const [taskBegin, setTaskBegin] = useState(new Date())
+    const [taskDeadline, setTaskDeadline] = useState(() => {
+      const deadline = new Date(taskBegin);
+      deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+      return deadline;
+    });
     const [inputChecklistValue, setInputChecklistValue] =useState('')
+    const [repeat, setRepeat] =useState(false)
+    const [repeatObject, setRepeatObject] =useState({
+      "type": "daily",
+      "time": 1,
+    })
     const [checklists, setChecklists] =useState([])
     const [feedbacks, setFeedbacks] =useState([])
     const [inputFeedbackValue, setInputFeedbackValue] =useState({
@@ -56,10 +66,14 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
           "title": taskName,
           "description": taskDescription,
           "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
+          "startAt": "2024-04-02T14:38:23.108Z",
           "deadline": taskDeadline.toDateString(),
           "status": "To do",
           "assigneeIds": staffList,
-          "checkLists": checklists
+          "checkLists": checklists,
+          "repeats": [
+            
+          ],
         }))
         // console.log({
         //   "cageId": cageId,
@@ -83,7 +97,6 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
     const handleAddChecklistItem =()=>{
       setChecklists(prevChecklists => [...prevChecklists, {
         "title": inputChecklistValue,
-        "asigneeId": null,
         "order": orderCount 
       }]);
       setInputChecklistValue('')
@@ -123,23 +136,32 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
     aria-describedby="alert-dialog-description"
     >
     <DialogTitle id="alert-dialog-title">
+      <Stack direction='row' className='justify-between'>
       Create
+      <FormControlLabel control={<Checkbox checked={repeat} onChange={(e) => setRepeat(e.target.checked )}  />} label="Repeat" />
+      </Stack>
     </DialogTitle>
     <DialogContent>
+      {repeat && <Stack direction='row' spacing={4} className='pt-5 mb-8'>
+      <Autocomplete disablePortal value={repeatObject.type}  onChange={(e, v) => setRepeatObject({ ...repeatObject, type: v })} options={['daily','monthly']} disabled={!repeat} sx={{width: 200}}
+          size='small' clearIcon={null}  renderInput={(params) => <TextField {...params} label="Repeat" />} />  
+      <FormControlLabel control={<TextField value={repeatObject.time} onChange={e => setRepeatObject({ ...repeatObject, time: parseInt(e.target.value)}) }
+     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'6rem', marginRight:'1rem'}}/>} label="time(s)" labelPlacement='end' />
+      </Stack>}
       <Stack direction='row' spacing={2} className='pt-5'>
       <TextField value={taskName} onChange={(e)=> setTaskName(e.target.value)} helperText={checkName ? "This field is required" : false} 
-      error={checkName} 
-       style={{width:'70%'}} placeholder='Enter task title' label="Title" variant="outlined" />
-      <DateTimePicker
-              minDate={new Date()}
-							value={taskDeadline}
-							format="Pp"
-							onChange={(value) => setTaskDeadline(value)}
-							className="w-full sm:w-auto"
+      error={checkName} sx={{width:'40$'}} placeholder='Enter task title' label="Title" variant="outlined"/>
+      <DateTimePicker minDate={new Date()} value={taskBegin} format="dd/MM/yyyy, hh:mm a"
+							onChange={(value) => {
+                setTaskBegin(value);
+                const deadline = new Date(value);
+                deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+                setTaskDeadline(deadline);
+              }} className="w-full sm:w-auto"
 							slotProps={{
 								textField: {
-									label: 'Due date',
-									placeholder: 'Choose a due date',
+									label: 'Start date',
+									placeholder: 'Choose a start date',
 									InputLabelProps: {
 										shrink: true
 									},
@@ -147,7 +169,22 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
 								}
 							}}
 						/>
+      <DateTimePicker minDate={taskBegin} value={taskDeadline} format="dd/MM/yyyy, hh:mm a"
+							onChange={(value) => setTaskDeadline(value)} className="w-full sm:w-auto"
+							slotProps={{
+								textField: {
+									label: 'Deadline',
+									placeholder: 'Choose a deadline',
+									InputLabelProps: {
+										shrink: true
+									},
+									variant: 'outlined'
+								}
+							}}
+						/>
+            
       </Stack>
+      
       <TextField value={taskDescription} onChange={e => setTaskDescription(e.target.value)} className='mb-8 mt-14' label="Description" multiline rows="4" variant="outlined" fullWidth />
       
       <div className="flex-1 mb-24">
