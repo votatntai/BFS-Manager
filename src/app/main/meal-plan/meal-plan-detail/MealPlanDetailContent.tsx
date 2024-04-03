@@ -13,10 +13,13 @@ import * as yup from 'yup';
 import { getCage, selectCage } from '../store/cagesSlice';
 import MealDialog from './dialogs/MealDialog';
 import MealItemDialog from './dialogs/MealItemDialog';
-import { addMealId, createMenu, createPlan, decreaseQuantity, getCareMode, getMenuSample, getPlanById, getSpecies, increaseQuantity, removeMealItem, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem } from './store/menusSlice';
+import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, decreaseQuantity, getCareMode, getMenuSample, getPlanById, getSpecies, increaseQuantity, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem } from './store/menusSlice';
 import MenuDialog from './dialogs/MenuDialog';
 import { MenuType, PlanType } from '../calendar/types/PlanType';
-import { NameType } from './type/MenuType';
+import { NameType, menuSampleType } from './type/MenuType';
+import { forEach } from 'lodash';
+import { AnyAction, unwrapResult } from '@reduxjs/toolkit';
+import { showMessage } from 'app/store/fuse/messageSlice';
 const schema = yup.object().shape({
     // start: yup.date().required('Start date is required'),
     // end: yup.date().required('End date is required').when('start', (start, schema) => {
@@ -25,8 +28,8 @@ const schema = yup.object().shape({
     title: yup.string(),
     start: yup.date().required('Start date is required'),
     end: yup.date().required('End date is required'),
-    speciesId: yup.mixed().required("Must fill in"),
-    careModeId: yup.mixed().required("Must fill in"),
+    speciesId: yup.mixed(),
+    careModeId: yup.mixed(),
     menuName: yup.string()
 });
 
@@ -44,7 +47,7 @@ export default function MealPlanDetailContent() {
     const [openMealDialog, setOpenDialog] = useState(false)
     const [isMenuExist, setIsMenuExist] = useState(false)
     const [isTitleEdited, setIsTitleEdited] = useState(false)
-    const [selectedMenuSample, setSelectedMenuSample] = useState();
+    const [selectedMenuSample, setSelectedMenuSample] = useState<menuSampleType>();
     const [isButtonApplyDisabled, setIsButtonApplyDisabled] = useState(true);
     // const [isTitleEdited, setIsTitleEdited] = useState(false)
     const { control, watch, formState, handleSubmit, getValues, setError, setValue, reset } = useForm(
@@ -120,33 +123,79 @@ export default function MealPlanDetailContent() {
         , [reset, plan]
     )
     useEffect(() => {
-
         return () => {
-
             dispatch(resetPlan());
         };
     }, [dispatch]);
     // Form handler
-    function handleApply(){
-        console.log("selection", selectedMenuSample)
+    function handleApply() {
+        const menuMeals = plan.menu.menuMeals
+        if (menuMeals.length > 0) {
+            menuMeals.forEach(meal => {
+                dispatch(removeMenuMeal(meal.id))
+            });
+        }
+        console.log("selection", selectedMenuSample?.menuMealSamples)
+        const menuSampleList = selectedMenuSample?.menuMealSamples;
+        let data
+        let itemData
+        const handleCreation = async (menuSampleList) => {
+            if (menuSampleList.length > 0) {
+                for (let index = 0; index < menuSampleList.length; index++) {
+                    const mealSample = menuSampleList[index];
+                    data = {
+                        menuId: plan.menu.id,
+                        name: mealSample.name,
+                        from: mealSample.from,
+                        to: mealSample.to
+                    }
+                    const result = await dispatch(createMenuMeal(data));
+
+                    const newMenuMeal = unwrapResult(result); // Unwrap result from action
+                    if (mealSample.mealItemSamples.length > 0) {
+                        for (let item of mealSample.mealItemSamples) {
+                            itemData = {
+                                menuMealId: newMenuMeal.id,
+                                foodId: item.food.id,
+                                quantity: item.quantity,
+                                order: item.order
+                            }
+                            await dispatch(createMealItems(itemData)).catch(error => console.log(error));
+                        }
+                    }
+
+                }
+            }
+        }
+
+        handleCreation(menuSampleList);
+
     }
 
     function onSubmit(data) {
-        const menuMeals = plan.menu.menuMeals
-        menuMeals.forEach(menuMeal => {
-            menuMeal.mealItems.forEach(mealItem => {
-                if (mealItem.hasChanged == true) {
-                    const item = {
-                        itemId: mealItem.id,
-                        newItem: {
-                            quantity: mealItem.quantity
+        const menuMeals = plan.menu?.menuMeals ? plan.menu.menuMeals : null
+        if (menuMeals?.length > 0) {
+            menuMeals.forEach(menuMeal => {
+                menuMeal.mealItems.forEach(mealItem => {
+                    if (mealItem.hasChanged == true) {
+                        const item = {
+                            itemId: mealItem.id,
+                            newItem: {
+                                quantity: mealItem.quantity
+                            }
                         }
+                        dispatch(updateMealItem(item))
                     }
-                    dispatch(updateMealItem(item))
-                }
 
+                });
             });
-        });
+        }
+        const msg = {
+            variant: 'success',
+            autoHideDuration: 2000,
+            message: `Save successfully`,
+        }
+        dispatch(showMessage(msg))
 
 
     }
@@ -209,7 +258,6 @@ export default function MealPlanDetailContent() {
                                         <TextField
                                             {...field}
                                             className="mt-8 mb-16 w-[300px] "
-                                            required
                                             label="Title"
                                             variant="outlined"
                                             error={!!errors.title}
@@ -290,7 +338,7 @@ export default function MealPlanDetailContent() {
                                                     <TextField
                                                         {...params}
 
-                                                        placeholder="Select one w-[600px]"
+                                                        placeholder="Select one "
                                                         label="Specieses"
                                                         variant="outlined"
                                                         fullWidth
@@ -322,7 +370,7 @@ export default function MealPlanDetailContent() {
                                                     <TextField
                                                         {...params}
                                                         label="Caremode"
-                                                        placeholder="Select one w-[600px]"
+                                                        placeholder="Select one "
                                                         variant="outlined"
                                                         fullWidth
                                                         InputLabelProps={{
@@ -333,6 +381,8 @@ export default function MealPlanDetailContent() {
                                             />
                                         )}
                                     />
+                                    <Typography variant='h4' className=" text-20 font-400   "> Menu sample
+                                    </Typography>
                                     <Autocomplete
                                         className="mt-8 mb-16 w-512"
                                         fullWidth
@@ -355,15 +405,14 @@ export default function MealPlanDetailContent() {
                                         onChange={(event, newValue) => {
                                             setSelectedMenuSample(newValue);
                                             setIsButtonApplyDisabled(!newValue);
-                                          }}
-                                        
+                                        }}
+
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
 
                                                 placeholder="Select one "
-                                                label="Menu Smaple"
-                                                variant="standard"
+                                                variant="outlined"
                                                 fullWidth
                                                 InputLabelProps={{
                                                     shrink: true
@@ -372,10 +421,10 @@ export default function MealPlanDetailContent() {
                                         )}
                                     />
                                     <Box display="flex" justifyContent="end">
-                                                  <Button
-                                        disabled={isButtonApplyDisabled}
-                                        onClick={handleApply}
-                                        className='w-160' variant='contained' color='secondary'>Apply to menu</Button>
+                                        <Button
+                                            disabled={isButtonApplyDisabled}
+                                            onClick={handleApply}
+                                            className='w-160' variant='contained' color='secondary'>Apply to menu</Button>
                                     </Box>
 
                                 </Box>
@@ -447,6 +496,7 @@ export default function MealPlanDetailContent() {
                                                                     <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
                                                                     <div className="flex items-center">
                                                                         <Button
+                                                                            className="cursor-pointer "
                                                                             onClick={
                                                                                 () => {
                                                                                     dispatch(decreaseQuantity({
@@ -454,11 +504,14 @@ export default function MealPlanDetailContent() {
                                                                                         mealId: meal.id
                                                                                     }))
                                                                                 }
-                                                                            }><RemoveCircle /></Button>
+                                                                            }><RemoveCircle
+                                                                                className="cursor-pointer "
+                                                                            /></Button>
                                                                         <Typography className="mx-1">
                                                                             {item?.quantity}
                                                                         </Typography>
                                                                         <Button
+                                                                            className="cursor-pointer"
                                                                             onClick={
                                                                                 () => {
                                                                                     dispatch(increaseQuantity({
@@ -469,6 +522,7 @@ export default function MealPlanDetailContent() {
                                                                             }
                                                                         ><AddCircle /></Button>
                                                                         <Button
+                                                                            className="cursor-pointer"
                                                                             onClick={
                                                                                 () => {
                                                                                     dispatch(removeMealItem({

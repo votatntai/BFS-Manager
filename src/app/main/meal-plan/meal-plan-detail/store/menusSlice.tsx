@@ -18,9 +18,14 @@ export const getSpecies = createAppAsyncThunk('mealPlanReducer/menus/getSpecies'
     const data = (await response.data);
     return data;
 });
-export const getMenuSample = createAppAsyncThunk<any,any>('mealPlanReducer/menus/getMenuSample', async (item) => {
+export const getMenuSample = createAppAsyncThunk<any, any>('mealPlanReducer/menus/getMenuSample', async (item) => {
     const { speciesId, careModeId } = item;
-    const response = await axios.get(`/menu-samples?speciesId=${speciesId}&careModeId=${careModeId}`);
+    let response;
+    if (speciesId == null || careModeId == null) {
+        response = await axios.get('/menu-samples');
+    } else {
+        response = await axios.get(`/menu-samples?speciesId=${speciesId}&careModeId=${careModeId}`);
+    }
     const data = (await response.data);
     return data;
 });
@@ -72,6 +77,12 @@ export const updateMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/pla
         const data = (await response.data);
         return data;
     });
+export const removeMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/menus/removeMenuMeal',
+    async (id) => {
+        const response = await axios.delete(`/menu-meals/${id}`);
+        const data = (await response.data);
+        return data;
+    });
 
 const menusAdapter = createEntityAdapter({});
 
@@ -84,7 +95,7 @@ const initialState = menusAdapter.getInitialState({
     searchText: '',
     species: [],
     careMode: [],
-    menuSample:[],
+    menuSample: [],
     mealDialog: {
         data: [],
         isOpen: false,
@@ -198,7 +209,14 @@ export const menusSlice = createSlice({
 
             })
             .addCase(getMenuSample.fulfilled, (state, action) => {
-                state.menuSample=action.payload.data
+                state.menuSample = action.payload.data
+            })
+            .addCase(removeMenuMeal.fulfilled, (state, action) => {
+                const index = state.plans?.menu?.menuMeals.findIndex(meal => meal?.id == action.meta.arg)
+
+                if (index !== -1) {
+                    state.plans?.menu?.menuMeals.splice(index, 1)
+                }
             })
 
 
