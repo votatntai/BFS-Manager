@@ -31,7 +31,7 @@ export default function FoodReport(){
   <TableRow>
     <TableCell align="left"><span className='font-semibold'>Name</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Category</span></TableCell>
-    <TableCell align="left"><span className='font-semibold'>Current quantity</span></TableCell>
+    {/* <TableCell align="left"><span className='font-semibold'>Current quantity</span></TableCell> */}
     <TableCell align="left"><span className='font-semibold'>Last quantity</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Remain quantity</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Updated by</span></TableCell>
@@ -42,7 +42,7 @@ export default function FoodReport(){
         {foodReports.map((item) => (<TableRow key={item.id} >
         <TableCell align='left'>{item.food.name}</TableCell>
         <TableCell align='left'>{item.food.foodCategory.name}</TableCell>
-        <TableCell align='left'>{item.food.quantity} {item.food.unitOfMeasurement.name}</TableCell>
+        {/* <TableCell align='left'>{item.food.quantity} {item.food.unitOfMeasurement.name}</TableCell> */}
         <TableCell align='left'>{item.lastQuantity} {item.food.unitOfMeasurement.name}</TableCell>
         <TableCell align='left'>{item.remainQuantity} {item.food.unitOfMeasurement.name}</TableCell>
         <TableCell align='left'>{item.staff.name}</TableCell>

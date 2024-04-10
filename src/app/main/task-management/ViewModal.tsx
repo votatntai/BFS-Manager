@@ -51,7 +51,7 @@ const ViewModal = ({show,handleClose,object,setOpenSuccessSnackbar})=>{
       <Stack direction='row' className='justify-between	'>
       Task detail
       <Autocomplete disablePortal value={value} size='small'onChange={(event: any, newValue: string | null) => { setValue(newValue); }}
-        options={['Inprogress', 'Work finished', 'Done']}
+        options={['In progress', 'Work finished', 'Done']}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Status"/>}
     />

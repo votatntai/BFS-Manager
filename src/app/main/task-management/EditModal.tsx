@@ -60,7 +60,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
       }else setOpenFailSnackbar(true)
     }  
     
-    const comboboxList = ['To do', 'Inprogress', 'Work finished', 'Done', 'Cancel']
+    const comboboxList = ['To do', 'In progress', 'Work finished', 'Done', 'Cancel']
     const [staffs, setStaffs] = useState([])
     const loadStaffs = async() => {
       const res = await axios.get('/staffs')

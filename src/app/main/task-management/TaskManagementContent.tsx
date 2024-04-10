@@ -45,7 +45,7 @@ const TaskManagementContent = ()=>{
 <Table className="min-w-x" aria-labelledby="tableTitle" >
 <TableHead style={{background:'rgb(250, 251, 254)'}}>
     <TableRow>
-    <TableCell align="left"><span className='font-semibold'>Name</span></TableCell>
+    <TableCell align="left"><span className='font-semibold'>Title</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Description</span></TableCell>
     <TableCell width={'15%'} align="left"><span className='font-semibold'>Start at</span></TableCell>
     <TableCell width={'15%'} align="left"><span className='font-semibold'>Deadline</span></TableCell>

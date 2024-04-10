@@ -65,7 +65,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
           "title": taskName,
           "description": taskDescription,
           "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
-          "startAt": "2024-04-02T14:38:23.108Z",
+          "startAt": taskBegin.toDateString(),
           "deadline": taskDeadline.toDateString(),
           "status": "To do",
           "assigneeIds": staffList,

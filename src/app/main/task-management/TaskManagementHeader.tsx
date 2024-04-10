@@ -19,7 +19,7 @@ const TaskManagementHeader = ()=>{
     const [show,setShow]=useState(false)
     const [openCreateSuccessNotify, setOpenCreateSuccessNotify] = useState(false);
     const [openCreateFailNotify, setOpenCreateFailNotify] = useState(false);
-    const comboboxList = ['To do', 'Inprogress', 'Work finished', 'Done']
+    const comboboxList = ['To do', 'In progress', 'Work finished', 'Done']
     const [value, setValue] = useState<string | null>(comboboxList[0]);
     const inputValue = useAppSelector(state  => state.taskManagementReducer.taskManagement.filterStatus)
     const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)
