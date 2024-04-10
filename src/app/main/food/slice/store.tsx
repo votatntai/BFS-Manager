@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import ticketReducer from './ticketSlice';
+import foodReducer from './foodSlice';
 const reducer = combineReducers({
-    ticketReducer
+    foodReducer
 })
 
 export default reducer

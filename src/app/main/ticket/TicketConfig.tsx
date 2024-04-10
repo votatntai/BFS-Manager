@@ -1,7 +1,7 @@
 import lazyWithReducer from 'app/store/lazyWithReducer';
 import { lazy } from 'react';
 import reducer from './slice/store';
-const Ticket = lazyWithReducer('taskManagementReducer', () => import('./Ticket'), reducer);
+const Ticket = lazyWithReducer('ticketReducer', () => import('./Ticket'), reducer);
 
 const TicketConfig = {
 	settings: {

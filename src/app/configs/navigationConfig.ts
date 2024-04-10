@@ -26,6 +26,13 @@ const navigationConfig: FuseNavigationType = [
 				icon: 'heroicons-outline:view-boards'
 			},
 			{
+				id: 'food-report',  
+				title: 'Food report',
+				type: 'item',
+				url: '/food',
+				icon: 'heroicons-outline:clipboard-list'
+			},
+			{
 				id: 'ticket',  
 				title: 'Ticket',
 				type: 'item',

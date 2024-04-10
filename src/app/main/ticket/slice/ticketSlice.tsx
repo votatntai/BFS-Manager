@@ -1,10 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTickets} from "src/app/auth/services/api/callAPI";
+import { getTickets, updateTicket} from "src/app/auth/services/api/callAPI";
 
 export const getTicketData = createAsyncThunk('ticketReducer/getTickets', async (object: Object) => {
 	try {
 	  const response = await getTickets(object);
 	  return response;
+	} catch (error) {
+	  console.log(error);
+	}
+  });
+export const editTicketData = createAsyncThunk('ticketReducer/editTicket', async ({id, formData}: {id: string, formData: FormData}) => {
+	try {
+	  await updateTicket(id, formData);
 	} catch (error) {
 	  console.log(error);
 	}
@@ -42,6 +49,7 @@ const ticketSlice = createSlice({
             .addCase(getTicketData.fulfilled, (state, action: any) => {
                 state.tickets = action.payload;
             })
+            .addCase(editTicketData.fulfilled, (state, action: any) => { })
 	}
 });
 

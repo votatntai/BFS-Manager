@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from 'app/store';
 import Autocomplete from '@mui/material/Autocomplete';
 import axios from 'src/app/auth/services/api/customAxios';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { editTask,getTaskData,assignStaff,removeStaff,updateStaffForChecklist } from '../slice/taskManagementSlice';
+import { editTask,getTaskData,assignStaff,removeStaff,updateStaffForChecklist } from './slice/taskManagementSlice';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -26,13 +26,13 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
   const [showAssignToChecklistNotification, setShowAssignToChecklistNotification] = useState(false);
   const [msgCheck, setMsgCheck] = useState(false)
   const [task, setTask] =useState({
-    cageId: object.cage.id,      
     title: object.title,
     description: object.description,
     deadline: object.deadline,
     status: object.status,
+    startAt: object.startAt
   }) 
-  // console.log(object)
+  console.log(object)
   
   const [value, setValue] =useState(object.status)
     const [checkName, setCheckName] = useState(false)
@@ -54,7 +54,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
       const validate = checkValid()
       if(validate) {
         await dispatch(editTask({id: object.id, object: task}))
-        await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+        await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
         setOpenSuccessSnackbar(true)
         handleClose()
       }else setOpenFailSnackbar(true)
@@ -70,12 +70,11 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     }
     useEffect(()=>{loadStaffs()},[])
     
-    return <Dialog fullWidth
+    return <Dialog classes={{
+      paper: 'max-w-lg w-full m-8 sm:m-24'
+  }}
     open={show}
-    onClose={handleClose}
-    aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
-  >
+    onClose={handleClose} >
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between	'>
       Edit
@@ -94,19 +93,35 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     </DialogTitle>
     <DialogContent>
     <Stack direction='row' spacing={2} className='pt-5'>
-      <TextField value={task.title} onChange={e => setTask(prev => ({...prev, name: e.target.value}))} helperText={checkName ? "This field is required" : false} 
-      error={checkName} 
-       style={{width:'70%'}} placeholder='Enter task title' label="Title" variant="outlined" />
+      <TextField value={task.title} onChange={e => setTask(prev => ({...prev, title: e.target.value}))} helperText={checkName ? "This field is required" : false} 
+      error={checkName} style={{width:'40%'}} placeholder='Enter task title' label="Title" variant="outlined" />
       <DateTimePicker
               minDate={new Date()}
+							value={new Date(task.startAt)}
+							format="dd/MM/yyyy, hh:mm a "
+							onChange={(value) => setTask(prev => ({...prev, startAt: value}))}
+							className="w-full sm:w-auto"
+							slotProps={{
+								textField: {
+									label: 'Start at',
+									placeholder: 'Choose a start date',
+									InputLabelProps: {
+										shrink: true
+									},
+									variant: 'outlined'
+								}
+							}}
+						/>
+      <DateTimePicker
+              minDate={new Date(task.startAt)}
 							value={new Date(task.deadline)}
-							format="Pp"
+							format="dd/MM/yyyy, hh:mm a "
 							onChange={(value) => setTask(prev => ({...prev, deadline: value}))}
 							className="w-full sm:w-auto"
 							slotProps={{
 								textField: {
-									label: 'Due date',
-									placeholder: 'Choose a due date',
+									label: 'Deadline',
+									placeholder: 'Choose a deadline',
 									InputLabelProps: {
 										shrink: true
 									},
@@ -134,7 +149,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
                       "taskId": object.id, 
                       "staffId": addedStaff.id
                     })); // Dispatch assignStaff action with the added staff
-                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
                     setShowSuccessNotification(true);
                   }
                 } else if (value.length < assignee.length) {
@@ -143,7 +158,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
                   if (removedStaff) {
                     setMsgCheck(false)
                     await dispatch(removeStaff({id: object.id, staffId: removedStaff.id})); // Dispatch removeStaff action with the removed staff's id
-                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
                     setShowSuccessNotification(true);
                   }
                 }
@@ -163,21 +178,20 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
 							<FuseSvgIcon size={20}>heroicons-outline:check</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Checklists</Typography>
 						</div>			
-      {checklists.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+      {checklists.length > 0 && <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
        {checklists.map((item) => <ListItem key={item.id}>
-        <Stack direction='row' spacing={4} >
+        <Stack direction='row' spacing={2} className='items-center'>
         <Checkbox disabled checked={item.status} />
-        <Typography className="text-14" style={{marginTop:'10px'}}>
+        <Typography className="text-14" style={{width:'65%'}}>
           {item.title}
           </Typography>
-        <Autocomplete options={assignee} size='small'  sx={{ width: 200 }}
+        <Autocomplete options={assignee} size='small' sx={{ width: '35%' }} 
               getOptionLabel={(option:any) => option.name} 
               defaultValue={item.asignee} onChange={async(event, value) => {
                 try {
                   if(value !== null){
-                    // console.log({checklistId: item.id, updateInfo: {asigneeId: value.id,status: item.status}})
                     await dispatch(updateStaffForChecklist({checklistId: item.id, updateInfo: {"asigneeId": value.id, "status": item.status}}))
-                    await dispatch(getTaskData({cageId: object.cage.id, pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
+                    await dispatch(getTaskData({ pageNumber: pageNumber, pageSize: pageSize, status: 'To do'}))
                     setShowAssignToChecklistNotification(true);
                   }
                 } catch (error) {
@@ -199,7 +213,7 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     </DialogContent>
     <DialogActions>
     <Stack direction='row' spacing={2} className='me-14 mb-5'>
-    <Button variant='contained' onClick={handleClose}>Cancel</Button>
+      <Button variant='contained' onClick={handleClose}>Cancel</Button>
       <Button variant='contained' color='success' onClick={edit} >Edit</Button>
       </Stack>
     </DialogActions>

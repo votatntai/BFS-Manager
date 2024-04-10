@@ -5,18 +5,16 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TablePagination from '@mui/material/TablePagination';
-import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
+import { lighten } from '@mui/material/styles';
 import {useEffect, useState } from 'react';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { motion } from 'framer-motion';
 import { useAppDispatch,useAppSelector } from 'app/store';
-import { setPaginPageNumber,setPaginPageSize } from './slice/ticketSlice';
-import ViewModal from './ViewModal';
+import { getFoodData,setPaginPageNumber,setPaginPageSize } from './slice/foodSlice';
 const container = {
 	show: {
 		transition: {
@@ -26,27 +24,15 @@ const container = {
 };
 const TicketContent = ()=>{
     const dispatch = useAppDispatch()
-    const [showView, setShowView] =useState(false)
-    const [viewValue, setViewValue] =useState({})
-    const [openEditSuccessNotify, setOpenEditSuccessNotify] = useState(false);
-    const [openEditFailNotify, setOpenEditFailNotify] = useState(false);
-    const sortByPriority = (a, b) => {
-      const priorityOrder = {
-        'High': 3,
-        'Moderate': 2,
-        'Low': 1
-      };
-      
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
-    };
     const tickets = useAppSelector(state => state.ticketReducer.ticketReducer.tickets.data)
     const pageNumber  = useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.pageNumber)
     const pageSize  = useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.pageSize)
     const totalRow =  useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.totalRow)
     // const testState = useAppSelector(state => state)
     // console.log(testState)
-    const sortedTickets = tickets.slice().sort(sortByPriority);
-    
+    useEffect(()=>{
+        dispatch(getFoodData({pageNumber:0,pageSize:100}))
+    },[])
     return <div className="w-full flex flex-col bg-white">
     <FuseScrollbars className="overflow-x-auto">
 <Table className="min-w-x" aria-labelledby="tableTitle" >
@@ -61,10 +47,10 @@ const TicketContent = ()=>{
     </TableRow>
     </TableHead>
     {tickets && tickets.length > 0 && <TableBody>
-        {sortedTickets.map((item) => (<TableRow key={item.id} >
+        {tickets.map((item) => (<TableRow key={item.id} >
         <TableCell align='left'>{item.ticketCategory}</TableCell>
         <TableCell align='left'>{item.title}</TableCell>
-        <TableCell align='left'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'moderate' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Moderate</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
+        <TableCell align='left'>{item.priority === 1 ? <Button variant="contained" color='warning'>Low</Button> : item.priority === 2 ? <Button variant="contained" color='warning'>Moderate</Button>: <Button variant="contained" color='error'>High</Button>}</TableCell>
         <TableCell align='left'>{item.creator.name}</TableCell>
         <TableCell align='left'>{new Date(item.createAt).toLocaleString('en-GB', {
           day: '2-digit',
@@ -74,11 +60,6 @@ const TicketContent = ()=>{
           minute: '2-digit',
           hour12: true
         })}</TableCell>
-        <TableCell><Tooltip title='View detail'>
-            <FuseSvgIcon className="text-48 ms-10" size={24} color="action" style={{cursor:'pointer'}} 
-            onClick={()=>{setShowView(true); setViewValue(item)}}
-            >heroicons-solid:eye</FuseSvgIcon>
-            </Tooltip></TableCell>
     </TableRow>))}
     </TableBody>}
     </Table>
@@ -106,7 +87,7 @@ onRowsPerPageChange={(event) => {
    dispatch(setPaginPageNumber(0))
     }}
 />
-<Snackbar open={openEditSuccessNotify} autoHideDuration={3000} onClose={()=>{setOpenEditSuccessNotify(false)}} anchorOrigin={{vertical: 'bottom', horizontal: 'center' }}>
+{/* <Snackbar open={openEditSuccessNotify} autoHideDuration={3000} onClose={()=>{setOpenEditSuccessNotify(false)}} anchorOrigin={{vertical: 'bottom', horizontal: 'center' }}>
     <Alert onClose={()=>{setOpenEditSuccessNotify(false)}}
       severity="success" variant="filled" sx={{ width: '100%' }}>
       Edit successfully
@@ -118,7 +99,7 @@ onRowsPerPageChange={(event) => {
       Edit failed
     </Alert>
   </Snackbar>
-  {showView && <ViewModal setOpenFailSnackbar={setOpenEditFailNotify} setOpenSuccessSnackbar={setOpenEditSuccessNotify} object={viewValue} show={showView} handleClose={() => setShowView(false)} />}
+  {showEdit && <EditModal setOpenFailSnackbar={setOpenEditFailNotify} setOpenSuccessSnackbar={setOpenEditSuccessNotify} object={editValue} show={showEdit} handleClose={() => setShowEdit(false)} />} */}
 </div>
 }
 export default TicketContent

@@ -1,8 +1,10 @@
-import DemoContent from '@fuse/core/DemoContent';
 import FusePageSimple from '@fuse/core/FusePageSimple';
-import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
+import TabContent from './TabContent'
+import TabContext from '@mui/lab/TabContext';
+import { useAppSelector } from 'app/store';
 
+import FoodHeader from './FoodHeader';
 const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& .FusePageSimple-header': {
 		backgroundColor: theme.palette.background.paper,
@@ -15,25 +17,16 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& .FusePageSimple-sidebarContent': {}
 }));
 
-function Example() {
-	const { t } = useTranslation('examplePage');
-
-	return (
-		<Root
-			header={
-				<div className="p-24">
-					<h4>{t('TITLE')}</h4>
-				</div>
-			}
-			content={
-				<div className="p-24">
-					
-					<br />
-					<DemoContent />
-				</div>
-			}
-		/>
-	);
+function Food() {
+    const tabValue = useAppSelector(state => state.foodReducer.foodReducer.tabState)
+	return <TabContext value={tabValue}>
+	<Root
+	header={<FoodHeader/>}
+	content={
+			<TabContent />
+	}
+/>
+</TabContext>
 }
 
-export default Example;
+export default Food;

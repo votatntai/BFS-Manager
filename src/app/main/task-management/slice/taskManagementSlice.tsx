@@ -9,13 +9,10 @@ export const getCageData = createAsyncThunk('taskReducer/getCages', async (objec
 	  console.log(error);
 	}
   });
-export const getTaskData = createAsyncThunk('taskReducer/getTasks', async (object: {status: string, cageId: string, pageNumber: number, pageSize: number}) => {
+export const getTaskData = createAsyncThunk('taskReducer/getTasks', async (object: {status: string, pageNumber: number, pageSize: number}) => {
 	try {
-	if(object.cageId !== undefined && object.cageId !== ''){
 		const response = await getTask(object);
-		// console.log(object.cageId)
 		return response;
-	}
 	} catch (error) {
 	  console.log(error);
 	}

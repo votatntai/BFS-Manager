@@ -16,11 +16,11 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Fab from '@mui/material/Fab';
-import { addTask, getTaskData,setFilterStatus } from '../slice/taskManagementSlice';
+import { addTask, getTaskData,setFilterStatus } from './slice/taskManagementSlice';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
+const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
     const [taskName, setTaskName] =useState('')
     const [taskDescription, setTaskDescription] = useState('')
     const [taskBegin, setTaskBegin] = useState(new Date())
@@ -62,7 +62,6 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
       const validate = checkValid()
       if(validate) {
         await dispatch(addTask({
-          "cageId": cageId,
           "title": taskName,
           "description": taskDescription,
           "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
@@ -85,7 +84,7 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
         //   "assigneeIds": staffList,
         //   "checkLists": checklists
         // })
-        await dispatch(getTaskData({cageId: cageId, pageNumber: pageNumber, pageSize: pageSize, status:'To do'}))
+        await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status:'To do'}))
         dispatch(setFilterStatus('To do'))
         setOpenSuccessSnackbar(true)
         handleClose()
@@ -131,10 +130,7 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
     useEffect(()=>{loadStaffs()},[])
     return <Dialog open={show} classes={{
         paper: 'max-w-lg w-full m-8 sm:m-24'
-    }}
-    onClose={handleClose} aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
-    >
+    }} onClose={handleClose} >
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between'>
       Create
@@ -150,7 +146,7 @@ const CreateModal=({handleClose, show, cageId,setOpenFailSnackbar, setOpenSucces
       </Stack>}
       <Stack direction='row' spacing={2} className='pt-5'>
       <TextField value={taskName} onChange={(e)=> setTaskName(e.target.value)} helperText={checkName ? "This field is required" : false} 
-      error={checkName} sx={{width:'40$'}} placeholder='Enter task title' label="Title" variant="outlined"/>
+      error={checkName} sx={{width:'40%'}} placeholder='Enter task title' label="Title" variant="outlined"/>
       <DateTimePicker minDate={new Date()} value={taskBegin} format="dd/MM/yyyy, hh:mm a"
 							onChange={(value) => {
                 setTaskBegin(value);

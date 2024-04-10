@@ -11,10 +11,13 @@ import Error404Config from '../main/404/Error404Config';
 import TaskManagementConfig from '../main/task-management/TaskManagementConfig';
 import TicketConfig from '../main/ticket/TicketConfig';
 import MealPlanConfig from '../main/meal-plan/MealPlanConfig';
+import FoodConfig from '../main/food/FoodConfig';
 
 const routeConfigs: FuseRouteConfigsType = [
 	MealPlanConfig,
 	TaskManagementConfig,
+	TicketConfig,
+	FoodConfig,
 	 SignOutConfig, 
 	 SignInConfig,
 	  SignUpConfig, 
