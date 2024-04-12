@@ -32,12 +32,12 @@ const TicketContent = ()=>{
     const [openEditFailNotify, setOpenEditFailNotify] = useState(false);
     const sortByPriority = (a, b) => {
       const priorityOrder = {
-        'High': 3,
-        'Moderate': 2,
-        'Low': 1
+        'high': 3,
+        'medium': 2,
+        'low': 1
       };
       
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
+      return priorityOrder[b.priority.toLowerCase()] - priorityOrder[a.priority.toLowerCase()];
     };
     const tickets = useAppSelector(state => state.ticketReducer.ticketReducer.tickets.data)
     const pageNumber  = useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.pageNumber)
@@ -47,9 +47,9 @@ const TicketContent = ()=>{
     // console.log(testState)
     const sortedTickets = tickets.slice().sort(sortByPriority);
     
-    return <div className="w-full flex flex-col bg-white">
-    <FuseScrollbars className="overflow-x-auto">
-<Table className="min-w-x" aria-labelledby="tableTitle" >
+    return <div className="w-full flex flex-col min-h-full bg-white">
+    <FuseScrollbars className="grow overflow-x-auto">
+<Table className="min-w-xl" aria-labelledby="tableTitle" >
 <TableHead style={{background:'rgb(250, 251, 254)'}}>
     <TableRow>
     <TableCell align="left"><span className='font-semibold'>Type</span></TableCell>
@@ -64,7 +64,7 @@ const TicketContent = ()=>{
         {sortedTickets.map((item) => (<TableRow key={item.id} >
         <TableCell align='left'>{item.ticketCategory}</TableCell>
         <TableCell align='left'>{item.title}</TableCell>
-        <TableCell align='left'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'moderate' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Moderate</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
+        <TableCell align='left'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'medium' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Medium</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
         <TableCell align='left'>{item.creator.name}</TableCell>
         <TableCell align='left'>{new Date(item.createAt).toLocaleString('en-GB', {
           day: '2-digit',

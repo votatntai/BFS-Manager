@@ -29,9 +29,9 @@ export default function FoodData(){
         dispatch(getFoodData({pageNumber: pageNumber, pageSize: pageSize}))
     },[pageNumber, pageSize])
     
-    return <div className="bg-white shadow-2">
+    return <div className="w-full flex flex-col min-h-full bg-white shadow-2">
     <FuseScrollbars className="grow overflow-x-auto">
-        <Table className="min-w-x" aria-labelledby="tableTitle" >   
+        <Table className="min-w-xl" aria-labelledby="tableTitle" >   
         <TableHead style={{background:'rgb(250, 251, 254)'}}>
   <TableRow>
     <TableCell align="left"><span className='font-semibold'>Avatar</span></TableCell>

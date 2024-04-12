@@ -82,10 +82,10 @@ const ViewModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
       <Stack direction='row' spacing={2}>
       <Autocomplete size='small' value={ticketStatus}
             onChange={(event: any, newValue: string | null) => { setTicketStatus(newValue); }}
-            options={['Processing','Done']} sx={{ width: 200 }} renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Status" />}
+            options={['Processing','Rejected','Done']} sx={{ width: 200 }} renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Status" />}
         />
         <Button variant="contained" style={{pointerEvents: "none"}} color={ticket.priority.toLowerCase() === 'low' ? 'success' :
-ticket.priority.toLowerCase() === 'moderate' ? 'warning' : 'error'}>{ticket.priority}</Button>
+ticket.priority.toLowerCase() === 'medium' ? 'warning' : 'error'}>{ticket.priority}</Button>
       </Stack>
       </Stack>
     </DialogTitle>

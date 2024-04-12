@@ -1,5 +1,5 @@
 import { FuseNavigationType } from '@fuse/core/FuseNavigation/types/FuseNavigationType';
-
+import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 /**
  * The navigationConfig object is an array of navigation items for the Fuse application.
  */
@@ -16,8 +16,13 @@ const navigationConfig: FuseNavigationType = [
 				type: 'item',
 				icon: 'heroicons-outline:calendar',
 				url: '/meal-plan/cages',
-				end: true,
 			},
+			// {
+			// 	id: 'bird-management',  
+			// 	title: 'Bird management',
+			// 	type: 'item',
+			// 	url: '/bird-management',
+			// },
 			{
 				id: 'task-management',  
 				title: 'Task management',

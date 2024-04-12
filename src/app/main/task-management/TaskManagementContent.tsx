@@ -40,9 +40,9 @@ const TaskManagementContent = ()=>{
       dispatch(setTaskDataToEmpty())
       dispatch(getTaskData({status: 'To do', pageNumber: pageNumber, pageSize: pageSize}))
   },[pageNumber, pageSize])
-    return <div className="w-full flex flex-col bg-white">
-    <FuseScrollbars className="overflow-x-auto">
-<Table className="min-w-x" aria-labelledby="tableTitle" >
+    return <div className="w-full flex flex-col min-h-full bg-white">
+    <FuseScrollbars className="overflow-x-auto grow">
+<Table className="min-w-xl" aria-labelledby="tableTitle" >
 <TableHead style={{background:'rgb(250, 251, 254)'}}>
     <TableRow>
     <TableCell align="left"><span className='font-semibold'>Title</span></TableCell>

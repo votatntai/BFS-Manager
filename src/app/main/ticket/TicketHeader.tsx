@@ -35,8 +35,8 @@ const TicketHeader = ()=>{
         onChange={(event: any, newValue: string | null) => {
           setValue(newValue);
         }}
-        options={['Processing','Done']}
-        sx={{ width: 200 }}
+        options={['Processing','Rejected','Done']}
+        sx={{ width: '15rem' }}
         renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Status" />}
       />
     <Autocomplete size='small' 
@@ -45,7 +45,7 @@ const TicketHeader = ()=>{
           setType(newValue);
         }}
         options={['All','Food','Bird', 'Cage', 'Personnel']}
-        sx={{ width: 200 }}
+        sx={{ width: '15rem' }}
         renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Type" />}
       />
     

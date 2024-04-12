@@ -182,10 +182,10 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
        {checklists.map((item) => <ListItem key={item.id}>
         <Stack direction='row' spacing={2} className='items-center'>
         <Checkbox disabled checked={item.status} />
-        <Typography className="text-14" style={{width:'65%'}}>
+        <Typography className="text-14" sx={{width:'40rem'}}>
           {item.title}
           </Typography>
-        <Autocomplete options={assignee} size='small' sx={{ width: '35%' }} 
+        <Autocomplete options={assignee} size='small' sx={{ width: '20rem' }} 
               getOptionLabel={(option:any) => option.name} 
               defaultValue={item.asignee} onChange={async(event, value) => {
                 try {

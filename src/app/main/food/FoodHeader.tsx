@@ -26,7 +26,6 @@ const FoodHeader = ()=>{
     }
     const tabValue = useAppSelector(state => state.foodReducer.foodReducer.tabState)
     return <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
-        <Stack direction='row' spacing={5}>
         <TabList 
         value={tabValue}
         onChange={(e, newValue) => {dispatch(setTabState(newValue))}}
@@ -47,7 +46,6 @@ const FoodHeader = ()=>{
             >
                 Search
             </Button>
-        </Stack>
         </Stack>
     </div>
 }
