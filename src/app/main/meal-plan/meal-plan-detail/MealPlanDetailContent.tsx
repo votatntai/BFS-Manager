@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AddCircle, DeleteForever, EditAttributesSharp, EditRounded, RemoveCircle } from '@mui/icons-material';
+import { AddCircle, AddCircleOutline, DeleteForever, EditAttributesSharp, EditRounded, RemoveCircle, RemoveCircleOutline } from '@mui/icons-material';
 import AddCircleOutlineRounded from '@mui/icons-material/AddCircleOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Divider, Grid, Paper, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { formatISO } from 'date-fns';
@@ -20,6 +20,8 @@ import { NameType, menuSampleType } from './type/MenuType';
 import { forEach } from 'lodash';
 import { AnyAction, unwrapResult } from '@reduxjs/toolkit';
 import { showMessage } from 'app/store/fuse/messageSlice';
+import FoodNormTab from './tabs/FoodNormTab';
+import BirdMenus from './menu/BirdMenus';
 const schema = yup.object().shape({
     // start: yup.date().required('Start date is required'),
     // end: yup.date().required('End date is required').when('start', (start, schema) => {
@@ -32,7 +34,28 @@ const schema = yup.object().shape({
     careModeId: yup.mixed(),
     menuName: yup.string()
 });
-
+const menuMeals = [
+    {
+        name: "Morning",
+        from: "07:00:00",
+        to: "09:00:00"
+    },
+    {
+        name: "Lunch",
+        from: "12:0:00",
+        to: "14:00:00"
+    },
+    {
+        name: "Afternoon",
+        from: "17:00:00",
+        to: "19:00:00"
+    },
+    {
+        name: "Evening",
+        from: "21:00:00",
+        to: "22:00:00"
+    }
+]
 export default function MealPlanDetailContent() {
     const dispatch = useAppDispatch()
     const { cageId, planId } = useParams()
@@ -44,6 +67,9 @@ export default function MealPlanDetailContent() {
     const menu: Partial<MenuType> = useAppSelector(selectMenuId)
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
+    // useState
+    const [planCreated, setPlanCreated] = useState(false);
+    const [menuCreated, setMenuCreated] = useState(false);
     const [openMealDialog, setOpenDialog] = useState(false)
     const [isMenuExist, setIsMenuExist] = useState(false)
     const [isTitleEdited, setIsTitleEdited] = useState(false)
@@ -58,7 +84,7 @@ export default function MealPlanDetailContent() {
     );
     const { errors } = formState
     const navigate = useNavigate()
-    //useEffect
+    //useEffet
     //------- get List Info--------
     useEffect(
         () => {
@@ -67,6 +93,7 @@ export default function MealPlanDetailContent() {
             dispatch(getCareMode())
         }
         , [])
+
     //------- get sample menu --------
     const speciesId = watch("speciesId");
     const careModeId = watch("careModeId");
@@ -79,32 +106,61 @@ export default function MealPlanDetailContent() {
             dispatch(getMenuSample(data))
         }
         , [speciesId, careModeId])
-
-    // ------- Check Menu exist--------
+    // ------  Run after cageLoaded --
     useEffect(
         () => {
-            if (planId == "new") {
+            if (planId == "new" && cage.name && !menuCreated) {
+                const data = {
+                    item: {
+                        name: `${cage.name}-${cage.code}`
+                    },
+                    actionType: "PLAN_MENU"
+                };
+                dispatch(createMenu(data))
+                setMenuCreated(true)
+            }
+        }
+        , [cage]
+    )
+    useEffect(
+        () => {
+            if (planId == "new" && !planCreated) {
                 if (menu.name) {
-                    setIsMenuExist(true)
                     const data = {
-                        title: getValues().title,
+                        title: `${formatDateToDayMonth(getValues().start)} to ${formatDateToDayMonth(getValues().end)}`,
                         from: formatISO(getValues().start),
                         to: formatISO(getValues().end),
                         menuId: menu.id,
                         cageId: cageId
                     }
                     dispatch(createPlan(data))
+                    let promises = menuMeals.map((meal, index) => {
+                        const info = {
+                            menuId: menu.id,
+                            name: meal.name,
+                            from: meal.from,
+                            to: meal.to
+                        }
+                        return dispatch(createMenuMeal(info));
+                    });
 
+                    Promise.all(promises)
+                        .then(() => console.log("All meals have been created"))
+                        .catch((error) => console.error(error))
+                    setPlanCreated(true)
                 }
-                else
-                    setIsMenuExist(false)
-            } else {
-                dispatch(getPlanById(planId))
-
-
             }
         }
-        , [menu, planId, cageId, isExistMealItem])
+        , [menu]
+    )
+
+    // ------- Get Plan --------
+    useEffect(
+        () => {
+            if (planId !== "new")
+                dispatch(getPlanById(planId))
+        }
+        , [ ])
     // -------- Insert form ----------
     useEffect(() => {
         if (Object.keys(plan).length !== 0) {
@@ -135,7 +191,6 @@ export default function MealPlanDetailContent() {
                 dispatch(removeMenuMeal(meal.id))
             });
         }
-        console.log("selection", selectedMenuSample?.menuMealSamples)
         const menuSampleList = selectedMenuSample?.menuMealSamples;
         let data
         let itemData
@@ -150,8 +205,7 @@ export default function MealPlanDetailContent() {
                         to: mealSample.to
                     }
                     const result = await dispatch(createMenuMeal(data));
-
-                    const newMenuMeal = unwrapResult(result); // Unwrap result from action
+                    const newMenuMeal = result.payload; // Unwrap result from action
                     if (mealSample.mealItemSamples.length > 0) {
                         for (let item of mealSample.mealItemSamples) {
                             itemData = {
@@ -171,7 +225,13 @@ export default function MealPlanDetailContent() {
         handleCreation(menuSampleList);
 
     }
-
+    function formatDateToDayMonth(date) {
+        if (date instanceof Date) {
+            const formattedDate = date.toLocaleDateString('vn-VI', { day: '2-digit', month: '2-digit' });
+            return formattedDate;
+        }
+        return null;
+    }
     function onSubmit(data) {
         const menuMeals = plan.menu?.menuMeals ? plan.menu.menuMeals : null
         if (menuMeals?.length > 0) {
@@ -391,17 +451,7 @@ export default function MealPlanDetailContent() {
                                             return options?.name || null;
                                         }
                                         }
-                                        // renderOption={
-                                        //     (,options,props :NameType) => (
-                                        //         <div
-                                        //             key={options.id} className='p-20'>
-
-                                        //             {props.name}
-                                        //             <span>X</span>
-                                        //         </div>
-
-                                        //     )
-                                        // }
+                             
                                         onChange={(event, newValue) => {
                                             setSelectedMenuSample(newValue);
                                             setIsButtonApplyDisabled(!newValue);
@@ -460,12 +510,7 @@ export default function MealPlanDetailContent() {
                                     <div className="flex justify-between items-center">
                                         <Typography variant='h4' className=" text-20 font-400  "> Meal
                                         </Typography>
-                                        <Button onClick={() => {
-                                            dispatch(setDialogState(true))
-                                        }}>
-                                            <AddCircleOutlineRounded />
-                                        </Button>
-                                        <MealDialog prop={openMealDialog} />
+                                  
                                     </div>
                                     {(plan.menu?.menuMeals && plan.menu?.menuMeals?.length > 0) ? (
                                         plan.menu.menuMeals.map(
@@ -495,43 +540,12 @@ export default function MealPlanDetailContent() {
 
                                                                     <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
                                                                     <div className="flex items-center">
-                                                                        <Button
-                                                                            className="cursor-pointer "
-                                                                            onClick={
-                                                                                () => {
-                                                                                    dispatch(decreaseQuantity({
-                                                                                        itemId: item.id,
-                                                                                        mealId: meal.id
-                                                                                    }))
-                                                                                }
-                                                                            }><RemoveCircle
-                                                                                className="cursor-pointer "
-                                                                            /></Button>
+                                                                 
                                                                         <Typography className="mx-1">
                                                                             {item?.quantity}
                                                                         </Typography>
-                                                                        <Button
-                                                                            className="cursor-pointer"
-                                                                            onClick={
-                                                                                () => {
-                                                                                    dispatch(increaseQuantity({
-                                                                                        itemId: item.id,
-                                                                                        mealId: meal.id
-                                                                                    }))
-                                                                                }
-                                                                            }
-                                                                        ><AddCircle /></Button>
-                                                                        <Button
-                                                                            className="cursor-pointer"
-                                                                            onClick={
-                                                                                () => {
-                                                                                    dispatch(removeMealItem({
-                                                                                        itemId: item.id,
-                                                                                        mealId: meal.id
-                                                                                    }))
-                                                                                }
-                                                                            }
-                                                                        ><DeleteForever /></Button>
+                                                           
+                                                                    
                                                                     </div>
                                                                 </AccordionDetails>
                                                             )
@@ -565,6 +579,31 @@ export default function MealPlanDetailContent() {
                         </div>
                     </>
                 )}
+
+                {/* ======================== Total food norm  ========================                           */}
+                <div className="">
+
+                    <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Total food norm (menu of cage)
+                    </Typography>
+                    <Typography variant='h4' className=" text-20 font-400 my-20  "> Menu meal table
+                    </Typography>
+
+
+                    <div className="flex justify-around">
+                        <FoodNormTab />
+                    </div>
+                </div>
+                <div className="">
+
+                    <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Birds in cage
+                    </Typography>
+                    <Typography variant='h4' className=" text-20 font-400 my-20  ">
+                    </Typography>
+                    <BirdMenus />
+
+
+
+                </div>
             </form>
         </Paper>
     </div >

@@ -1,4 +1,4 @@
-import { FoodType } from "../../calendar/types/PlanType";
+import { FoodType, MenuType } from "../../calendar/types/PlanType";
 
 export type NameType = {
     id: string;
@@ -20,3 +20,35 @@ export type mealItemSamplesType = {
     order: number;
 }
 
+export type BirdType = {
+    id: string,
+    code: string,
+    name: string,
+    dayOfBirth: Date,
+    gender: string,
+    characteristic: string,
+    thumbnailUrl: string,
+    cage: {
+        id: string,
+    }
+    careMode?: {
+        id: string,
+        proirity: string,
+        name: string,
+        createAt: string,
+    },
+    species?: {
+        id: string,
+        thumbnailUrl: string,
+        name: string,
+        createAt: string,
+    },
+    category?: {
+        thumbnailUrl: string,
+        name: string,
+    },
+    createAt: string,
+    menuId: string,
+    menu: MenuType
+
+}

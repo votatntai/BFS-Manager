@@ -1,7 +1,7 @@
 import { Avatar, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { useEffect, useState } from 'react';
-import { addMealItems, createMealItems, getFoods, selectFoods, selectMealId, selectMealItemsDialogState, selectMeals, setMealitemsDialog } from '../store/menusSlice';
+import { addMealItems, createMealItems, getFoods, selectFoods, selectMealBirdId, selectMealId, selectMealItemsDialogState, selectMeals, setMealitemsDialog } from '../store/menusSlice';
 
 type MealItemsProp = {
     id: string
@@ -10,6 +10,7 @@ export default function MealItemDialog() {
     // const { id } = props
     // console.log("id",id)
     const id = useAppSelector(selectMealId)
+    const birdId = useAppSelector(selectMealBirdId)
     const dispatch = useAppDispatch()
     const open = useAppSelector(selectMealItemsDialogState)
     const meals = useAppSelector(selectMeals)
@@ -31,7 +32,11 @@ export default function MealItemDialog() {
                 quantity: 1,
                 order: index
             }
-            dispatch(createMealItems(newMealItems))
+            const mealItemData = {
+                data: newMealItems,
+                birdId: birdId
+            }
+            dispatch(createMealItems(mealItemData))
             handleClose()
         });
 
