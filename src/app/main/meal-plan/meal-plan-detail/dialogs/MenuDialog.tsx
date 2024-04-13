@@ -6,7 +6,7 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 
 export default function MenuDialog(props) {
     const { birds } = props
-    console.log("birds",birds)
+    console.log("birds", birds)
     const dispatch = useAppDispatch()
     const open = useAppSelector(selectMenuDialogState)
     const menuSamples = useAppSelector(selectMenuSample)
@@ -32,86 +32,91 @@ export default function MenuDialog(props) {
                 onSubmit: (event) => {
                     event.preventDefault();
                     for (let bird of birds) {
-                        
+
                         for (let menu of menuSamples) {
                             if (bird.species.id == menu.species.id && bird.careMode.id == menu.careMode.id) {
-                                for (let birdMeal of bird.menu.menuMeals){
-                                    mornigId= birdMeal.find(meal=>meal.name=="Morning")
-                                    lunchId= birdMeal.find(meal=>meal.name=="Lunch")
-                                    afternoonId= birdMeal.find(meal=>meal.name=="Afternoon")
-                                    eveningId= birdMeal.find(meal=>meal.name=="Evening")
-                                    for (let birdItem of birdMeal.mealItems)
-                                    dispatch(removeBirdItem({
-                                        itemId: birdItem.id,
-                                        mealId: birdMeal.id,
-                                        birdId: bird.id
-                                    }))
+                                mornigId = bird.menu.menuMeals.find(meal => meal.name == "Morning")
+                                lunchId = bird.menu.menuMeals.find(meal => meal.name == "Lunch")
+                                afternoonId = bird.menu.menuMeals.find(meal => meal.name == "Afternoon")
+                                eveningId = bird.menu.menuMeals.find(meal => meal.name == "Evening")
+                                for (let birdMeal of bird.menu.menuMeals) {
+                                    for (let birdItem of birdMeal.mealItems) {
+                                        dispatch(removeBirdItem({
+                                            itemId: birdItem.id,
+                                            mealId: birdMeal.id,
+                                            birdId: bird.id
+                                        }))
+                                    }
                                     for (let meal of menu.menuMealSamples) {
                                         switch (meal.name) {
                                             case "Morning":
-                                                for (let [index, itemSample] of meal.mealItemSamples){
-                                                    const newMealItems = {
-                                                        menuMealId: mornigId,
-                                                        foodId: itemSample.food.id,
-                                                        quantity: 1,
-                                                        order: index
+                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                        const newMealItems = {
+                                                            menuMealId: mornigId.id,
+                                                            foodId: meal.mealItemSamples[index].food.id,
+                                                            quantity: 1,
+                                                            order: index
+                                                        }
+                                                        const mealItemData = {
+                                                            data: newMealItems,
+                                                            birdId: bird.id
+                                                        }
+                                                        dispatch(createMealItems(mealItemData))
                                                     }
-                                                    const mealItemData = {
-                                                        data: newMealItems,
-                                                        birdId: bird.id
-                                                    }
-                                                    dispatch(createMealItems(mealItemData))
-                                                }
                                                 break;
                                             case "Lunch":
-                                                for (let [index, itemSample] of meal.mealItemSamples){
-                                                    const newMealItems = {
-                                                        menuMealId: lunchId,
-                                                        foodId: itemSample.food.id,
-                                                        quantity: 1,
-                                                        order: index
+                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                        const newMealItems = {
+                                                            menuMealId: lunchId.id,
+                                                            foodId: meal.mealItemSamples[index].food.id,
+                                                            quantity: 1,
+                                                            order: index
+                                                        }
+                                                        const mealItemData = {
+                                                            data: newMealItems,
+                                                            birdId: bird.id
+                                                        }
+                                                        dispatch(createMealItems(mealItemData))
                                                     }
-                                                    const mealItemData = {
-                                                        data: newMealItems,
-                                                        birdId: bird.id
-                                                    }
-                                                    dispatch(createMealItems(mealItemData))
-                                                }
                                                 break;
                                             case "Afternoon":
-                                                for (let [index, itemSample] of meal.mealItemSamples){
-                                                    const newMealItems = {
-                                                        menuMealId: afternoonId,
-                                                        foodId: itemSample.food.id,
-                                                        quantity: 1,
-                                                        order: index
+                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                        const newMealItems = {
+                                                            menuMealId: afternoonId.id,
+                                                            foodId: meal.mealItemSamples[index].food.id,
+                                                            quantity: 1,
+                                                            order: index
+                                                        }
+                                                        const mealItemData = {
+                                                            data: newMealItems,
+                                                            birdId: bird.id
+                                                        }
+                                                        dispatch(createMealItems(mealItemData))
                                                     }
-                                                    const mealItemData = {
-                                                        data: newMealItems,
-                                                        birdId: bird.id
-                                                    }
-                                                    dispatch(createMealItems(mealItemData))
-                                                }
                                                 break;
                                             case "Evening":
-                                                for (let [index, itemSample] of meal.mealItemSamples){
-                                                    const newMealItems = {
-                                                        menuMealId: eveningId,
-                                                        foodId: itemSample.food.id,
-                                                        quantity: 1,
-                                                        order: index
+                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                        const newMealItems = {
+                                                            menuMealId: eveningId.id,
+                                                            foodId: meal.mealItemSamples[index].food.id,
+                                                            quantity: 1,
+                                                            order: index
+                                                        }
+                                                        const mealItemData = {
+                                                            data: newMealItems,
+                                                            birdId: bird.id
+                                                        }
+                                                        dispatch(createMealItems(mealItemData))
                                                     }
-                                                    const mealItemData = {
-                                                        data: newMealItems,
-                                                        birdId: bird.id
-                                                    }
-                                                    dispatch(createMealItems(mealItemData))
-                                                }
                                                 break;
                                         }
                                     }
                                 }
-                            
+
                             }
                         }
                     }
