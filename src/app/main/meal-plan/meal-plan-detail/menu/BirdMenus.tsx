@@ -8,6 +8,7 @@ import { forEach } from 'lodash'
 import { menuMeals } from '../tabs/FoodNormTab'
 import { MealItemType } from '../../calendar/types/PlanType'
 import MenuDialog from '../dialogs/MenuDialog'
+import { showMessage } from 'app/store/fuse/messageSlice'
 
 export default function BirdMenus() {
     const dispatch = useAppDispatch()
@@ -143,7 +144,13 @@ export default function BirdMenus() {
             dispatch(createPFoodNormItem(itemData))
 
         }
-
+        const msg = {
+            variant: 'success',
+            autoHideDuration: 2000,
+            message: `Apply menu successfully`,
+        }
+        dispatch(showMessage(msg))
+    
 
     }
     function groupByFoodId(mealItems: MealItemType[]) {
@@ -173,7 +180,7 @@ export default function BirdMenus() {
                 </h4>
 
                 <Button
-                className="mx-20"
+                    className="mx-20"
                     onClick={() => {
                         dispatch(setMenuDialog(true))
                     }}

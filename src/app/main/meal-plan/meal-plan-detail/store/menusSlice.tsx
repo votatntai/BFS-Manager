@@ -87,6 +87,7 @@ export const createPlan = createAppAsyncThunk<any, any>('mealPlanReducer/menus/c
     });
 export const createMealItems = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMealItems',
     async (dataItem) => {
+        console.log("testing api",dataItem.data)
         const response = await axios.post('/meal-items', dataItem.data);
         const data = (await response.data);
         return {
@@ -147,6 +148,13 @@ export const updateBird = createAppAsyncThunk<any, any>('mealPlanReducer/plans/u
     async (item) => {
         const { itemId, newItem } = item
         const response = await axios.put(`/birds/${itemId}`, newItem);
+        const data = (await response.data);
+        return data;
+    });
+export const updatePlan = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updatePlan',
+    async (item) => {
+        const { itemId, newItem } = item
+        const response = await axios.put(`/plans/${itemId}`, newItem);
         const data = (await response.data);
         return data;
     });
@@ -330,6 +338,9 @@ export const menusSlice = createSlice({
                 }
             })
             .addCase(updateBird.fulfilled, (state, action) => {
+
+            })
+            .addCase(updatePlan.fulfilled, (state, action) => {
 
             })
 

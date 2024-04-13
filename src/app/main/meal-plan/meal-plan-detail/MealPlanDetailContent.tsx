@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { getCage, selectCage } from '../store/cagesSlice';
 import MealDialog from './dialogs/MealDialog';
 import MealItemDialog from './dialogs/MealItemDialog';
-import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem } from './store/menusSlice';
+import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem, updatePlan } from './store/menusSlice';
 import MenuDialog from './dialogs/MenuDialog';
 import { MenuType, PlanType } from '../calendar/types/PlanType';
 import { NameType, menuSampleType } from './type/MenuType';
@@ -267,9 +267,13 @@ export default function MealPlanDetailContent() {
                 className='my-[5rem] mx-40 '>
 
                 <div className="flex">
-                    <div className=' w-1/2'>
+                    <div className=' w-1/2 '>
                         <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Plan info
                         </Typography>
+                        {/* <span className="bg-red">
+                            <span className="mx-20 border border-solid rounded-full hover:scale-125 cursor-pointer"> <EditRounded /> </span>
+                        </span> */}
+
 
                         <Box display="flex " >
                             <div className='mt-10 '>
@@ -328,7 +332,6 @@ export default function MealPlanDetailContent() {
                                 )}
 
                             />
-                            <span className="mx-20 border border-solid rounded-full hover:scale-125 cursor-pointer"> <EditRounded /> </span>
                         </Box>
 
                     </div>
@@ -349,6 +352,32 @@ export default function MealPlanDetailContent() {
                                     className="mt-8 mb-16 w-[300px] "
                                     variant="outlined"
                                 />
+                                <div
+                                    className="flex justify-end">
+                                    <Button
+                                        onClick={() => {
+                                            const newPlan = {
+                                                "title": getValues().title,
+                                                "from": formatISO(getValues().start),
+                                                "to": formatISO(getValues().end)
+                                            }
+                                            const planData = {
+                                                itemId: plan.id,
+                                                newItem: newPlan
+                                            }
+                                            dispatch(updatePlan(planData))
+                                            const msg = {
+                                                variant: 'success',
+                                                autoHideDuration: 2000,
+                                                message: `Edit plan successfully`,
+                                            }
+                                            dispatch(showMessage(msg))
+                                        }}
+                                        variant="contained" color="secondary">
+                                        Save
+                                    </Button>
+
+                                </div>
 
 
                             </div>
@@ -358,11 +387,11 @@ export default function MealPlanDetailContent() {
                 </div>
                 <Divider variant='fullWidth' flexItem />
                 {/* Menu */}
-                    <>
-                        {/* <div className=" justify-center    "> */}
-                            {/* Memnu sample */}
-                            <Box display="flex"  >
-                                {/* <Box display="flex" flexDirection="column" className="flex-1 mt-10">
+                <>
+                    {/* <div className=" justify-center    "> */}
+                    {/* Memnu sample */}
+                    <Box display="flex"  >
+                        {/* <Box display="flex" flexDirection="column" className="flex-1 mt-10">
                                     <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu sample
                                     </Typography>
                                     <Typography variant='h4' className=" text-20 font-400   "> Select your menu sample type
@@ -467,101 +496,101 @@ export default function MealPlanDetailContent() {
                                     </Box>
 
                                 </Box> */}
-                                <div className='mt-10 mx-40 flex-1'>
-                                    <Divider variant='inset'>
-                                        <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu
-                                        </Typography>
+                        <div className='mt-10 mx-40 flex-1'>
+                            <Divider variant='inset'>
+                                <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu
+                                </Typography>
 
-                                    </Divider>
-                                    <Typography variant='h4' className=" text-20 font-400   "> Menu name
-                                    </Typography>
-                                    <Controller
-                                        name="menuName"
-                                        defaultValue={menu.name}
-                                        control={control}
-                                        render={({ field }) => (
-                                            <>
-                                                <TextField
-                                                    {...field}
-                                                    className="mt-8 mb-16 w-[300px] "
-                                                    required
-                                                    disabled
-                                                    label=""
-                                                    id="name"
-                                                    variant="outlined"
-                                                // error={!!errors.name}
-                                                // helperText={errors?.name?.message as string}
-                                                />
-                                            </>
-                                        )}
-                                    />
+                            </Divider>
+                            <Typography variant='h4' className=" text-20 font-400   "> Menu name
+                            </Typography>
+                            <Controller
+                                name="menuName"
+                                defaultValue={menu.name}
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <TextField
+                                            {...field}
+                                            className="mt-8 mb-16 w-[300px] "
+                                            required
+                                            disabled
+                                            label=""
+                                            id="name"
+                                            variant="outlined"
+                                        // error={!!errors.name}
+                                        // helperText={errors?.name?.message as string}
+                                        />
+                                    </>
+                                )}
+                            />
 
-                                    <div className="flex justify-between items-center">
-                                        <Typography variant='h4' className=" text-20 font-400  "> Meal
-                                        </Typography>
-                                    </div>
-                                    {(plan.menu?.menuMeals && plan.menu?.menuMeals?.length > 0) ? (
-                                        plan.menu.menuMeals.map(
-                                            (meal) => {
-                                                return (
-                                                    <Accordion
-                                                        key={meal.id}
-                                                        className="shadow-2  border rounded-16 my-20 overflow-hidden"
-                                                    >
-                                                        <AccordionSummary
-                                                            expandIcon={<ExpandMoreIcon />}
-                                                            classes={{ root: 'mb-16  ' }}
-                                                        >
-                                                            <Grid container direction="column">
-                                                                <Typography className="font-bold">{meal.name}</Typography>
-                                                                <Typography color="blue">
-                                                                    From: {meal.from}
-                                                                    <br />    To: {meal.to}
-                                                                </Typography>
+                            <div className="flex justify-between items-center">
+                                <Typography variant='h4' className=" text-20 font-400  "> Meal
+                                </Typography>
+                            </div>
+                            {(plan.menu?.menuMeals && plan.menu?.menuMeals?.length > 0) ? (
+                                plan.menu.menuMeals.map(
+                                    (meal) => {
+                                        return (
+                                            <Accordion
+                                                key={meal.id}
+                                                className="shadow-2  border rounded-16 my-20 overflow-hidden"
+                                            >
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    classes={{ root: 'mb-16  ' }}
+                                                >
+                                                    <Grid container direction="column">
+                                                        <Typography className="font-bold">{meal.name}</Typography>
+                                                        <Typography color="blue">
+                                                            From: {meal.from}
+                                                            <br />    To: {meal.to}
+                                                        </Typography>
 
-                                                            </Grid>
+                                                    </Grid>
 
-                                                        </AccordionSummary>
-                                                        {meal?.mealItems?.map((item) => {
-                                                            return (
-                                                                <AccordionDetails key={item.id}
-                                                                    className="flex p-20 items-center border border-solid rounded-sm shadow-sm  md:flex-row   ">
-                                                                    <Avatar
-                                                                        src={item?.food.thumbnailUrl}>
-                                                                    </Avatar>
-                                                                    <Typography 
-                                                                    className="ml-10"
-                                                                    >
-                                                                        {item?.food.name} {" "}
-                                                                        {item?.quantity}
-                                                                        {" ("}{item?.food.unitOfMeasurement.name}{") "}
-                                                                    </Typography>
+                                                </AccordionSummary>
+                                                {meal?.mealItems?.map((item) => {
+                                                    return (
+                                                        <AccordionDetails key={item.id}
+                                                            className="flex p-20 items-center border border-solid rounded-sm shadow-sm  md:flex-row   ">
+                                                            <Avatar
+                                                                src={item?.food.thumbnailUrl}>
+                                                            </Avatar>
+                                                            <Typography
+                                                                className="ml-10"
+                                                            >
+                                                                {item?.food.name} {" "}
+                                                                {item?.quantity}
+                                                                {" ("}{item?.food.unitOfMeasurement.name}{") "}
+                                                            </Typography>
 
-                                                                </AccordionDetails>
-                                                            )
-                                                        }
-                                                        )}
+                                                        </AccordionDetails>
+                                                    )
+                                                }
+                                                )}
 
-                                                        <MealItemDialog />
-                                                    </Accordion>
-                                                )
-                                            }
+                                                <MealItemDialog />
+                                            </Accordion>
                                         )
-
-                                    ) :
-                                        <div className="flex justify-center m-20 "
-                                        >   <Typography> There is no meal available !</Typography></div>
                                     }
+                                )
 
-                                </div>
+                            ) :
+                                <div className="flex justify-center m-20 "
+                                >   <Typography> There is no meal available !</Typography></div>
+                            }
 
-                            </Box>
-                        {/* </div> */}
-                        {/* <div className="flex justify-end w-full ">
+                        </div>
+
+                    </Box>
+                    {/* </div> */}
+                    {/* <div className="flex justify-end w-full ">
                             <Button type="submit" variant="contained" color="secondary"> Save</Button>
                         </div> */}
-                    </>
-                
+                </>
+
 
                 {/* ======================== Total food norm  ========================                           */}
                 {/* <div className="">
