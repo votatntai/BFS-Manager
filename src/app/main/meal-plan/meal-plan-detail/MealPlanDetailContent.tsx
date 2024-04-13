@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AddCircle, AddCircleOutline, DeleteForever, EditAttributesSharp, EditRounded, RemoveCircle, RemoveCircleOutline } from '@mui/icons-material';
 import AddCircleOutlineRounded from '@mui/icons-material/AddCircleOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Avatar, Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { formatISO } from 'date-fns';
@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { getCage, selectCage } from '../store/cagesSlice';
 import MealDialog from './dialogs/MealDialog';
 import MealItemDialog from './dialogs/MealItemDialog';
-import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, decreaseQuantity, getCareMode, getMenuSample, getPlanById, getSpecies, increaseQuantity, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem } from './store/menusSlice';
+import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem } from './store/menusSlice';
 import MenuDialog from './dialogs/MenuDialog';
 import { MenuType, PlanType } from '../calendar/types/PlanType';
 import { NameType, menuSampleType } from './type/MenuType';
@@ -68,6 +68,7 @@ export default function MealPlanDetailContent() {
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
+    const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
     const [planCreated, setPlanCreated] = useState(false);
     const [menuCreated, setMenuCreated] = useState(false);
     const [openMealDialog, setOpenDialog] = useState(false)
@@ -160,7 +161,7 @@ export default function MealPlanDetailContent() {
             if (planId !== "new")
                 dispatch(getPlanById(planId))
         }
-        , [ ])
+        , [])
     // -------- Insert form ----------
     useEffect(() => {
         if (Object.keys(plan).length !== 0) {
@@ -356,24 +357,12 @@ export default function MealPlanDetailContent() {
                     </div>
                 </div>
                 <Divider variant='fullWidth' flexItem />
-                {(!isMenuExist) &&
-                    (<>
-                        <div className="flex justify-center">
-                            <Button
-                                onClick={() => {
-                                    dispatch(setMenuDialog(true))
-                                }}
-                                className='mt-28 py-10 px 20 border transform hover:-translate-y-1 hover:scale-110  transition duration-500 ease-in-out bg-blue-400 hover:bg-blue-600 rounded-8 text-white'>
-                                Create new menu</Button></div>
-                        <MenuDialog /></>
-                    )}
                 {/* Menu */}
-                {isMenuExist && (
                     <>
-                        <div className=" justify-center    ">
+                        {/* <div className=" justify-center    "> */}
                             {/* Memnu sample */}
                             <Box display="flex"  >
-                                <Box display="flex" flexDirection="column" className="flex-1 mt-10">
+                                {/* <Box display="flex" flexDirection="column" className="flex-1 mt-10">
                                     <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu sample
                                     </Typography>
                                     <Typography variant='h4' className=" text-20 font-400   "> Select your menu sample type
@@ -451,7 +440,7 @@ export default function MealPlanDetailContent() {
                                             return options?.name || null;
                                         }
                                         }
-                             
+
                                         onChange={(event, newValue) => {
                                             setSelectedMenuSample(newValue);
                                             setIsButtonApplyDisabled(!newValue);
@@ -477,7 +466,7 @@ export default function MealPlanDetailContent() {
                                             className='w-160' variant='contained' color='secondary'>Apply to menu</Button>
                                     </Box>
 
-                                </Box>
+                                </Box> */}
                                 <div className='mt-10 mx-40 flex-1'>
                                     <Divider variant='inset'>
                                         <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu
@@ -510,7 +499,6 @@ export default function MealPlanDetailContent() {
                                     <div className="flex justify-between items-center">
                                         <Typography variant='h4' className=" text-20 font-400  "> Meal
                                         </Typography>
-                                  
                                     </div>
                                     {(plan.menu?.menuMeals && plan.menu?.menuMeals?.length > 0) ? (
                                         plan.menu.menuMeals.map(
@@ -536,29 +524,24 @@ export default function MealPlanDetailContent() {
                                                         </AccordionSummary>
                                                         {meal?.mealItems?.map((item) => {
                                                             return (
-                                                                <AccordionDetails key={item.id} className="flex items-center border border-solid rounded-sm shadow-sm justify-between md:flex-row -mx-8 px-16 ">
+                                                                <AccordionDetails key={item.id}
+                                                                    className="flex p-20 items-center border border-solid rounded-sm shadow-sm  md:flex-row   ">
+                                                                    <Avatar
+                                                                        src={item?.food.thumbnailUrl}>
+                                                                    </Avatar>
+                                                                    <Typography 
+                                                                    className="ml-10"
+                                                                    >
+                                                                        {item?.food.name} {" "}
+                                                                        {item?.quantity}
+                                                                        {" ("}{item?.food.unitOfMeasurement.name}{") "}
+                                                                    </Typography>
 
-                                                                    <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
-                                                                    <div className="flex items-center">
-                                                                 
-                                                                        <Typography className="mx-1">
-                                                                            {item?.quantity}
-                                                                        </Typography>
-                                                           
-                                                                    
-                                                                    </div>
                                                                 </AccordionDetails>
                                                             )
                                                         }
                                                         )}
 
-
-                                                        <Button
-                                                            onClick={() => {
-                                                                dispatch(addMealId(meal.id))
-                                                                dispatch(setMealitemsDialog(true))
-                                                            }}
-                                                        ><AddCircleOutlineRounded /></Button>
                                                         <MealItemDialog />
                                                     </Accordion>
                                                 )
@@ -573,26 +556,30 @@ export default function MealPlanDetailContent() {
                                 </div>
 
                             </Box>
-                        </div>
-                        <div className="flex justify-end w-full ">
+                        {/* </div> */}
+                        {/* <div className="flex justify-end w-full ">
                             <Button type="submit" variant="contained" color="secondary"> Save</Button>
-                        </div>
+                        </div> */}
                     </>
-                )}
+                
 
                 {/* ======================== Total food norm  ========================                           */}
-                <div className="">
-
+                {/* <div className="">
                     <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Total food norm (menu of cage)
                     </Typography>
                     <Typography variant='h4' className=" text-20 font-400 my-20  "> Menu meal table
                     </Typography>
-
+                    <Button
+                        variant='contained'
+                        color='primary'
+                    >
+                        Auto generate menu
+                    </Button>
 
                     <div className="flex justify-around">
                         <FoodNormTab />
                     </div>
-                </div>
+                </div> */}
                 <div className="">
 
                     <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Birds in cage

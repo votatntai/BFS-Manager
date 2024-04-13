@@ -48,6 +48,7 @@ export type BirdType = {
         name: string,
     },
     createAt: string,
+    recommend:boolean,
     menuId: string,
     menu: MenuType
 

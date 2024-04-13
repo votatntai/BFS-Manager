@@ -1,12 +1,13 @@
 import { useAppDispatch, useAppSelector } from 'app/store'
 import React, { useEffect } from 'react'
-import { createPFoodNormItem, getBirds, removeMealItem, removeMenuMeal, selectBirds, selectPlanById } from '../store/menusSlice'
+import { createPFoodNormItem, getBirds, removeMealItem, removeMenuMeal, selectBirds, selectPlanById, setMenuDialog } from '../store/menusSlice'
 import BirdCard from './cards/BirdCard'
 import { BirdType } from '../type/MenuType'
 import { Button } from '@mui/material'
 import { forEach } from 'lodash'
 import { menuMeals } from '../tabs/FoodNormTab'
 import { MealItemType } from '../../calendar/types/PlanType'
+import MenuDialog from '../dialogs/MenuDialog'
 
 export default function BirdMenus() {
     const dispatch = useAppDispatch()
@@ -53,8 +54,12 @@ export default function BirdMenus() {
             const menuMeal = menuMeals.find(meal => meal.name == "Morning")
             menuMeals.forEach(meal => {
                 if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(mealitem => {
-                        dispatch(removeMealItem(mealitem.id))
+                    meal.mealItems.forEach(item => {
+                        const data = {
+                            itemId: item.id,
+                            mealId: meal.id
+                        }
+                        dispatch(removeMealItem(data))
                     });
                 }
             });
@@ -72,8 +77,12 @@ export default function BirdMenus() {
             const menuMeal = menuMeals.find(meal => meal.name == "Lunch")
             menuMeals.forEach(meal => {
                 if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(mealitem => {
-                        dispatch(removeMealItem(mealitem.id))
+                    meal.mealItems.forEach(item => {
+                        const data = {
+                            itemId: item.id,
+                            mealId: meal.id
+                        }
+                        dispatch(removeMealItem(data))
                     });
                 }
             });
@@ -91,8 +100,12 @@ export default function BirdMenus() {
             const menuMeal = menuMeals.find(meal => meal.name == "Evening")
             menuMeals.forEach(meal => {
                 if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(mealitem => {
-                        dispatch(removeMealItem(mealitem.id))
+                    meal.mealItems.forEach(item => {
+                        const data = {
+                            itemId: item.id,
+                            mealId: meal.id
+                        }
+                        dispatch(removeMealItem(data))
                     });
                 }
             });
@@ -111,8 +124,12 @@ export default function BirdMenus() {
 
             menuMeals.forEach(meal => {
                 if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(mealitem => {
-                        dispatch(removeMealItem(mealitem.id))
+                    meal.mealItems.forEach(item => {
+                        const data = {
+                            itemId: item.id,
+                            mealId: meal.id
+                        }
+                        dispatch(removeMealItem(data))
                     });
                 }
             });
@@ -147,12 +164,23 @@ export default function BirdMenus() {
     }
 
     return (
-        <div>
-            <h4
-                className=" text-20 font-400   "
-            >
-                Bird Menu
-            </h4>
+        <div className="">
+            <div className="flex items-center">
+                <h4
+                    className=" text-20 font-400   "
+                >
+                    Bird Menu
+                </h4>
+
+                <Button
+                className="mx-20"
+                    onClick={() => {
+                        dispatch(setMenuDialog(true))
+                    }}
+                    variant='contained'
+                    color='secondary'
+                > Auto generate menu  </Button></div>
+            <MenuDialog birds={birdList} />
             <div className="flex gap-32">
                 {birdList?.map((bird) => (
                     <div key={bird.id}>
@@ -160,7 +188,7 @@ export default function BirdMenus() {
                     </div>
                 ))}
             </div>
-            <div className="flex justify-end ">
+            <div className="flex  justify-end ">
                 <Button
                     className='mt-32'
                     onClick={handleAplyTomenu}

@@ -125,10 +125,23 @@ export const removeMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/men
 //========== PUT API ===================
 export const updateMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updateMealItem',
     async (item) => {
-        const { itemId, newItem } = item
-        const response = await axios.put(`/meal-items/${itemId}`, newItem);
-        const data = (await response.data);
-        return data;
+        const { itemId, newItem, action } = item
+        if (action == "decrease") {
+            if (newItem.quantity > 1) {
+                newItem.quantity -= 1
+                const response = await axios.put(`/meal-items/${itemId}`, newItem);
+                const data = (await response.data);
+                return data
+            }
+          
+        }
+        if (action == "increase") {
+            newItem.quantity += 1
+            const response = await axios.put(`/meal-items/${itemId}`, newItem);
+            const data = (await response.data);
+            return data;
+        }
+        throw new Error('No action taken');
     });
 export const updateBird = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updateBird',
     async (item) => {
@@ -211,26 +224,13 @@ export const menusSlice = createSlice({
             state.mealItemDialogState.birdId = action.payload
         },
         resetPlan: () => initialState,
-        decreaseQuantity: (state, action) => {
+        setBirdRecommend: (state, action) => {
             const bird = state.birds?.find(bird => bird?.id == action.payload.birdId)
-            const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.payload.mealId)
-            const item = meal.mealItems.find(item => item.id == action.payload.itemId)
-            if (item) {
-                if (item.quantity > 1) {
-                    item.quantity -= 1;
-                    item.hasChanged = true;
-                }
+            if (bird) {
+                bird.recommend=action.payload.checked
             }
         },
-        increaseQuantity: (state, action) => {
-            const bird = state.birds?.find(bird => bird?.id == action.payload.birdId)
-            const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.payload.mealId)
-            const item = meal.mealItems.find(item => item.id == action.payload.itemId)
-            if (item) {
-                item.quantity += 1;
-                item.hasChanged = true;
-            }
-        },
+  
 
     },
     extraReducers: (builder) => {
@@ -296,7 +296,6 @@ export const menusSlice = createSlice({
             .addCase(removeBirdItem.fulfilled, (state, action) => {
                 const bird = state.birds.find(bird => bird.id == action.meta.arg.birdId)
                 const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
-                console.log("meal>>>", meal)
                 const index = meal.mealItems.findIndex(item => item.id === action.meta.arg.itemId)
                 if (index !== -1) {
                     meal.mealItems.splice(index, 1)
@@ -311,7 +310,24 @@ export const menusSlice = createSlice({
             })
             //=================== PUT Reducer ========================
             .addCase(updateMealItem.fulfilled, (state, action) => {
-
+                if (action.meta.arg.action == "decrease") {
+                    const bird = state.birds?.find(bird => bird?.id == action.meta.arg.birdId)
+                    const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
+                    const item = meal.mealItems.find(item => item.id == action.meta.arg.itemId)
+                    if (item) {
+                        item.quantity -= 1;
+                    }
+                }
+                if (action.meta.arg.action == "increase") {
+                    if (action.meta.arg.newItem.quantity > 1) {
+                        const bird = state.birds?.find(bird => bird?.id == action.meta.arg.birdId)
+                        const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
+                        const item = meal.mealItems.find(item => item.id == action.meta.arg.itemId)
+                        if (item) {
+                            item.quantity += 1;
+                        }
+                    }
+                }
             })
             .addCase(updateBird.fulfilled, (state, action) => {
 
@@ -324,7 +340,7 @@ export const menusSlice = createSlice({
     }
 });
 
-export const { increaseQuantity, addMealBirdId, decreaseQuantity, resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
+export const {  setBirdRecommend,addMealBirdId , resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
 
 export const selectCageSearchText = (state: AppRootStateType) => state.mealPlanReducer?.menus
 export const selectBirds = (state: AppRootStateType) => state.mealPlanReducer.menus.birds

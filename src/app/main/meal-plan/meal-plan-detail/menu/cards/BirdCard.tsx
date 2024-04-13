@@ -1,31 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
+import { AddCircle, AddCircleOutlineRounded, DeleteForever, RemoveCircle } from '@mui/icons-material';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Button } from "@mui/material";
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, IconButtonProps } from "@mui/material";
-import CustomizedSwitches from '../../component/button/CustomizedSwitches';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import { styled } from '@mui/material/styles';
 import { useAppDispatch } from 'app/store';
-import { addMealBirdId, addMealId, createBirdMenu, createBirdMenuMeal, createMenu, decreaseQuantity, increaseQuantity, removeBirdItem, removeMealItem, setMealitemsDialog, updateBird, updateMealItem } from '../../store/menusSlice';
-import { BirdType } from '../../type/MenuType';
-import { AddCircle, AddCircleOutlineRounded, DeleteForever, RemoveCircle } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import CustomizedSwitches from '../../component/button/CustomizedSwitches';
 import MealItemDialog from '../../dialogs/MealItemDialog';
-
+import { addMealBirdId, addMealId, createBirdMenu, createBirdMenuMeal, removeBirdItem, setMealitemsDialog, updateBird, updateMealItem } from '../../store/menusSlice';
+import { BirdType } from '../../type/MenuType';
+import _ from 'lodash';
 const ExpandMore = styled((props: any) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -98,6 +93,7 @@ const menuMeals = [
 ]
 export default function BirdCard(props: BirdProp) {
     const [expanded, setExpanded] = useState(false);
+    const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
     const [accordionExpend, setAccordionExpend] = useState('panel1');
     const [createdMenu, setCreatedMenu] = useState(false);
     const dispatch = useAppDispatch()
@@ -105,6 +101,7 @@ export default function BirdCard(props: BirdProp) {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     }
+
 
     useEffect(() => {
         if (bird.menu?.id) {
@@ -153,10 +150,11 @@ export default function BirdCard(props: BirdProp) {
         }
     }
         , [])
-
+    // bird.menu?.menuMeals.sort((a, b) => ('' + a.from).localeCompare(b.from));
     const handleChange = (panel) => (event, newExpanded) => {
         setAccordionExpend(newExpanded ? panel : false);
     };
+ 
     return (
         <Card
             className="shadow max-w-[345px]"
@@ -167,7 +165,6 @@ export default function BirdCard(props: BirdProp) {
                 }
                 action={
                     <IconButton >
-                        <MoreVertIcon />
                     </IconButton>
                 }
                 title={bird.name}
@@ -178,7 +175,7 @@ export default function BirdCard(props: BirdProp) {
                 </Typography>
             </CardContent>
             <CardActions disableSpacing >
-                <CustomizedSwitches />
+                <CustomizedSwitches bird={bird} />
                 <ExpandMore
                     expand={expanded}
                     onClick={handleExpandClick}
@@ -189,7 +186,7 @@ export default function BirdCard(props: BirdProp) {
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
                     {(bird.menu?.menuMeals && bird.menu?.menuMeals?.length > 0) ? (
-                        bird.menu.menuMeals.map(
+                        bird.menu?.menuMeals.map(
                             (meal, index) => {
                                 return (
                                     <Accordion
@@ -213,10 +210,10 @@ export default function BirdCard(props: BirdProp) {
                                                                         itemId: item.id,
                                                                         mealId: meal.id,
                                                                         birdId: bird.id,
-                                                                        newItem:{
-                                                                            quantity:item.quantity
+                                                                        newItem: {
+                                                                            quantity: item.quantity
                                                                         },
-                                                                        action:"decrease"
+                                                                        action: "decrease"
                                                                     }))
                                                                 }
                                                             }><RemoveCircle
@@ -233,10 +230,10 @@ export default function BirdCard(props: BirdProp) {
                                                                         itemId: item.id,
                                                                         mealId: meal.id,
                                                                         birdId: bird.id,
-                                                                        newItem:{
-                                                                            quantity:item.quantity
+                                                                        newItem: {
+                                                                            quantity: item.quantity
                                                                         },
-                                                                        action:"increase"
+                                                                        action: "increase"
                                                                     }))
                                                                 }
                                                             }

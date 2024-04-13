@@ -1,10 +1,12 @@
-import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useAppDispatch } from 'app/store';
+import { setBirdRecommend } from '../../store/menusSlice';
+import { useEffect, useState } from 'react';
 
 
 
@@ -43,13 +45,36 @@ const Android12Switch = styled(Switch)(({ theme }) => ({
 
 
 
-export default function CustomizedSwitches() {
+export default function CustomizedSwitches(props) {
+  const { bird } = props
+  const [checked, setChecked] = useState(true);
+  const dispatch = useAppDispatch()
+  useEffect(
+    () => {
+      const data = {
+        birdId: props?.bird?.id,
+        checked: checked
+      }
+      dispatch(setBirdRecommend(data))
+    }
+    , []
+  )
+  const handleChange = (event) => {
+    const data = {
+      birdId: props?.bird?.id,
+      checked: !checked
+    }
+    console.log("dat>>>", bird)
+    dispatch(setBirdRecommend(data))
+  };
   return (
-    <FormGroup>
-      <FormControlLabel
-        control={<Android12Switch defaultChecked />}
-        label="Recommend"
+    <div className="flex items-center ">
+      <Android12Switch
+        checked={props?.bird?.recommend ?? true}
+        onChange={handleChange}
       />
-    </FormGroup>
+      <Typography variant="body1">Recommend</Typography>
+
+    </div>
   );
 }

@@ -11,6 +11,7 @@ import { MutableRefObject, useEffect } from 'react';
 import { openNewPlanDialog } from './store/plansSlice';
 import CalendarViewMenu from './CalendarViewMenu';
 import { useNavigate } from 'react-router';
+import { Button } from '@mui/material';
 
 type CalendarHeaderProps = {
 	calendarRef: MutableRefObject<FullCalendar | null>;
@@ -27,22 +28,17 @@ function CalendarHeader(props: CalendarHeaderProps) {
 	const mainTheme = useAppSelector(selectMainTheme);
 	const calendarApi = () => calendarRef?.current?.getApi();
 	const dispatch = useAppDispatch();
-	
+
 	return (
 		<div className="flex flex-col md:flex-row w-full p-12 justify-between z-10 container">
 			<div className="flex flex-col sm:flex-row items-center">
 				<div className="flex items-center">
-					<IconButton
-						onClick={() => onToggleLeftSidebar()}
-						aria-label="open left sidebar"
-						size="small"
-					>
-						<FuseSvgIcon>heroicons-outline:menu</FuseSvgIcon>
-					</IconButton>
+
 
 					<Typography className="text-2xl font-semibold tracking-tight whitespace-nowrap mx-16">
 						{currentDate?.view.title}
 					</Typography>
+
 				</div>
 
 				<div className="flex items-center">
@@ -87,6 +83,15 @@ function CalendarHeader(props: CalendarHeaderProps) {
 							</motion.div>
 						</div>
 					</Tooltip>
+					<IconButton
+						onClick={() => onToggleLeftSidebar()}
+						aria-label="open left sidebar"
+						size="small"
+					>
+						<Button variant='contained'
+							color='primary'
+						>View food norm</Button>
+					</IconButton>
 				</div>
 			</div>
 
@@ -98,8 +103,9 @@ function CalendarHeader(props: CalendarHeaderProps) {
 				<IconButton
 					className="mx-8"
 					aria-label="add"
-					onClick={()=>{
-						navigate("detail/new")} 
+					onClick={() => {
+						navigate("detail/new")
+					}
 					}
 				>
 					<FuseSvgIcon>heroicons-outline:plus-circle</FuseSvgIcon>
