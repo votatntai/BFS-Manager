@@ -21557,7 +21557,8 @@
             "id": "8f011ac5-b71c-4cd7-a317-857dcd7d85e0",
             "title": "",
             "content": "Find a new company name",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21571,7 +21572,8 @@
             "id": "ced0a1ce-051d-41a3-b080-e2161e4ae621",
             "title": "",
             "content": "Send the photos of last summer to John",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": "assets/images/cards/14-640x480.jpg",
             "reminder": null,
             "labels": [
@@ -21586,7 +21588,8 @@
             "id": "d3ac02a9-86e4-4187-bbd7-2c965518b3a3",
             "title": "",
             "content": "Update the design of the theme",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21600,7 +21603,8 @@
             "id": "89861bd4-0144-4bb4-8b39-332ca10371d5",
             "title": "",
             "content": "Theming support for all apps",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": "2022-03-10T09:34:08.245Z",
             "labels": [
@@ -21730,7 +21734,8 @@
             "id": "d46dee8b-8761-4b6d-a1df-449d6e6feb6a",
             "title": "",
             "content": "Organize the dad's surprise retirement party",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": "2022-12-25T11:56:08.245Z",
             "labels": [
@@ -21744,7 +21749,8 @@
             "id": "6bc9f002-1675-417c-93c4-308fba39023e",
             "title": "Plan the road trip",
             "content": "",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": "assets/images/cards/17-640x480.jpg",
             "reminder": null,
             "labels": [
@@ -21759,7 +21765,8 @@
             "id": "15188348-78aa-4ed6-b5c2-028a214ba987",
             "title": "Office Address",
             "content": "933 8th Street Stamford, CT 06902",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21798,7 +21805,8 @@
             "id": "49548409-90a3-44d4-9a9a-f5af75aa9a66",
             "title": "",
             "content": "Dinner with parents",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21813,7 +21821,8 @@
             "id": "c6d13a35-500d-4491-a3f3-6ca05d6632d3",
             "title": "",
             "content": "Re-fill the medicine cabinet",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21828,7 +21837,8 @@
             "id": "c6d13a35-500d-4491-a3f3-6ca05d6632d3",
             "title": "",
             "content": "Update the icons pack",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [
@@ -21842,7 +21852,8 @@
             "id": "46214383-f8e7-44da-aa2e-0b685e0c5027",
             "title": "Team Meeting",
             "content": "Talk about the future of the web apps",
-            "tasks": [],
+            "tasks": [
+            ],
             "image": null,
             "reminder": null,
             "labels": [

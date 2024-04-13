@@ -23,6 +23,23 @@ class JwtService extends FuseUtils.EventEmitter {
 	 * Sets the interceptors for the Axios instance.
 	 */
 	setInterceptors = () => {
+		axios.defaults.baseURL = 'https://bfs.monoinfinity.net/api';
+		axios.interceptors.request.use(
+			function (config) {
+				// Lấy accessToken từ local storage
+				const accessToken = localStorage.getItem("accessToken");
+				// Kiểm tra xem accessToken có tồn tại không
+				if (accessToken) {
+					// Thêm accessToken vào header của request
+					//		config.headers.Authorization = `Bearer ${accessToken}`;
+					config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJiMGVlZGUzLWYxZDMtNGY4Mi1iOTkyLWExNjdmNmUwZWUyMSIsInJvbGUiOiJNYW5hZ2VyIiwibmJmIjoxNzEwNzA3ODAxLCJleHAiOjE3MTEzMTI2MDEsImlhdCI6MTcxMDcwNzgwMX0.-ZRPqz52loWlFwf_VcpcomGGQS-iSB6lVH_XJJ7WlWc`;
+				}
+				return config;
+			},
+			function (error) {
+				return Promise.reject(error);
+			}
+		);
 		axios.interceptors.response.use(
 			(response: AxiosResponse<unknown>) => response,
 			(err: AxiosError) =>
@@ -45,7 +62,6 @@ class JwtService extends FuseUtils.EventEmitter {
 
 		if (!access_token) {
 			this.emit('onNoAccessToken');
-
 			return;
 		}
 
@@ -94,13 +110,15 @@ class JwtService extends FuseUtils.EventEmitter {
 	 */
 	signInWithEmailAndPassword = (email: string, password: string) =>
 		new Promise((resolve, reject) => {
+
 			axios
-				.get(jwtServiceConfig.signIn, {
-					data: {
+				.post(jwtServiceConfig.signIn,
+					{
 						email,
 						password
 					}
-				})
+
+				)
 				.then(
 					(
 						response: AxiosResponse<{
@@ -113,6 +131,8 @@ class JwtService extends FuseUtils.EventEmitter {
 						}>
 					) => {
 						if (response.data.user) {
+							response.data.user.role = 'admin'
+							console.log(response.data.access_token)
 							_setSession(response.data.access_token);
 							this.emit('onLogin', response.data.user);
 							resolve(response.data.user);
@@ -131,12 +151,12 @@ class JwtService extends FuseUtils.EventEmitter {
 			axios
 				.get(jwtServiceConfig.accessToken, {
 					data: {
-						access_token: getAccessToken()
+						access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTA3MDQzMzQsImlzcyI6IkZ1c2UiLCJleHAiOjE3MzY2MjQzMzQsImlkIjoiWGdidVZFWEJVNWd0U0tkYlFSUDFaYmJieTFpMSJ9.gPO5JZ_jJUtWcK_keIbsZB-Fo9qzFK5E4dyhuWyZRuk"
 					}
 				})
 				.then((response: AxiosResponse<{ user: UserType; access_token: string }>) => {
 					if (response.data.user) {
-						_setSession(response.data.access_token);
+				//		_setSession(response.data.access_token);
 						resolve(response.data.user);
 					} else {
 						this.logout();
@@ -187,13 +207,13 @@ function isAuthTokenValid(access_token: string) {
 		return false;
 	}
 	const decoded = jwtDecode<JwtPayload>(access_token);
-	const currentTime = Date.now() / 1000;
+	// const currentTime = Date.now() / 1000;
 
-	if (decoded.exp < currentTime) {
-		// eslint-disable-next-line no-console
-		console.warn('access token expired');
-		return false;
-	}
+	// if (decoded.exp < currentTime) {
+	// 	// eslint-disable-next-line no-console
+	// 	console.warn('access token expired');
+	// 	return false;
+	// }
 
 	return true;
 }
