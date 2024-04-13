@@ -74,8 +74,11 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
 		backgroundColor: 'transparent!important',
 		'& .fc-daygrid-day-number': {
 			borderRadius: '100%',
-			backgroundColor: `${theme.palette.secondary.main}!important`,
-			color: `${theme.palette.secondary.contrastText}!important`
+			backgroundColor: `blue!important`,
+			color: `${theme.palette.secondary.contrastText}!important`,
+			display: 'flex!important',
+			alignItems: 'center!important',
+			justifyContent: 'center!important'
 		}
 	},
 	'& .fc-daygrid-day-top': {
@@ -147,7 +150,7 @@ function Calendar() {
 
 	const handleEventClick = (clickInfo: EventClickArg) => {
 		clickInfo.jsEvent.preventDefault();
-		const id =clickInfo.event._def.publicId;
+		const id = clickInfo.event._def.publicId;
 		navigate(`detail/${id}`);
 		// dispatch(openEditPlanDialog(clickInfo));
 	};
@@ -211,7 +214,6 @@ function Calendar() {
 						plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
 						headerToolbar={false}
 						initialView="dayGridMonth"
-
 						editable
 						selectable
 						selectMirror

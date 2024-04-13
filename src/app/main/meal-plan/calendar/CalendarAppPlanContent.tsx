@@ -28,11 +28,11 @@ function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 		<Box
 			sx={{
 				backgroundColor: "black",
-				color: label && theme.palette.getContrastText(label?.color)
+				color: "blue"
 			}}
 			className={clsx('items-center w-full rounded-4 px-8 py-2 h-22 text-white')}
 		>
-			<Typography className="text-12 font-semibold">{planInfo.timeText}</Typography>
+			{/* <Typography className="text-12 font-semibold">{planInfo.timeText}</Typography> */}
 			<Typography className="text-12 px-4 truncate">{planInfo.event.title}</Typography>
 		</Box>
 	);

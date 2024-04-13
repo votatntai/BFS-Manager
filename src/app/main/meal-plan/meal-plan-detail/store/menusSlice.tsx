@@ -3,18 +3,24 @@ import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import createAppAsyncThunk from 'app/store/createAppAsyncThunk';
 import { RootStateType } from 'app/store/types';
 import { PlanType } from '../../calendar/types/PlanType';
+import { BirdType } from '../type/MenuType';
 
 
 export type AppRootStateType = RootStateType<menusSliceType>;
 
+//========== GET API ===================
 export const getCareMode = createAppAsyncThunk('mealPlanReducer/menus/getCareMode', async () => {
     const response = await axios.get('/care-modes');
     const data = (await response.data);
     return data;
 });
-
 export const getSpecies = createAppAsyncThunk('mealPlanReducer/menus/getSpecies', async () => {
     const response = await axios.get('/species');
+    const data = (await response.data);
+    return data;
+});
+export const getBirds = createAppAsyncThunk('mealPlanReducer/menus/getBirds', async () => {
+    const response = await axios.get('/birds');
     const data = (await response.data);
     return data;
 });
@@ -34,17 +40,44 @@ export const getFoods = createAppAsyncThunk('mealPlanReducer/menus/getFoods', as
     const data = (await response.data);
     return data;
 });
+export const getPlanById = createAppAsyncThunk<any, any>('mealPlanReducer/plans/getPlanById', async (planId) => {
+    const response = await axios.get(`/plans/${planId}`);
+    const data = (await response.data);
+    return data;
+});
+//========== POST API ===================
 export const createMenu = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMenu',
     async (dataItem) => {
-        const response = await axios.post('/menus', dataItem);
+        const response = await axios.post('/menus', dataItem.item);
         const data = (await response.data);
-        return data;
+        return {
+            ...data,
+            actionType: dataItem.actionType
+        };
+    });
+export const createBirdMenu = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createBirdMenu',
+    async (dataItem) => {
+        const response = await axios.post('/menus', dataItem.item);
+        const data = (await response.data);
+        return {
+            data: data,
+            birdId: dataItem.birdId
+        };
     });
 export const createMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMenuMeal',
     async (dataItem) => {
         const response = await axios.post('/menu-meals', dataItem);
         const data = (await response.data);
         return data;
+    });
+export const createBirdMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createBirdMenuMeal',
+    async (dataItem) => {
+        const response = await axios.post('/menu-meals', dataItem.data);
+        const data = (await response.data);
+        return {
+            data: data,
+            birdId: dataItem.birdId
+        };
     });
 export const createPlan = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createPlan',
     async (dataItem) => {
@@ -54,10 +87,21 @@ export const createPlan = createAppAsyncThunk<any, any>('mealPlanReducer/menus/c
     });
 export const createMealItems = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMealItems',
     async (dataItem) => {
+        const response = await axios.post('/meal-items', dataItem.data);
+        const data = (await response.data);
+        return {
+            data: data,
+            birdId: dataItem.birdId
+        };
+    });
+export const createPFoodNormItem = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createPFoodNormItem',
+    async (dataItem) => {
         const response = await axios.post('/meal-items', dataItem);
         const data = (await response.data);
-        return data;
+        return data
     });
+
+//========== DELETE API ===================
 export const removeMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/menus/removeMealItem',
     async (item) => {
         const { itemId } = item;
@@ -65,15 +109,10 @@ export const removeMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/men
         const data = (await response.data);
         return data;
     });
-export const getPlanById = createAppAsyncThunk<any, any>('mealPlanReducer/plans/getPlanById', async (planId) => {
-    const response = await axios.get(`/plans/${planId}`);
-    const data = (await response.data);
-    return data;
-});
-export const updateMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updateMealItem',
+export const removeBirdItem = createAppAsyncThunk<any, any>('mealPlanReducer/menus/removeBirdItem',
     async (item) => {
-        const { itemId, newItem } = item
-        const response = await axios.put(`/meal-items/${itemId}`, newItem);
+        const { itemId } = item;
+        const response = await axios.delete(`/meal-items/${itemId}`);
         const data = (await response.data);
         return data;
     });
@@ -83,6 +122,36 @@ export const removeMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/men
         const data = (await response.data);
         return data;
     });
+//========== PUT API ===================
+export const updateMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updateMealItem',
+    async (item) => {
+        const { itemId, newItem, action } = item
+        if (action == "decrease") {
+            if (newItem.quantity > 1) {
+                newItem.quantity -= 1
+                const response = await axios.put(`/meal-items/${itemId}`, newItem);
+                const data = (await response.data);
+                return data
+            }
+          
+        }
+        if (action == "increase") {
+            newItem.quantity += 1
+            const response = await axios.put(`/meal-items/${itemId}`, newItem);
+            const data = (await response.data);
+            return data;
+        }
+        throw new Error('No action taken');
+    });
+export const updateBird = createAppAsyncThunk<any, any>('mealPlanReducer/plans/updateBird',
+    async (item) => {
+        const { itemId, newItem } = item
+        const response = await axios.put(`/birds/${itemId}`, newItem);
+        const data = (await response.data);
+        return data;
+    });
+
+
 
 const menusAdapter = createEntityAdapter({});
 
@@ -93,6 +162,7 @@ export const { selectAll: selectCages, selectById: selectCageByid } = menusAdapt
 
 const initialState = menusAdapter.getInitialState({
     searchText: '',
+    birds: [] as BirdType[],
     species: [],
     careMode: [],
     menuSample: [],
@@ -102,6 +172,7 @@ const initialState = menusAdapter.getInitialState({
     },
     mealItemDialogState: {
         mealId: "",
+        birdId: "",
         isOpen: false,
         foods: [],
         mealItems: [],
@@ -149,54 +220,71 @@ export const menusSlice = createSlice({
         addMealId: (state, action) => {
             state.mealItemDialogState.mealId = action.payload
         },
+        addMealBirdId: (state, action) => {
+            state.mealItemDialogState.birdId = action.payload
+        },
         resetPlan: () => initialState,
-        decreaseQuantity: (state, action) => {
-            const data = state.plans?.menu?.menuMeals.find(meal => meal?.id == action.payload.mealId)
-            const item = data.mealItems.find(item => item.id == action.payload.itemId)
-            if (item) {
-                if (item.quantity > 1) {
-                    item.quantity -= 1;
-                    item.hasChanged = true;
-                }
+        setBirdRecommend: (state, action) => {
+            const bird = state.birds?.find(bird => bird?.id == action.payload.birdId)
+            if (bird) {
+                bird.recommend=action.payload.checked
             }
         },
-        increaseQuantity: (state, action) => {
-            const data = state.plans?.menu?.menuMeals.find(meal => meal?.id == action.payload.mealId)
-            const item = data.mealItems.find(item => item.id == action.payload.itemId)
-            if (item) {
-                item.quantity += 1;
-                item.hasChanged = true;
-            }
-        },
+  
 
     },
     extraReducers: (builder) => {
         builder
+            //=================== GET Reducer ========================
             .addCase(getSpecies.fulfilled, (state, action) => {
                 state.species = action.payload.data
             })
             .addCase(getCareMode.fulfilled, (state, action) => {
                 state.careMode = action.payload.data
             })
+            .addCase(getBirds.fulfilled, (state, action) => {
+                state.birds = action.payload.data
+            })
             .addCase(getFoods.fulfilled, (state, action) => {
                 state.mealItemDialogState.foods = action.payload.data
-            })
-            .addCase(createMenu.fulfilled, (state, action) => {
-                state.menus = action.payload
-            })
-            .addCase(createPlan.fulfilled, (state, action) => {
-                state.plans = action.payload
             })
             .addCase(getPlanById.fulfilled, (state, action) => {
                 state.plans = action.payload
             })
+            .addCase(getMenuSample.fulfilled, (state, action) => {
+                state.menuSample = action.payload.data
+            })
+            //=================== POST Reducer ========================
+            .addCase(createMenu.fulfilled, (state, action) => {
+                if (action.payload.actionType == "PLAN_MENU")
+                    state.menus = action.payload
+            })
+            .addCase(createPlan.fulfilled, (state, action) => {
+                state.plans = action.payload
+            })
+            .addCase(createBirdMenu.fulfilled, (state, action) => {
+                const data = state.birds.find(bird => bird.id == action.payload.birdId)
+                data.menu = action.payload.data
+            })
+            .addCase(createBirdMenuMeal.fulfilled, (state, action) => {
+                const data = state.birds.find(bird => bird.id == action.payload.birdId)
+                if (!data?.menu?.menuMeals.find(meal => meal.id === action.payload.data.id))
+                    data?.menu?.menuMeals.push(action.payload.data)
+            })
             .addCase(createMenuMeal.fulfilled, (state, action) => {
-                state.plans?.menu?.menuMeals.push(action.payload)
+                if (!state.plans?.menu?.menuMeals.find(meal => meal.id === action.payload.id))
+                    state.plans?.menu?.menuMeals.push(action.payload)
             })
             .addCase(createMealItems.fulfilled, (state, action) => {
-                const data = state.plans?.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.menuMealId)
-                data.mealItems.push(action.payload)
+                const data = state.birds.find(bird => bird.id == action.payload.birdId)
+                const menuMeal = data?.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.data.menuMealId)
+                menuMeal.mealItems.push(action.payload.data)
             })
+            .addCase(createPFoodNormItem.fulfilled, (state, action) => {
+                const menuMeal = state?.plans?.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.menuMealId)
+                menuMeal.mealItems.push(action.payload)
+            })
+            //=================== DELETE Reducer ========================
             .addCase(removeMealItem.fulfilled, (state, action) => {
                 const data = state.plans?.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
 
@@ -205,11 +293,13 @@ export const menusSlice = createSlice({
                     data.mealItems.splice(index, 1)
                 }
             })
-            .addCase(updateMealItem.fulfilled, (state, action) => {
-
-            })
-            .addCase(getMenuSample.fulfilled, (state, action) => {
-                state.menuSample = action.payload.data
+            .addCase(removeBirdItem.fulfilled, (state, action) => {
+                const bird = state.birds.find(bird => bird.id == action.meta.arg.birdId)
+                const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
+                const index = meal.mealItems.findIndex(item => item.id === action.meta.arg.itemId)
+                if (index !== -1) {
+                    meal.mealItems.splice(index, 1)
+                }
             })
             .addCase(removeMenuMeal.fulfilled, (state, action) => {
                 const index = state.plans?.menu?.menuMeals.findIndex(meal => meal?.id == action.meta.arg)
@@ -218,16 +308,42 @@ export const menusSlice = createSlice({
                     state.plans?.menu?.menuMeals.splice(index, 1)
                 }
             })
+            //=================== PUT Reducer ========================
+            .addCase(updateMealItem.fulfilled, (state, action) => {
+                if (action.meta.arg.action == "decrease") {
+                    const bird = state.birds?.find(bird => bird?.id == action.meta.arg.birdId)
+                    const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
+                    const item = meal.mealItems.find(item => item.id == action.meta.arg.itemId)
+                    if (item) {
+                        item.quantity -= 1;
+                    }
+                }
+                if (action.meta.arg.action == "increase") {
+                    if (action.meta.arg.newItem.quantity > 1) {
+                        const bird = state.birds?.find(bird => bird?.id == action.meta.arg.birdId)
+                        const meal = bird.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.mealId)
+                        const item = meal.mealItems.find(item => item.id == action.meta.arg.itemId)
+                        if (item) {
+                            item.quantity += 1;
+                        }
+                    }
+                }
+            })
+            .addCase(updateBird.fulfilled, (state, action) => {
+
+            })
+
+
 
 
 
     }
 });
 
-export const { increaseQuantity, decreaseQuantity, resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
+export const {  setBirdRecommend,addMealBirdId , resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
 
 export const selectCageSearchText = (state: AppRootStateType) => state.mealPlanReducer?.menus
-
+export const selectBirds = (state: AppRootStateType) => state.mealPlanReducer.menus.birds
 export const selectSpecies = (state) => state.mealPlanReducer?.menus.species;
 export const selectCareModes = (state) => state.mealPlanReducer?.menus.careMode;
 export const selectMeals = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealDialog.data
@@ -238,7 +354,8 @@ export const selectDialogState = (state: AppRootStateType) => state.mealPlanRedu
 export const selectMealItemsDialogState = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealItemDialogState.isOpen
 export const selectMealItemsDialogProp = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealItemDialogState.mealItems
 export const selectMealId = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealItemDialogState.mealId
+export const selectMealBirdId = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealItemDialogState.birdId
 export const selectMenuDialogState = (state: AppRootStateType) => state.mealPlanReducer?.menus.menuDialogState.isOpen
 export const selectMenuSample = (state: AppRootStateType) => state.mealPlanReducer?.menus.menuSample
-export type menusSliceType = typeof menusSlice;
+export type menusSliceType = typeof menusSlice
 export default menusSlice.reducer;
