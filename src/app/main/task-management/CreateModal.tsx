@@ -65,24 +65,16 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
           "title": taskName,
           "description": taskDescription,
           "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
-          "startAt": taskBegin.toDateString(),
-          "deadline": taskDeadline.toDateString(),
+          "startAt": taskBegin,
+          "deadline": taskDeadline,
           "status": "To do",
           "assigneeIds": staffList,
           "checkLists": checklists,
-          "repeats": [
-            
-          ],
+          "repeats": [],
         }))
         // console.log({
-        //   "cageId": cageId,
-        //   "title": taskName,
-        //   "description": taskDescription,
-        //   "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
-        //   "deadline": taskDeadline.toDateString(),
-        //   "status": "To do",
-        //   "assigneeIds": staffList,
-        //   "checkLists": checklists
+        //   "start": taskBegin,
+        //   "end": taskDeadline
         // })
         await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status:'To do'}))
         dispatch(setFilterStatus('To do'))

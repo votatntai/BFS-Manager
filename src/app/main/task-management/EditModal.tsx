@@ -32,7 +32,6 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     status: object.status,
     startAt: object.startAt
   }) 
-  console.log(object)
   
   const [value, setValue] =useState(object.status)
     const [checkName, setCheckName] = useState(false)
