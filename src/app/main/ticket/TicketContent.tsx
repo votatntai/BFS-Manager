@@ -54,7 +54,7 @@ const TicketContent = ()=>{
     <TableRow>
     <TableCell align="left"><span className='font-semibold'>Type</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Problem</span></TableCell>
-    <TableCell width={'15%'} align="left"><span className='font-semibold'>Priority</span></TableCell>
+    <TableCell width={'15%'} align="center"><span className='font-semibold'>Priority</span></TableCell>
     <TableCell width={'15%'} align="left"><span className='font-semibold'>Created by</span></TableCell>
     <TableCell width={'15%'} align="left"><span className='font-semibold'>Created at</span></TableCell>
     <TableCell align="left"><span className='font-semibold'>Action</span></TableCell>
@@ -64,7 +64,7 @@ const TicketContent = ()=>{
         {sortedTickets.map((item) => (<TableRow key={item.id} >
         <TableCell align='left'>{item.ticketCategory}</TableCell>
         <TableCell align='left'>{item.title}</TableCell>
-        <TableCell align='left'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'medium' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Medium</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
+        <TableCell align='center'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'medium' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Medium</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
         <TableCell align='left'>{item.creator.name}</TableCell>
         <TableCell align='left'>{new Date(item.createAt).toLocaleString('en-GB', {
           day: '2-digit',

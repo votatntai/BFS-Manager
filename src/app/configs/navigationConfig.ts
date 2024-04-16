@@ -17,12 +17,6 @@ const navigationConfig: FuseNavigationType = [
 				icon: 'heroicons-outline:calendar',
 				url: '/meal-plan/cages',
 			},
-			// {
-			// 	id: 'bird-management',  
-			// 	title: 'Bird management',
-			// 	type: 'item',
-			// 	url: '/bird-management',
-			// },
 			{
 				id: 'task-management',  
 				title: 'Task management',
@@ -43,6 +37,28 @@ const navigationConfig: FuseNavigationType = [
 				type: 'item',
 				url: '/ticket',
 				icon: 'heroicons-outline:document-report'
+			},
+			{
+				id: 'master-data',  
+				title: 'Master data',
+				type: 'collapse',
+				icon: 'heroicons-solid:database',
+				children:[
+					{
+						id: 'master-data-bird',
+						title: 'Bird',
+						type: 'item',
+						url: 'master-data/bird',
+						end: true
+					},
+					{
+						id: 'master-data-menu-sample',
+						title: 'Menu sample',
+						type: 'item',
+						url: 'master-data/menu-sample',
+						end: true
+					},
+				]
 			},
 		]
 	},

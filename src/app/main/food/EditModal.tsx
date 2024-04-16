@@ -19,7 +19,7 @@ const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
     "foodCategoryId":{
       label: object.foodCategory.name, value: object.foodCategory.id
     },
-    "quantity": 0,
+    "quantity": object.quantity,
     "unitOfMeasurementId":{
       label: object.unitOfMeasurement.name, value: object.unitOfMeasurement.id
     },
@@ -116,7 +116,6 @@ const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
               renderInput={(params) => <TextField {...params} label={'Food categories'} helperText={checkFoodCategory ? "This field is required" : false}  
               error={checkFoodCategory ? true : false}/>}
             />}
-      
       <TextField  value={food.quantity} type="number" InputProps={{ inputProps: { min: 0 } }}
       onChange={e => setFood(prev => ({...prev, quantity: parseInt(e.target.value)}))} label='Quantity' 
       placeholder='Enter name' size='small' variant="outlined" />

@@ -12,11 +12,12 @@ import TaskManagementConfig from '../main/task-management/TaskManagementConfig';
 import TicketConfig from '../main/ticket/TicketConfig';
 import MealPlanConfig from '../main/meal-plan/MealPlanConfig';
 import FoodConfig from '../main/food/FoodConfig';
+import BirdConfig from '../main/master-data/bird/BirdConfig';
 
 const routeConfigs: FuseRouteConfigsType = [
 	MealPlanConfig,
 	TaskManagementConfig,
-	TicketConfig,
+	TicketConfig,BirdConfig,
 	FoodConfig,
 	 SignOutConfig, 
 	 SignInConfig,

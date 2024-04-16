@@ -43,3 +43,9 @@ export const getCages = (object: Object) => axios.get(`/cages`,{params: object})
  * Food report
  */
  export const getFoodReport = (object) => axios.get(`/food-report`,{params: object});
+ /**
+ * Bird
+ */
+ export const getBirds = (object) => axios.get(`/birds`,{params: object});
+ export const updateBird = (id, formData) => axios.put(`/birds/${id}`,formData);
+
