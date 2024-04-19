@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getBirds,updateBird } from "src/app/auth/services/api/callAPI";
+import { getBirds,updateBird,createBird } from "src/app/auth/services/api/callAPI";
 export const getBirdData = createAsyncThunk('birdReducer/getBirds', async (object: Object) => {
 	try {
 	  const response = await getBirds(object);
@@ -11,6 +11,15 @@ export const getBirdData = createAsyncThunk('birdReducer/getBirds', async (objec
 export const editBird = createAsyncThunk('birdReducer/editBird', async (object: {id:string, formData: FormData}) => {
 	try {
 	  const response = await updateBird(object.id, object.formData);
+	  return response;
+	} catch (error) {
+	  console.log(error);
+	}
+  });
+
+export const addBird = createAsyncThunk('birdReducer/addBird', async (formData: FormData) => {
+	try {
+	  const response = await createBird(formData);
 	  return response;
 	} catch (error) {
 	  console.log(error);
@@ -50,6 +59,7 @@ const birdSlice = createSlice({
                 state.birds = action.payload;
             })
             .addCase(editBird.fulfilled, (state, action: any) => {})
+            .addCase(addBird.fulfilled, (state, action: any) => {})
 	}
 });
 

@@ -47,5 +47,6 @@ export const getCages = (object: Object) => axios.get(`/cages`,{params: object})
  * Bird
  */
  export const getBirds = (object) => axios.get(`/birds`,{params: object});
+ export const createBird = (formData) => axios.post(`/birds`,formData);
  export const updateBird = (id, formData) => axios.put(`/birds/${id}`,formData);
 

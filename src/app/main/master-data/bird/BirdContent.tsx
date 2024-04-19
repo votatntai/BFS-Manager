@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import {useEffect, useState } from 'react';
 import {getBirdData, setPaginPageNumber,setPaginPageSize } from './slice/birdSlice';
 import { useAppDispatch,useAppSelector } from 'app/store';
-import EditModal from './EditModal';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -18,10 +17,6 @@ const container = {
 	}
 };
 const BirdContent = ()=>{
-    const [openEditSuccessNotify, setOpenEditSuccessNotify] = useState(false);
-    const [openEditFailNotify, setOpenEditFailNotify] = useState(false);
-	const [showEdit, setShowEdit] =useState(false)
-	const [editValue, setEditValue] =useState({})
     const dispatch = useAppDispatch()
     const birds  = useAppSelector((state) => state.birdReducer.birdSlice.birds.data)
     const pageNumber  = useAppSelector((state) => state.birdReducer.birdSlice.birds.pagination.pageNumber)

@@ -7,6 +7,8 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { setPaginPageNumber, setSearchText } from './slice/birdSlice';
+import { Link } from 'react-router-dom';
+
  function BirdHeader(){
     // const dispatch = useAppDispatch()
     // const [searchValue, setSearchValue] = useState('')
@@ -53,6 +55,11 @@ import { setPaginPageNumber, setSearchText } from './slice/birdSlice';
                 //onClick={()=>{handleSearch();setSearchValue('')}}
             >
                 Search
+            </Button>
+            <Button to={`/master-data/bird/add-bird`} component={Link} variant="contained" color="secondary"
+                startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+            >
+                Add
             </Button>
         </motion.div>
 </div>
