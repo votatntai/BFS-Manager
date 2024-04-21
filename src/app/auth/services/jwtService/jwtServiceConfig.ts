@@ -5,7 +5,7 @@ const jwtServiceConfig = {
 	signIn: 'https://bfs.monoinfinity.net/api/auth/managers',
 	signIn2: 'api/auth/sign-in',
 	signUp: 'api/auth/sign-up',
-	accessToken: 'api/auth/access-token',
+	accessToken: 'https://bfs.monoinfinity.net/api/managers/informations',
 	updateUser: 'api/auth/user/update'
 };
 

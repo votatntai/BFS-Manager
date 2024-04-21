@@ -9,7 +9,28 @@ import { menuMeals } from '../tabs/FoodNormTab'
 import { MealItemType } from '../../calendar/types/PlanType'
 import MenuDialog from '../dialogs/MenuDialog'
 import { showMessage } from 'app/store/fuse/messageSlice'
-
+const meals = [
+    {
+        name: "Morning",
+        from: "07:00:00",
+        to: "09:00:00"
+    },
+    {
+        name: "Lunch",
+        from: "12:0:00",
+        to: "14:00:00"
+    },
+    {
+        name: "Afternoon",
+        from: "17:00:00",
+        to: "19:00:00"
+    },
+    {
+        name: "Evening",
+        from: "21:00:00",
+        to: "22:00:00"
+    }
+]
 export default function BirdMenus() {
     const dispatch = useAppDispatch()
     const plan = useAppSelector(selectPlanById)
@@ -26,46 +47,52 @@ export default function BirdMenus() {
     let lunch: MealItemType[] = []
     let evening: MealItemType[] = []
     let afternoon: MealItemType[] = []
-    function handleAplyTomenu() {
-        birds.forEach(bird => {
-            bird.menu.menuMeals.forEach(
-                menuMeal => {
-                    menuMeal.mealItems.forEach(mealItem => {
-                        switch (menuMeal.name) {
-                            case "Morning":
-                                morning.push(mealItem)
-                                break;
-                            case "Lunch":
-                                lunch.push(mealItem)
-                                break;
-                            case "Afternoon":
-                                afternoon.push(mealItem)
-                                break;
-                            case "Evening":
-                                evening.push(mealItem)
-                                break;
-                        }
-                    });
-                }
-            )
-        });
+    async function handleAplyTomenu() {
 
-        for (let mealItem of groupByFoodId(morning)) {
-            const menuMeals = plan.menu?.menuMeals
-            const menuMeal = menuMeals.find(meal => meal.name == "Morning")
-            menuMeals.forEach(meal => {
-                if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(item => {
-                        const data = {
-                            itemId: item.id,
-                            mealId: meal.id
-                        }
-                        dispatch(removeMealItem(data))
-                    });
+        birdList.forEach(bird => {
+            if (bird.recommend === true) {
+                bird?.menu?.menuMeals.forEach(
+                    menuMeal => {
+                        menuMeal.mealItems.forEach(mealItem => {
+                            switch (menuMeal.name) {
+                                case "Morning":
+                                    morning.push(mealItem)
+                                    break;
+                                case "Lunch":
+                                    lunch.push(mealItem)
+                                    break;
+                                case "Afternoon":
+                                    afternoon.push(mealItem)
+                                    break;
+                                case "Evening":
+                                    evening.push(mealItem)
+                                    break;
+                            }
+                        });
+                    }
+                )
+            }
+        });
+        const menuMeals = plan.menu?.menuMeals
+        for (let meal of menuMeals) {
+            if (meal.mealItems.length > 0) {
+                for (let item of meal.mealItems) {
+                    const data = {
+                        itemId: item.id,
+                        mealId: meal.id
+                    }
+                    await dispatch(removeMealItem(data))
                 }
-            });
+            }
+        }
+        const morningMeal = menuMeals.find(meal => meal.name == "Morning")
+        const lunchMeal = menuMeals.find(meal => meal.name == "Lunch")
+        const EveningMeal = menuMeals.find(meal => meal.name == "Evening")
+        const afternoonMeal = menuMeals.find(meal => meal.name == "Afternoon")
+   
+        for (let mealItem of groupByFoodId(morning)) {
             const itemData = {
-                menuMealId: menuMeal.id,
+                menuMealId: morningMeal.id,
                 foodId: mealItem.food.id,
                 quantity: mealItem.quantity,
                 order: mealItem.order
@@ -74,21 +101,9 @@ export default function BirdMenus() {
 
         }
         for (let mealItem of groupByFoodId(lunch)) {
-            const menuMeals = plan.menu?.menuMeals
-            const menuMeal = menuMeals.find(meal => meal.name == "Lunch")
-            menuMeals.forEach(meal => {
-                if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(item => {
-                        const data = {
-                            itemId: item.id,
-                            mealId: meal.id
-                        }
-                        dispatch(removeMealItem(data))
-                    });
-                }
-            });
+
             const itemData = {
-                menuMealId: menuMeal.id,
+                menuMealId: lunchMeal.id,
                 foodId: mealItem.food.id,
                 quantity: mealItem.quantity,
                 order: mealItem.order
@@ -97,21 +112,8 @@ export default function BirdMenus() {
 
         }
         for (let mealItem of groupByFoodId(evening)) {
-            const menuMeals = plan.menu?.menuMeals
-            const menuMeal = menuMeals.find(meal => meal.name == "Evening")
-            menuMeals.forEach(meal => {
-                if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(item => {
-                        const data = {
-                            itemId: item.id,
-                            mealId: meal.id
-                        }
-                        dispatch(removeMealItem(data))
-                    });
-                }
-            });
             const itemData = {
-                menuMealId: menuMeal.id,
+                menuMealId: EveningMeal.id,
                 foodId: mealItem.food.id,
                 quantity: mealItem.quantity,
                 order: mealItem.order
@@ -120,23 +122,8 @@ export default function BirdMenus() {
 
         }
         for (let mealItem of groupByFoodId(afternoon)) {
-            const menuMeals = plan.menu?.menuMeals
-            const menuMeal = menuMeals.find(meal => meal.name == "Afternoon")
-
-            menuMeals.forEach(meal => {
-                if (meal.mealItems.length > 0) {
-                    meal.mealItems.forEach(item => {
-                        const data = {
-                            itemId: item.id,
-                            mealId: meal.id
-                        }
-                        dispatch(removeMealItem(data))
-                    });
-                }
-            });
-
             const itemData = {
-                menuMealId: menuMeal.id,
+                menuMealId: afternoonMeal.id,
                 foodId: mealItem.food.id,
                 quantity: mealItem.quantity,
                 order: mealItem.order
@@ -150,7 +137,7 @@ export default function BirdMenus() {
             message: `Apply menu successfully`,
         }
         dispatch(showMessage(msg))
-    
+
 
     }
     function groupByFoodId(mealItems: MealItemType[]) {
@@ -188,7 +175,7 @@ export default function BirdMenus() {
                     color='secondary'
                 > Auto generate menu  </Button></div>
             <MenuDialog birds={birdList} />
-            <div className="flex gap-32">
+            <div className="grid grid-cols-4 gap-32">
                 {birdList?.map((bird) => (
                     <div key={bird.id}>
                         <BirdCard bird={bird} />

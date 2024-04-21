@@ -21,6 +21,7 @@ import MealItemDialog from '../../dialogs/MealItemDialog';
 import { addMealBirdId, addMealId, createBirdMenu, createBirdMenuMeal, removeBirdItem, setMealitemsDialog, updateBird, updateMealItem } from '../../store/menusSlice';
 import { BirdType } from '../../type/MenuType';
 import _ from 'lodash';
+import { MenuMealType } from '../../../calendar/types/PlanType';
 const ExpandMore = styled((props: any) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -93,15 +94,25 @@ const menuMeals = [
 ]
 export default function BirdCard(props: BirdProp) {
     const [expanded, setExpanded] = useState(false);
-    const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
     const [accordionExpend, setAccordionExpend] = useState('panel1');
     const [createdMenu, setCreatedMenu] = useState(false);
+    const [sortedMenuMeal, setSortedMenuMeal] = useState<MenuMealType[]>([]);
+
     const dispatch = useAppDispatch()
     const { bird } = props
     const handleExpandClick = () => {
         setExpanded(!expanded);
     }
-
+    useEffect(
+        ()=>{
+            if (bird.menu?.menuMeals.length > 0) {
+                let sorted = [...bird?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
+                setSortedMenuMeal(sorted);
+              } else
+                setSortedMenuMeal(null);
+        },
+        [bird.menu?.menuMeals]
+    )
 
     useEffect(() => {
         if (bird.menu?.id) {
@@ -154,10 +165,10 @@ export default function BirdCard(props: BirdProp) {
     const handleChange = (panel) => (event, newExpanded) => {
         setAccordionExpend(newExpanded ? panel : false);
     };
- 
+
     return (
         <Card
-            className="shadow max-w-[345px]"
+            className="shadow max-w-[345px]  "
         >
             <CardHeader
                 avatar={
@@ -169,9 +180,9 @@ export default function BirdCard(props: BirdProp) {
                 }
                 title={bird.name}
             />
-            <CardContent>
+            <CardContent className="h-52 overflow-auto">
                 <Typography variant="body2" color="text.secondary">
-                    {bird?.menu?.name}
+                    {bird?.species.name} - {bird?.careMode.name}
                 </Typography>
             </CardContent>
             <CardActions disableSpacing >
@@ -185,9 +196,9 @@ export default function BirdCard(props: BirdProp) {
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    {(bird.menu?.menuMeals && bird.menu?.menuMeals?.length > 0) ? (
-                        bird.menu?.menuMeals.map(
-                            (meal, index) => {
+                    {(sortedMenuMeal && sortedMenuMeal?.length > 0) ? (
+                        sortedMenuMeal.map(
+                                (meal, index) => {
                                 return (
                                     <Accordion
                                         key={index}
@@ -202,7 +213,7 @@ export default function BirdCard(props: BirdProp) {
 
                                                     <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
                                                     <div className="flex items-center">
-                                                        <Button
+                                                        <div className="flex items-center justify-end">     <Button
                                                             className="cursor-pointer "
                                                             onClick={
                                                                 () => {
@@ -219,25 +230,25 @@ export default function BirdCard(props: BirdProp) {
                                                             }><RemoveCircle
                                                                 className="cursor-pointer "
                                                             /></Button>
-                                                        <Typography className="mx-1">
-                                                            {item?.quantity}
-                                                        </Typography>
-                                                        <Button
-                                                            className="cursor-pointer"
-                                                            onClick={
-                                                                () => {
-                                                                    dispatch(updateMealItem({
-                                                                        itemId: item.id,
-                                                                        mealId: meal.id,
-                                                                        birdId: bird.id,
-                                                                        newItem: {
-                                                                            quantity: item.quantity
-                                                                        },
-                                                                        action: "increase"
-                                                                    }))
+                                                            <Typography className="mx-1">
+                                                                {item?.quantity}
+                                                            </Typography>
+                                                            <Button
+                                                                className="cursor-pointer"
+                                                                onClick={
+                                                                    () => {
+                                                                        dispatch(updateMealItem({
+                                                                            itemId: item.id,
+                                                                            mealId: meal.id,
+                                                                            birdId: bird.id,
+                                                                            newItem: {
+                                                                                quantity: item.quantity
+                                                                            },
+                                                                            action: "increase"
+                                                                        }))
+                                                                    }
                                                                 }
-                                                            }
-                                                        ><AddCircle /></Button>
+                                                            ><AddCircle /></Button></div>   
                                                         <Button
                                                             className="cursor-pointer"
                                                             onClick={

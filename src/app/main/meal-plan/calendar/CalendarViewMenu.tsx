@@ -42,7 +42,7 @@ function CalendarViewMenu(props: CalendarViewMenuProps) {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleClose = () => {
+	const handleClose = () => { 
 		setAnchorEl(null);
 	};
 

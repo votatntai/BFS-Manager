@@ -31,8 +31,8 @@ class JwtService extends FuseUtils.EventEmitter {
 				// Kiểm tra xem accessToken có tồn tại không
 				if (accessToken) {
 					// Thêm accessToken vào header của request
-					//		config.headers.Authorization = `Bearer ${accessToken}`;
-					config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJiMGVlZGUzLWYxZDMtNGY4Mi1iOTkyLWExNjdmNmUwZWUyMSIsInJvbGUiOiJNYW5hZ2VyIiwibmJmIjoxNzEwNzA3ODAxLCJleHAiOjE3MTEzMTI2MDEsImlhdCI6MTcxMDcwNzgwMX0.-ZRPqz52loWlFwf_VcpcomGGQS-iSB6lVH_XJJ7WlWc`;
+					config.headers.Authorization = `Bearer ${accessToken}`;
+					// config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJiMGVlZGUzLWYxZDMtNGY4Mi1iOTkyLWExNjdmNmUwZWUyMSIsInJvbGUiOiJNYW5hZ2VyIiwibmJmIjoxNzEwNzA3ODAxLCJleHAiOjE3MTEzMTI2MDEsImlhdCI6MTcxMDcwNzgwMX0.-ZRPqz52loWlFwf_VcpcomGGQS-iSB6lVH_XJJ7WlWc`;
 				}
 				return config;
 			},
@@ -131,8 +131,6 @@ class JwtService extends FuseUtils.EventEmitter {
 						}>
 					) => {
 						if (response.data.user) {
-							response.data.user.role = 'admin'
-							console.log(response.data.access_token)
 							_setSession(response.data.access_token);
 							this.emit('onLogin', response.data.user);
 							resolve(response.data.user);
@@ -149,14 +147,13 @@ class JwtService extends FuseUtils.EventEmitter {
 	signInWithToken = () =>
 		new Promise<UserType>((resolve, reject) => {
 			axios
-				.get(jwtServiceConfig.accessToken, {
-					data: {
-						access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTA3MDQzMzQsImlzcyI6IkZ1c2UiLCJleHAiOjE3MzY2MjQzMzQsImlkIjoiWGdidVZFWEJVNWd0U0tkYlFSUDFaYmJieTFpMSJ9.gPO5JZ_jJUtWcK_keIbsZB-Fo9qzFK5E4dyhuWyZRuk"
-					}
-				})
-				.then((response: AxiosResponse<{ user: UserType; access_token: string }>) => {
+				.get(jwtServiceConfig.accessToken)
+				.then((response: AxiosResponse<{
+					user: UserType;
+					access_token: string
+				}>) => {
 					if (response.data.user) {
-				//		_setSession(response.data.access_token);
+						_setSession(response.data.access_token);
 						resolve(response.data.user);
 					} else {
 						this.logout();

@@ -6,11 +6,10 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 
 export default function MenuDialog(props) {
     const { birds } = props
-    console.log("birds", birds)
     const dispatch = useAppDispatch()
     const open = useAppSelector(selectMenuDialogState)
     const menuSamples = useAppSelector(selectMenuSample)
-    console.log(menuSamples.filter(menu => menu.name == "High quality"))
+    // console.log(menuSamples.filter(menu => menu.name == "High quality"))
     const [menuType, setMenuType] = useState("");
     let mornigId
     let lunchId
@@ -31,95 +30,97 @@ export default function MenuDialog(props) {
                 component: 'form',
                 onSubmit: (event) => {
                     event.preventDefault();
-                    for (let bird of birds) {
-
-                        for (let menu of menuSamples) {
-                            if (bird.species.id == menu.species.id && bird.careMode.id == menu.careMode.id) {
-                                mornigId = bird.menu.menuMeals.find(meal => meal.name == "Morning")
-                                lunchId = bird.menu.menuMeals.find(meal => meal.name == "Lunch")
-                                afternoonId = bird.menu.menuMeals.find(meal => meal.name == "Afternoon")
-                                eveningId = bird.menu.menuMeals.find(meal => meal.name == "Evening")
-                                for (let birdMeal of bird.menu.menuMeals) {
-                                    for (let birdItem of birdMeal.mealItems) {
-                                        dispatch(removeBirdItem({
-                                            itemId: birdItem.id,
-                                            mealId: birdMeal.id,
-                                            birdId: bird.id
-                                        }))
-                                    }
-                                    for (let meal of menu.menuMealSamples) {
-                                        switch (meal.name) {
-                                            case "Morning":
-                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
-                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
-                                                        const newMealItems = {
-                                                            menuMealId: mornigId.id,
-                                                            foodId: meal.mealItemSamples[index].food.id,
-                                                            quantity: 1,
-                                                            order: index
+                    async function handleMealItems() {
+                        for (let bird of birds) {
+                            for (let menu of menuSamples) {
+                                if (bird.species.id == menu.species.id && bird.careMode.id == menu.careMode.id) {
+                                    mornigId = bird.menu.menuMeals.find(meal => meal.name == "Morning")
+                                    lunchId = bird.menu.menuMeals.find(meal => meal.name == "Lunch")
+                                    afternoonId = bird.menu.menuMeals.find(meal => meal.name == "Afternoon")
+                                    eveningId = bird.menu.menuMeals.find(meal => meal.name == "Evening")
+                                    for (let birdMeal of bird.menu.menuMeals) {
+                                        for (let birdItem of birdMeal.mealItems) {
+                                            await dispatch(removeBirdItem({
+                                                itemId: birdItem.id,
+                                                mealId: birdMeal.id,
+                                                birdId: bird.id
+                                            }))
+                                        }
+                                        for (let meal of menu.menuMealSamples) {
+                                            switch (meal.name) {
+                                                case "Morning":
+                                                    if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                        for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                            const newMealItems = {
+                                                                menuMealId: mornigId.id,
+                                                                foodId: meal.mealItemSamples[index].food.id,
+                                                                quantity: 1,
+                                                                order: index
+                                                            }
+                                                            const mealItemData = {
+                                                                data: newMealItems,
+                                                                birdId: bird.id
+                                                            }
+                                                            await dispatch(createMealItems(mealItemData))
                                                         }
-                                                        const mealItemData = {
-                                                            data: newMealItems,
-                                                            birdId: bird.id
+                                                    break;
+                                                case "Lunch":
+                                                    if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                        for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                            const newMealItems = {
+                                                                menuMealId: lunchId.id,
+                                                                foodId: meal.mealItemSamples[index].food.id,
+                                                                quantity: 1,
+                                                                order: index
+                                                            }
+                                                            const mealItemData = {
+                                                                data: newMealItems,
+                                                                birdId: bird.id
+                                                            }
+                                                            await dispatch(createMealItems(mealItemData))
                                                         }
-                                                        dispatch(createMealItems(mealItemData))
-                                                    }
-                                                break;
-                                            case "Lunch":
-                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
-                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
-                                                        const newMealItems = {
-                                                            menuMealId: lunchId.id,
-                                                            foodId: meal.mealItemSamples[index].food.id,
-                                                            quantity: 1,
-                                                            order: index
+                                                    break;
+                                                case "Afternoon":
+                                                    if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                        for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                            const newMealItems = {
+                                                                menuMealId: afternoonId.id,
+                                                                foodId: meal.mealItemSamples[index].food.id,
+                                                                quantity: 1,
+                                                                order: index
+                                                            }
+                                                            const mealItemData = {
+                                                                data: newMealItems,
+                                                                birdId: bird.id
+                                                            }
+                                                            await dispatch(createMealItems(mealItemData))
                                                         }
-                                                        const mealItemData = {
-                                                            data: newMealItems,
-                                                            birdId: bird.id
+                                                    break;
+                                                case "Evening":
+                                                    if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
+                                                        for (let index = 0; index < meal.mealItemSamples.length; index++) {
+                                                            const newMealItems = {
+                                                                menuMealId: eveningId.id,
+                                                                foodId: meal.mealItemSamples[index].food.id,
+                                                                quantity: 1,
+                                                                order: index
+                                                            }
+                                                            const mealItemData = {
+                                                                data: newMealItems,
+                                                                birdId: bird.id
+                                                            }
+                                                            await dispatch(createMealItems(mealItemData))
                                                         }
-                                                        dispatch(createMealItems(mealItemData))
-                                                    }
-                                                break;
-                                            case "Afternoon":
-                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
-                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
-                                                        const newMealItems = {
-                                                            menuMealId: afternoonId.id,
-                                                            foodId: meal.mealItemSamples[index].food.id,
-                                                            quantity: 1,
-                                                            order: index
-                                                        }
-                                                        const mealItemData = {
-                                                            data: newMealItems,
-                                                            birdId: bird.id
-                                                        }
-                                                        dispatch(createMealItems(mealItemData))
-                                                    }
-                                                break;
-                                            case "Evening":
-                                                if (meal.mealItemSamples && meal.mealItemSamples.length > 0)
-                                                    for (let index = 0; index < meal.mealItemSamples.length; index++) {
-                                                        const newMealItems = {
-                                                            menuMealId: eveningId.id,
-                                                            foodId: meal.mealItemSamples[index].food.id,
-                                                            quantity: 1,
-                                                            order: index
-                                                        }
-                                                        const mealItemData = {
-                                                            data: newMealItems,
-                                                            birdId: bird.id
-                                                        }
-                                                        dispatch(createMealItems(mealItemData))
-                                                    }
-                                                break;
+                                                    break;
+                                            }
                                         }
                                     }
-                                }
 
+                                }
                             }
                         }
                     }
+                    handleMealItems()
                     const msg = {
                         variant: 'success',
                         autoHideDuration: 2000,
@@ -137,7 +138,6 @@ export default function MenuDialog(props) {
             <DialogContent>
                 <InputLabel id="demo-simple-select-label">Type of menu</InputLabel>
                 <Select
-
                     value={menuType}
                     onChange={handleChange}
                     className='w-[200px]'

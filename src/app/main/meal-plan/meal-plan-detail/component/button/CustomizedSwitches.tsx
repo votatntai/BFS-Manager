@@ -47,30 +47,37 @@ const Android12Switch = styled(Switch)(({ theme }) => ({
 
 export default function CustomizedSwitches(props) {
   const { bird } = props
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(bird?.recommend ?? true);
   const dispatch = useAppDispatch()
   useEffect(
     () => {
       const data = {
         birdId: props?.bird?.id,
-        checked: checked
+        checked: true
       }
       dispatch(setBirdRecommend(data))
     }
     , []
   )
+  useEffect(
+    () => {
+      if (bird?.recommend !== undefined)
+        setChecked(bird.recommend)
+    }
+    , [bird?.recommend]
+  )
   const handleChange = (event) => {
     const data = {
       birdId: props?.bird?.id,
-      checked: !checked
+      checked: !bird?.recommend
     }
-    console.log("dat>>>", bird)
     dispatch(setBirdRecommend(data))
+    console.log("bird", bird?.recommend)
   };
   return (
     <div className="flex items-center ">
       <Android12Switch
-        checked={props?.bird?.recommend ?? true}
+        checked={checked}
         onChange={handleChange}
       />
       <Typography variant="body1">Recommend</Typography>

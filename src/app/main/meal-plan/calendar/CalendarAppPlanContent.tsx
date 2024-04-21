@@ -17,7 +17,7 @@ type CalendarAppPlanContentProps = {
  */
 function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 	const { planInfo } = props;
-	console.log("planInfo",planInfo)
+	// console.log("planInfo",planInfo)
 	const theme = useTheme();
 	const labels = useAppSelector(selectLabels);
 

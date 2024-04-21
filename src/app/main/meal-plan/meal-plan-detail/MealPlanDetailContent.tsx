@@ -1,37 +1,37 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AddCircle, AddCircleOutline, DeleteForever, EditAttributesSharp, EditRounded, RemoveCircle, RemoveCircleOutline } from '@mui/icons-material';
-import AddCircleOutlineRounded from '@mui/icons-material/AddCircleOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Avatar, Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Divider, Grid, Paper, TextField, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useAppDispatch, useAppSelector } from 'app/store';
+import { showMessage } from 'app/store/fuse/messageSlice';
 import { formatISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import * as yup from 'yup';
+import { MenuMealType, MenuType, PlanType } from '../calendar/types/PlanType';
 import { getCage, selectCage } from '../store/cagesSlice';
-import MealDialog from './dialogs/MealDialog';
 import MealItemDialog from './dialogs/MealItemDialog';
-import { addMealId, createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMealItem, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, setDialogState, setMealitemsDialog, setMenuDialog, updateMealItem, updatePlan } from './store/menusSlice';
-import MenuDialog from './dialogs/MenuDialog';
-import { MenuType, PlanType } from '../calendar/types/PlanType';
-import { NameType, menuSampleType } from './type/MenuType';
-import { forEach } from 'lodash';
-import { AnyAction, unwrapResult } from '@reduxjs/toolkit';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import FoodNormTab from './tabs/FoodNormTab';
 import BirdMenus from './menu/BirdMenus';
+import { createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, updateMealItem, updatePlan } from './store/menusSlice';
+import { menuSampleType } from './type/MenuType';
 const schema = yup.object().shape({
     // start: yup.date().required('Start date is required'),
     // end: yup.date().required('End date is required').when('start', (start, schema) => {
     //     return start ? schema.min(start, 'End date must be later than start date') : schema;
     // }),
-    title: yup.string(),
+    title: yup.string().required("Title is required"),
     start: yup.date().required('Start date is required'),
-    end: yup.date().required('End date is required'),
-    speciesId: yup.mixed(),
-    careModeId: yup.mixed(),
+    end: yup.date().test(
+        "is-greater",
+        "End date must be greater than start date",
+        function (value) {
+            let { start } = this.parent;
+            if (start && value) return value > start;
+            return true; // bypass this test if `start` is undefined
+        }
+    ).required('End date is required'),
+
     menuName: yup.string()
 });
 const menuMeals = [
@@ -69,6 +69,7 @@ export default function MealPlanDetailContent() {
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
     const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
+    const [sortedMenuMeal, setSortedMenuMeal] = useState<MenuMealType[]>([]);
     const [planCreated, setPlanCreated] = useState(false);
     const [menuCreated, setMenuCreated] = useState(false);
     const [openMealDialog, setOpenDialog] = useState(false)
@@ -96,17 +97,16 @@ export default function MealPlanDetailContent() {
         , [])
 
     //------- get sample menu --------
-    const speciesId = watch("speciesId");
-    const careModeId = watch("careModeId");
+
     useEffect(
         () => {
             const data = {
-                speciesId: speciesId,
-                careModeId: careModeId
+                speciesId: null,
+                careModeId: null
             }
             dispatch(getMenuSample(data))
         }
-        , [speciesId, careModeId])
+        , [])
     // ------  Run after cageLoaded --
     useEffect(
         () => {
@@ -179,6 +179,16 @@ export default function MealPlanDetailContent() {
     }
         , [reset, plan]
     )
+ 
+    useEffect(() => {
+      if (plan?.menu?.menuMeals.length > 0) {
+        let sorted = [...plan?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
+        setSortedMenuMeal(sorted);
+      } else
+        setSortedMenuMeal(null);
+    }, [plan?.menu?.menuMeals]);
+    
+    // Sử dụng sortedMenuMeal trong render
     useEffect(() => {
         return () => {
             dispatch(resetPlan());
@@ -388,7 +398,7 @@ export default function MealPlanDetailContent() {
                 <Divider variant='fullWidth' flexItem />
                 {/* Menu */}
                 <>
-                    {/* <div className=" justify-center    "> */}
+                    {/* <div className=" justify-center"> */}
                     {/* Memnu sample */}
                     <Box display="flex"  >
                         {/* <Box display="flex" flexDirection="column" className="flex-1 mt-10">
@@ -529,8 +539,8 @@ export default function MealPlanDetailContent() {
                                 <Typography variant='h4' className=" text-20 font-400  "> Meal
                                 </Typography>
                             </div>
-                            {(plan.menu?.menuMeals && plan.menu?.menuMeals?.length > 0) ? (
-                                plan.menu.menuMeals.map(
+                            {(sortedMenuMeal && sortedMenuMeal?.length > 0) ? (
+                                sortedMenuMeal.map(
                                     (meal) => {
                                         return (
                                             <Accordion

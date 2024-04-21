@@ -33,12 +33,9 @@ function CalendarHeader(props: CalendarHeaderProps) {
 		<div className="flex flex-col md:flex-row w-full p-12 justify-between z-10 container">
 			<div className="flex flex-col sm:flex-row items-center">
 				<div className="flex items-center">
-
-
 					<Typography className="text-2xl font-semibold tracking-tight whitespace-nowrap mx-16">
 						{currentDate?.view.title}
 					</Typography>
-
 				</div>
 
 				<div className="flex items-center">
