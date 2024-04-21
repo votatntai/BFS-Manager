@@ -24,7 +24,9 @@ const ViewModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
     "description": object.description,
     "image": object.image,
     "status": object.status,
-    "createAt": object.createAt
+    "createAt": object.createAt,
+    "resultDescription":object.resultDescription,
+    "resultImage": object.resultImage
   }) 
   const [ticketStatus, setTicketStatus] = useState(object.status)
   const [file, setFile] =useState(object.image)
@@ -110,7 +112,10 @@ ticket.priority.toLowerCase() === 'medium' ? 'warning' : 'error'}>{ticket.priori
             options={combobox} sx={{ width: 200 }} renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="select a staff" />}
         />
         </Stack>
-        <Typography><b>Problem picture:</b></Typography>
+        <Typography><b>Solver reply:</b> {ticket.resultDescription === null ? 'A staff is processing' : ticket.resultDescription}</Typography>
+        <Typography><b>Solver's picture:</b> {ticket.resultImage === null && 'A staff is processing'}</Typography>
+        {ticket.resultImage !==null && <img src={URL.createObjectURL(ticket.resultImage)} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
+        <Typography><b>Problem's picture:</b></Typography>
         {file && <img src={file} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
     </Stack>
     </DialogContent>

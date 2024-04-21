@@ -35,7 +35,7 @@ const TicketHeader = ()=>{
         onChange={(event: any, newValue: string | null) => {
           setValue(newValue);
         }}
-        options={['Processing','Rejected','Done']}
+        options={['Processing','Rejected','Work finished','Done']}
         sx={{ width: '15rem' }}
         renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Status" />}
       />
