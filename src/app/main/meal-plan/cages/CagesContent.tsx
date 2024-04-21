@@ -27,48 +27,48 @@ const item = {
 };
 export default function CagesContent() {
     const dispatch = useAppDispatch();
-	const cages = useAppSelector(selectCages);
-	const materials = cages?.map( cage=>cage.material)
+    const cages = useAppSelector(selectCages);
+    const materials = cages?.map(cage => cage.material)
 
 
-	const [filteredData, setFilteredData] = useState<CageType[]>([]);
-	const [searchText, setSearchText] = useState('');
-	const [selectedMaterial, setSelectedMaterial] = useState('all');
-	const [hideCompleted, setHideCompleted] = useState(false);
+    const [filteredData, setFilteredData] = useState<CageType[]>([]);
+    const [searchText, setSearchText] = useState('');
+    const [selectedMaterial, setSelectedMaterial] = useState('all');
+    const [hideCompleted, setHideCompleted] = useState(false);
 
-	useEffect(() => {
-		dispatch(getCages());
-	}, [dispatch]);
+    useEffect(() => {
+        dispatch(getCages());
+    }, [dispatch]);
 
-	useEffect(() => {
-		function getFilteredArray() {
-			if (searchText.length === 0 && selectedMaterial === 'all') {
-				return cages;
-			}
+    useEffect(() => {
+        function getFilteredArray() {
+            if (searchText.length === 0 && selectedMaterial === 'all') {
+                return cages;
+            }
 
-			return _.filter(cages, (item) => {
-				if (selectedMaterial !== 'all' && item.material !== selectedMaterial) {
-					return false;
-				}
+            return _.filter(cages, (item) => {
+                if (selectedMaterial !== 'all' && item.material !== selectedMaterial) {
+                    return false;
+                }
 
-			
 
-				return item.name.toLowerCase().includes(searchText.toLowerCase());
-			});
-		}
 
-		if (cages) {
-			setFilteredData(getFilteredArray());
-		}
-	}, [cages, searchText, selectedMaterial]);
+                return item.name.toLowerCase().includes(searchText.toLowerCase());
+            });
+        }
 
-	function handleSelectedMaterial(event) {
-		setSelectedMaterial(event.target.value);
-	}
+        if (cages) {
+            setFilteredData(getFilteredArray());
+        }
+    }, [cages, searchText, selectedMaterial]);
 
-	function handleSearchText(event) {
-		setSearchText(event.target.value);
-	}
+    function handleSelectedMaterial(event) {
+        setSelectedMaterial(event.target.value);
+    }
+
+    function handleSearchText(event) {
+        setSearchText(event.target.value);
+    }
     return (
         <div className="flex flex-col flex-1 w-full mx-auto px-24 pt-24 sm:p-40">
             <div className="flex flex-col shrink-0 sm:flex-row items-center justify-between space-y-16 sm:space-y-0">
@@ -88,7 +88,9 @@ export default function CagesContent() {
                             <MenuItem value="all">
                                 <em> All </em>
                             </MenuItem>
-                            {materials.map((Material) => (
+                            { materials.filter((material, index, self) =>
+                                index === self.indexOf(material)
+                            ).map((Material) => (
                                 <MenuItem
                                     value={Material}
                                     key={Material}
@@ -135,14 +137,14 @@ export default function CagesContent() {
                         initial="hidden"
                         animate="show"
                     >
-                 {filteredData.map((Cage) => {
-                    
+                        {filteredData.map((Cage) => {
+
                             return (
                                 <motion.div
                                     variants={item}
                                     key={Cage.id}
                                 >
-                                       
+
                                     <CageCard cage={Cage} />
                                 </motion.div>
                             );

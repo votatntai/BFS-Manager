@@ -8,7 +8,7 @@ export type PlanType = {
 	to: string;
 	title: string;
 	createAt?: string
-	cage?: {}
+	cage?: CageType;
 	menu?: MenuType
 	// allDay?: boolean | undefined;
 	// extendedProps?: {
@@ -72,7 +72,6 @@ export type FoodType = {
 	name: string;
 	thumbnailUrl: string;
 	unitOfMeasurement: UoM
-
 }
 export type UoM = {
 	name: string;
