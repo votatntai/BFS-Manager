@@ -39,10 +39,7 @@ const TaskManagementHeader = ()=>{
          <Autocomplete size='small' value={value}
         onChange={(event: any, newValue: string | null) => {
           setValue(newValue);
-        }}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue) => {
-            dispatch(setFilterStatus(newInputValue))
+          dispatch(setFilterStatus(newValue))
         }}
         options={comboboxList}
         sx={{ width: 200 }}

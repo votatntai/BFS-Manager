@@ -3,6 +3,7 @@ import reducer from '../store';
 import { lazy } from 'react';
 const Bird = lazyWithReducer('birdReducer', () => import('./Bird'), reducer);
 const BirdDetail = lazy(() => import('./bird-detail/BirdDetail'));
+const AddBird = lazy(() => import('./add-bird/AddBird'));
 
 const BirdConfig = {
 	settings: {
@@ -16,6 +17,10 @@ const BirdConfig = {
 		{
 			path: 'master-data/bird/bird-detail/:birdId',
 			element: <BirdDetail />
+		},
+		{
+			path: 'master-data/bird/add-bird',
+			element: <AddBird />
 		}
 	]
 };
