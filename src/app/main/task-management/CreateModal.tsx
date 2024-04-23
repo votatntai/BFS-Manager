@@ -26,7 +26,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     const [taskBegin, setTaskBegin] = useState(new Date())
     const [taskDeadline, setTaskDeadline] = useState(() => {
       const deadline = new Date(taskBegin);
-      deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+      deadline.setDate(deadline.getDate() + 1);
       return deadline;
     });
     const [inputChecklistValue, setInputChecklistValue] =useState('')
@@ -35,6 +35,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       "type": "daily",
       "time": 1,
     })
+    const [workingHours, setWorkingHours] = useState(1)
     const [checklists, setChecklists] =useState([])
     const [feedbacks, setFeedbacks] =useState([])
     const [inputFeedbackValue, setInputFeedbackValue] =useState({
@@ -120,6 +121,22 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       }
     }
     useEffect(()=>{loadStaffs()},[])
+
+    const [warning, setWarning] =useState(false)
+    useEffect(() => {
+      const totalStaff = staffList.length
+      const millisecondsPerDay = 1000 * 60 * 60 * 24; // Số milliseconds trong một ngày
+      const millisecondsBetween = taskDeadline.getTime() - taskBegin.getTime(); // Số milliseconds giữa hai ngày
+      const daysBetween = Math.ceil(millisecondsBetween / millisecondsPerDay); // Số ngày giữa hai ngày
+      const workingHoursDailyOfTask = Math.ceil(workingHours / daysBetween);
+      if ((workingHoursDailyOfTask/totalStaff) > 8) {
+        setWarning(true);
+        // console.log('overtime')
+      } else {
+        setWarning(false);
+        // console.log('ổn')
+      }
+    }, [staffList, workingHours, taskBegin, taskDeadline]);
     return <Dialog open={show} classes={{
         paper: 'max-w-lg w-full m-8 sm:m-24'
     }} onClose={handleClose} >
@@ -143,7 +160,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 							onChange={(value) => {
                 setTaskBegin(value);
                 const deadline = new Date(value);
-                deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+                deadline.setDate(deadline.getDate() + 1);
                 setTaskDeadline(deadline);
               }} className="w-full sm:w-auto"
 							slotProps={{
@@ -179,7 +196,20 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 						<div className="flex items-center mt-16 mb-12">
 							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Staffs</Typography>
-						</div>
+              <FormControlLabel className='me-28' control={<TextField  value={workingHours} onChange={e => {
+        const value = e.target.value.trim(); // Trim any leading or trailing spaces
+        if (value === '') {
+          setWorkingHours(1);
+        } else {
+          const parsedValue = parseInt(value); // Parse the input value as an integer
+          if (!isNaN(parsedValue)) {
+            setWorkingHours(parsedValue); // Set the state to the parsed integer value
+          }
+        }
+      }}
+     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'10rem', marginLeft:'1rem'}}/>} label="Working hours" labelPlacement='start' />
+						{staffList.length >0 && (warning ? <Button variant="contained" style={{pointerEvents: "none"}} color='warning'>Staffs overtime</Button> : <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Staffs within schedule</Button>)}
+            </div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs}
               getOptionLabel={(option) => option.name}
               filterSelectedOptions

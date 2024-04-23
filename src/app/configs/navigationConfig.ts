@@ -18,6 +18,13 @@ const navigationConfig: FuseNavigationType = [
 				url: '/meal-plan/cages',
 			},
 			{
+				id: 'task-overview',  
+				title: 'Task overview',
+				type: 'item',
+				url: '/task-overview',
+				icon: 'heroicons-outline:clock'
+			},
+			{
 				id: 'task-management',  
 				title: 'Task management',
 				type: 'item',

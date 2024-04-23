@@ -8,7 +8,7 @@ import { useAppDispatch } from "app/store";
 import { addBird } from "../slice/birdSlice";
 import { Link,redirect  } from 'react-router-dom';
 
-export default function AddBird({id}){
+export default function AddBird(){
   const [species, setSpecies]=useState([])
   const [caremodes, setCaremodes]=useState([])
   const [categories, setCategories]=useState([])
