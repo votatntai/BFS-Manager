@@ -31,22 +31,22 @@ export default function CageCard(props: CardProps) {
                     <Typography gutterBottom variant="h5" >
                         {cage.name}
                     </Typography>
-                    <Typography>
+                    <div>
                         <Typography display="inline" className='font-bold' variant="body2" color="text.secondary">
                             Code:{" "}
                         </Typography>
                         <Typography display="inline" variant="body2" color="text.secondary">
                             {cage.code}
                         </Typography>
-                    </Typography>
-                    <Typography>
+                    </div>
+                    <div>
                         <Typography display="inline" className='font-bold' variant="body2" color="text.secondary">
-                            Size:{" "}
+                            Size:{" "}      
                         </Typography>
                         <Typography display="inline" variant="body2" color="text.secondary">
                             {cage.height} x{cage.width} x {cage.depth}
                         </Typography>
-                    </Typography>
+                    </div>
                 </CardContent>
             </CardActionArea>
             <CardActions className='flex justify-end mr-5'>
