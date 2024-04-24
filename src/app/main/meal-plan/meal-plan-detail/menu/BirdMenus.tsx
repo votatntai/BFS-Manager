@@ -189,7 +189,7 @@ export default function BirdMenus() {
                     variant='contained'
                     color='secondary'
                 >
-                    Aply to Menu
+                    Apply to menu
                 </Button>
             </div>
         </div>

@@ -14,7 +14,7 @@ import axios from 'src/app/auth/services/api/customAxios';
 const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFailSnackbar})=>{
   const [food, setFood] =useState({
     "id": object.id,
-    "thumbnail": "not empty",
+    "thumbnail": object.thumbnailUrl,
     "name": object.name,
     "foodCategoryId":{
       label: object.foodCategory.name, value: object.foodCategory.id
@@ -148,18 +148,17 @@ const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
                   Upload image
               </Button>
               <input id="fileInput" type="file" hidden={true} onChange={(e: any) => {
-              setFood(prev => ({...prev, thumbnail: "có thumbnail"}))
+              setFood(prev => ({...prev, thumbnail: e.target.files[0] === undefined ? null : URL.createObjectURL(e.target.files[0])}))
               setFile(e.target.files[0])
-              setLocalFile(URL.createObjectURL(e.target.files[0]))
             }} />
-            {file && <Button variant='contained' onClick={()=>{setFood(prev => ({...prev, thumbnail: "" }))
+            {file && <Button variant='contained' onClick={()=>{setFood(prev => ({...prev, thumbnail: null }))
                     setFile(null)}}>
                   <FuseSvgIcon>heroicons-outline:x-circle</FuseSvgIcon>
                   Clear image
             </Button>}
             </Stack>
-            {checkThumbnail&&<div style={{color:'red'}}>Thumbnail is required!</div>}
-            {file && <img src={localFile!==null ? localFile : file} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
+            {food.thumbnail === null && <div style={{color:'red'}}>Thumbnail is required!</div>}
+            {file && <img src={food.thumbnail} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
         </Stack>
     </DialogContent>
     <DialogActions>
