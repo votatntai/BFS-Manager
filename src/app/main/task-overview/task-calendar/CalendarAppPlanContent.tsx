@@ -2,6 +2,7 @@ import { useTheme } from '@mui/material/styles';
 import { useAppSelector } from 'app/store';
 import _ from '@lodash';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
 import { EventContentArg } from '@fullcalendar/core';
@@ -25,6 +26,7 @@ function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 	const label = _.find(labels, { id: labelId });
 
 	return (
+		<Tooltip title={planInfo.event.title}>
 		<Box
 			sx={{
 				backgroundColor: "black",
@@ -35,6 +37,7 @@ function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 			{/* <Typography className="text-12 font-semibold">{planInfo.timeText}</Typography> */}
 			<Typography className="text-12 px-4 truncate">{planInfo.event.title}</Typography>
 		</Box>
+			</Tooltip>
 	);
 }
 

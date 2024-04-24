@@ -6,9 +6,11 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useAppDispatch } from "app/store";
 import { addBird } from "../slice/birdSlice";
-import { Link,redirect  } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export default function AddBird(){
+  const navigate=useNavigate()
   const [species, setSpecies]=useState([])
   const [caremodes, setCaremodes]=useState([])
   const [categories, setCategories]=useState([])
@@ -118,8 +120,7 @@ export default function AddBird(){
         const res = await dispatch(addBird(formData))
         if(res){
           setSuccessNotify(true)
-          //redirect to previous page
-          redirect('/master-data/bird')
+          navigate('/master-data/bird')
         }else setFailNotify(true)
       }
     }
@@ -265,7 +266,7 @@ export default function AddBird(){
       renderInput={(params) => <TextField  sx={{ background: 'white' }} {...params} error={errorConditions.cage} label="Cage *" />}
     />
 
-    <Stack direction='row' className='justify-end'>
+    <Stack direction='row' className='justify-end' spacing={2}>
       <Button variant='contained' component={Link} to='/master-data/bird'>Cancel</Button>
       <Button variant='contained' color='success' onClick={add}>Create</Button>
     </Stack>

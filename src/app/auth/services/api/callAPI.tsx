@@ -15,7 +15,7 @@ export const getCages = (object: Object) => axios.get(`/cages`,{params: object})
  /**
  * Task
  */
- export const getTask = (object: Object) => axios.get(`/tasks`,{params: object});
+ export const getTask = (object) => axios.get(`/tasks`,{params: object});
  export const createTask= (formData: Object) => axios.post('/tasks',formData);
  export const updateTask = (id: string, formData: Object) => axios.put(`/tasks/${id}`,formData);
  export const assigntStaffToTask = (object: Object) => axios.post(`/tasks/assign-staffs`,object);

@@ -16,7 +16,6 @@ import { Button } from '@mui/material';
 type CalendarHeaderProps = {
 	calendarRef: MutableRefObject<FullCalendar | null>;
 	currentDate: DatesSetArg;
-	onToggleLeftSidebar: () => void;
 };
 
 /**
@@ -24,7 +23,7 @@ type CalendarHeaderProps = {
  */
 
 function CalendarHeader(props: CalendarHeaderProps) {
-	const { calendarRef, currentDate, onToggleLeftSidebar } = props;
+	const { calendarRef, currentDate } = props;
 	const navigate = useNavigate();
 	const mainTheme = useAppSelector(selectMainTheme);
 	const calendarApi = () => calendarRef?.current?.getApi();
@@ -81,15 +80,6 @@ function CalendarHeader(props: CalendarHeaderProps) {
 							</motion.div>
 						</div>
 					</Tooltip>
-					<div
-						onClick={() => onToggleLeftSidebar()}
-						aria-label="open left sidebar"
-					>
-						<Button variant='contained'
-							color='primary'
-							className="cursor-pointer"
-						>Side bar</Button>
-					</div>
 				</div>
 			</div>
 
@@ -98,18 +88,7 @@ function CalendarHeader(props: CalendarHeaderProps) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1, transition: { delay: 0.3 } }}
 			>
-				<IconButton
-					className="mx-8"
-					aria-label="add"
-					onClick={() => {
-						navigate("detail/new")
-					}
-					}
-				>
-					<FuseSvgIcon>heroicons-outline:plus-circle</FuseSvgIcon>
-				</IconButton>
-
-				<Button variant='contained'
+				<Button variant='contained' startIcon={<FuseSvgIcon>heroicons-outline:arrow-left</FuseSvgIcon>}
 					onClick={() => {
 						navigate(-1)
 					}}

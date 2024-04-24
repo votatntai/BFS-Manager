@@ -122,9 +122,9 @@ function Calendar() {
 	console.log("tasks" , tasks)
 	const calendarRef = useRef<FullCalendar>(null);
 	const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
-	const { cageId } = useParams();
+	const { id } = useParams();
 	useEffect(() => {
-		dispatch(getTaskData());
+		dispatch(getTaskData({staffId: id, status:'', pageSize: 100, pageNumber: 0}));
 	}, [dispatch]);
 	const navigate = useNavigate();
 
@@ -209,7 +209,6 @@ function Calendar() {
 					<CalendarHeader
 						calendarRef={calendarRef}
 						currentDate={currentDate}
-						onToggleLeftSidebar={handleToggleLeftSidebar}
 					/>
 				}
 				content={
@@ -239,11 +238,11 @@ function Calendar() {
 						eventContent={(eventInfo: EventContentArg & { event: PlanType }) => (
 							<CalendarAppPlanContent planInfo={eventInfo} />
 						)}
-						eventClick={handleEventClick}
-						eventAdd={handleEventAdd}
-						eventChange={handleEventChange}
-						eventRemove={handleEventRemove}
-						eventDrop={handleEventDrop}
+						// eventClick={handleEventClick}
+						// eventAdd={handleEventAdd}
+						// eventChange={handleEventChange}
+						// eventRemove={handleEventRemove}
+						// eventDrop={handleEventDrop}
 						initialDate={new Date()}
 						ref={calendarRef}
 						dayCellContent={renderCellContent}
