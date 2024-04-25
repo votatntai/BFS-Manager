@@ -46,6 +46,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     const [staffList, setStaffList] =useState([])
     const [checkName, setCheckName] = useState(false)
     const [checkStaffList, setCheckStaffList] = useState(false)
+    const [checkChecklists, setCheckChecklists]=useState(false)
     const dispatch = useAppDispatch()
     const pageNumber  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageNumber)
     const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)    
@@ -53,7 +54,8 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       let check: boolean = true
       if(taskName.trim() === '') {setCheckName(true)} else setCheckName(false)
       if(staffList.length === 0) {setCheckStaffList(true)} else setCheckStaffList(false)
-      if(taskName.trim() === '' || staffList.length === 0){
+      if(checklists.length === 0) {setCheckChecklists(true)} else setCheckChecklists(false)
+      if(taskName.trim() === '' || staffList.length === 0 || checklists.length === 0){
           check = false
       }
       return check;
@@ -237,7 +239,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       </ListItem>) }
     </List>}
     <Stack direction='row' spacing={2}>
-    <TextField value={inputChecklistValue} onKeyPress={e => {if(e.key === 'Enter' && inputChecklistValue.trim() !== '') handleAddChecklistItem()}}
+    <TextField helperText={checkChecklists && 'Checklists cannot be empty'} error={checkChecklists} value={inputChecklistValue} onKeyPress={e => {if(e.key === 'Enter' && inputChecklistValue.trim() !== '') handleAddChecklistItem()}}
     onChange={(e)=>setInputChecklistValue(e.target.value)} size='small'
     fullWidth placeholder='Add checklist' variant="outlined" />
     <Fab
@@ -245,7 +247,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 					aria-label="Add"
 					size="small"
 					color="secondary" onClick={handleAddChecklistItem}
-					disabled={inputChecklistValue === '' ? true : false}
+					disabled={inputChecklistValue.trim() === '' ? true : false}
 				>
 					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
 				</Fab>

@@ -20,7 +20,7 @@ const schema = yup.object().shape({
     // end: yup.date().required('End date is required').when('start', (start, schema) => {
     //     return start ? schema.min(start, 'End date must be later than start date') : schema;
     // }),
-    title: yup.string().required("Title is required"),
+    title: yup.string().trim().required("Title is required").max(200,"Maximum 200 characters"),
     start: yup.date().required('Start date is required'),
     end: yup.date().test(
         "is-greater",
@@ -294,7 +294,7 @@ export default function MealPlanDetailContent() {
                                     control={control}
                                     defaultValue={new Date()}
                                     render={({ field }) => (
-                                        <DatePicker
+                                        <DatePicker 
                                             {...field}
                                             className='my-10'
                                         />
@@ -307,12 +307,11 @@ export default function MealPlanDetailContent() {
                                 </Typography>
                                 <Controller
                                     name="end"
-                                    defaultValue={new Date()}
                                     control={control}
+                                    defaultValue={new Date()}
                                     render={({ field }) => (
                                         <>
                                             <DatePicker
-
                                                 {...field}
                                                 className='my-10'
                                             />
@@ -328,18 +327,14 @@ export default function MealPlanDetailContent() {
                                 name="title"
                                 defaultValue={plan.title ? plan.title : ""}
                                 control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <TextField
+                                render={({ field }) =>  <TextField
                                             {...field}
                                             className="mt-8 mb-16 w-[300px] "
                                             label="Title"
                                             variant="outlined"
                                             error={!!errors.title}
                                             helperText={errors?.title?.message as string}
-                                        />
-                                    </>
-                                )}
+                                        />}
 
                             />
                         </Box>
@@ -507,11 +502,7 @@ export default function MealPlanDetailContent() {
 
                                 </Box> */}
                         <div className='mt-10 mx-40 flex-1'>
-                            <Divider variant='inset'>
-                                <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu
-                                </Typography>
-
-                            </Divider>
+                                <Typography className="font-oleoScript text-40 justify-center flex">Menu</Typography>
                             <Typography variant='h4' className=" text-20 font-400   "> Menu name
                             </Typography>
                             <Controller
