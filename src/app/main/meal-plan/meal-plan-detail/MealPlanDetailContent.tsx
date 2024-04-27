@@ -68,7 +68,6 @@ export default function MealPlanDetailContent() {
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
-    const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
     const [sortedMenuMeal, setSortedMenuMeal] = useState<MenuMealType[]>([]);
     const [planCreated, setPlanCreated] = useState(false);
     const [menuCreated, setMenuCreated] = useState(false);
@@ -179,16 +178,15 @@ export default function MealPlanDetailContent() {
     }
         , [reset, plan]
     )
- 
+    // sort menu
     useEffect(() => {
-      if (plan?.menu?.menuMeals.length > 0) {
-        let sorted = [...plan?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
-        setSortedMenuMeal(sorted);
-      } else
-        setSortedMenuMeal(null);
+        if (plan?.menu?.menuMeals.length > 0) {
+            let sorted = [...plan?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
+            setSortedMenuMeal(sorted);
+        } else
+            setSortedMenuMeal(null);
     }, [plan?.menu?.menuMeals]);
-    
-    // Sử dụng sortedMenuMeal trong render
+
     useEffect(() => {
         return () => {
             dispatch(resetPlan());

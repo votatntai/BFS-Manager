@@ -209,11 +209,13 @@ export default function BirdCard(props: BirdProp) {
                                         </AccordionSummary>
                                         {meal?.mealItems?.map((item) => {
                                             return (
-                                                <AccordionDetails key={item.id} className="flex items-center border border-solid rounded-sm shadow-sm justify-between md:flex-row -mx-8 px-16 ">
+                                                <AccordionDetails key={item.id} 
+                                                className="flex items-center border border-solid rounded-sm shadow-sm justify-between md:flex-row -mx-8 px-16 ">
 
                                                     <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
                                                     <div className="flex items-center">
-                                                        <div className="flex items-center justify-end">     <Button
+                                                        <div className="flex items-center justify-end">  
+                                                           <Button
                                                             className="cursor-pointer "
                                                             onClick={
                                                                 () => {

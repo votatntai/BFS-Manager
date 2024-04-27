@@ -87,7 +87,6 @@ export const createPlan = createAppAsyncThunk<any, any>('mealPlanReducer/menus/c
     });
 export const createMealItems = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMealItems',
     async (dataItem) => {
-        console.log("testing api",dataItem.data)
         const response = await axios.post('/meal-items', dataItem.data);
         const data = (await response.data);
         return {

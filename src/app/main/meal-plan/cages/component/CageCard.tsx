@@ -41,7 +41,7 @@ export default function CageCard(props: CardProps) {
                     </div>
                     <div>
                         <Typography display="inline" className='font-bold' variant="body2" color="text.secondary">
-                            Size:{" "}      
+                            Size:{" "}
                         </Typography>
                         <Typography display="inline" variant="body2" color="text.secondary">
                             {cage.height} x{cage.width} x {cage.depth}

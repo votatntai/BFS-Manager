@@ -22,6 +22,7 @@ type CalendarHeaderProps = {
 /**
  * The calendar header.
  */
+
 function CalendarHeader(props: CalendarHeaderProps) {
 	const { calendarRef, currentDate, onToggleLeftSidebar } = props;
 	const navigate = useNavigate();

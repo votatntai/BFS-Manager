@@ -122,7 +122,7 @@ function Calendar() {
 	console.log("tasks" , tasks)
 	const calendarRef = useRef<FullCalendar>(null);
 	const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
-	const { cageId } = useParams();
+	const { id } = useParams();
 	useEffect(() => {
 		dispatch(getTaskData());
 	}, [dispatch]);

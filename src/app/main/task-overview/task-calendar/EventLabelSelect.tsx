@@ -1,4 +1,4 @@
-import InputLabel from '@mui/material/InputLabel';
+																																																	import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -18,7 +18,7 @@ export type EventLabelSelectProps = {
  */
 const EventLabelSelect = forwardRef<HTMLElement, EventLabelSelectProps>((props, ref) => {
 	const { value, onChange, className } = props;
-
+ 
 	const labels = useAppSelector(selectLabels);
 
 	const handleChange = (event: SelectChangeEvent) => {

@@ -77,7 +77,6 @@ function CalendarViewMenu(props: CalendarViewMenuProps) {
 					<MenuItem
 						key={name}
 						onClick={() => {
-						
 							calendarApi().changeView(name);
 							handleClose();
 						}}

@@ -33,7 +33,7 @@ type CalendarViewMenuProps = {
 /**
  * The calendar view menu.
  */
-function CalendarViewMenu(props: CalendarViewMenuProps) {
+function 																																																																																																			=(props: CalendarViewMenuProps) {
 	const { className, calendarApi, currentDate } = props;
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -77,7 +77,6 @@ function CalendarViewMenu(props: CalendarViewMenuProps) {
 					<MenuItem
 						key={name}
 						onClick={() => {
-						
 							calendarApi().changeView(name);
 							handleClose();
 						}}
