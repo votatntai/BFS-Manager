@@ -25,7 +25,6 @@ const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
     },
     "status": object.status
   }) 
-  const [localFile, setLocalFile] = useState(null) //để render image push từ local lên
   const [file, setFile] =useState(object.thumbnailUrl)
   const [checkName, setCheckName] = useState(false)
   const [checkThumbnail, setCheckThumbnail] = useState(false)
@@ -42,7 +41,7 @@ const EditModal = ({show,handleClose, object, setOpenSuccessSnackbar, setOpenFai
       if(food.thumbnail === '') { setCheckThumbnail(true)} else setCheckThumbnail(false)
       if(food.unitOfMeasurementId === null) { setCheckUnit(true)} else setCheckUnit(false)
       if(food.status === '' || food.status === null) { setcheckStatus(true)} else setcheckStatus(false)
-      if(food.status === '' || food.status === null || food.name.trim() === '' || food.foodCategoryId.value === '' || food.thumbnail === '' || food.unitOfMeasurementId === null){
+      if(food.status === '' || food.status === null || food.name.trim() === '' || food.foodCategoryId.value === '' || food.thumbnail === '' || food.thumbnail === null || food.unitOfMeasurementId === null){
           check = false
       }
       return check;

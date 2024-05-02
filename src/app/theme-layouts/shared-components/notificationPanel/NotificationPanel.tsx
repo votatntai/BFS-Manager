@@ -66,21 +66,17 @@ function NotificationPanel() {
 
 		enqueueSnackbar(item.title, {
 			key: item.id,
-
-			// autoHideDuration: 3000,
+			autoHideDuration: 3000,
 			content: (
 				<NotificationTemplate
 					item={item}
-					onClose={() => {
-						closeSnackbar(item.id);
-					}}
 				/>
 			)
 		});
 
 		dispatch(addNotification(item));
 	}
-
+	console.log(notifications)
 	return (
 		<StyledSwipeableDrawer
 			open={state}
@@ -101,20 +97,12 @@ function NotificationPanel() {
 					<div className="flex flex-col">
 						<div className="mb-36 flex items-end justify-between pt-36">
 							<Typography className="text-28 font-semibold leading-none">Notifications</Typography>
-							<Typography
-								className="cursor-pointer text-12 underline"
-								color="secondary"
-								onClick={handleDismissAll}
-							>
-								dismiss all
-							</Typography>
 						</div>
 						{notifications.map((item) => (
 							<NotificationCard
 								key={item.id}
 								className="mb-16"
 								item={item}
-								onClose={handleDismiss}
 							/>
 						))}
 					</div>

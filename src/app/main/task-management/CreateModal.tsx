@@ -67,12 +67,13 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
         await dispatch(addTask({
           "title": taskName,
           "description": taskDescription,
-          "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
+          "managerId": localStorage.getItem("accessToken"),
           "startAt": taskBegin,
           "deadline": taskDeadline,
           "status": "To do",
           "assigneeIds": staffList,
           "checkLists": checklists,
+          "workingHours": workingHours,
           "repeats": [],
         }))
         // console.log({
@@ -133,10 +134,8 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       const workingHoursDailyOfTask = Math.ceil(workingHours / daysBetween);
       if ((workingHoursDailyOfTask/totalStaff) > 8) {
         setWarning(true);
-        // console.log('overtime')
       } else {
         setWarning(false);
-        // console.log('ổn')
       }
     }, [staffList, workingHours, taskBegin, taskDeadline]);
     return <Dialog open={show} classes={{
