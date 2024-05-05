@@ -1,48 +1,64 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getBirds,updateBird,createBird } from "src/app/auth/services/api/callAPI";
+import axios from "axios";
+import { getBirds, updateBird, createBird } from "src/app/auth/services/api/callAPI";
 export const getBirdData = createAsyncThunk('birdReducer/getBirds', async (object: Object) => {
 	try {
-	  const response = await getBirds(object);
-	  return response;
+		const response = await getBirds(object);
+		return response;
 	} catch (error) {
-	  console.log(error);
+		console.log(error);
 	}
-  });
-export const editBird = createAsyncThunk('birdReducer/editBird', async (object: {id:string, formData: FormData}) => {
+});
+//edit
+export const editBird = createAsyncThunk('birdReducer/editBird', async (object: { id: string, formData: FormData }) => {
 	try {
-	  const response = await updateBird(object.id, object.formData);
-	  return response;
+		const response = await updateBird(object.id, object.formData);
+		return response;
 	} catch (error) {
-	  console.log(error);
+		console.log(error);
 	}
-  });
-
+});
+// add 
 export const addBird = createAsyncThunk('birdReducer/addBird', async (formData: FormData) => {
 	try {
-	  const response = await createBird(formData);
-	  return response;
+		const response = await createBird(formData);
+		return response;
 	} catch (error) {
-	  console.log(error);
+		console.log(error);
 	}
-  });
-
+});
+export const createMealItems = createAsyncThunk<any, any>('birdReducer/createMealItems',
+	async (dataItem) => {
+		const response = await axios.post('/meal-items', dataItem.data);
+		const data = (await response.data);
+		return {
+			data: data,
+			birdId: dataItem.birdId
+		};
+	});
+// delete
 const birdSlice = createSlice({
 	name: 'birdReducer',
 	initialState: {
-		searchText:'',
-        birds: {
-			pagination:{
+		searchText: '',
+		birds: {
+			pagination: {
 				"pageNumber": 0,
 				"pageSize": 8,
 				"totalRow": 0
 			},
 			data: []
 		},
-    },
+		mealItemDialog: {
+			mealId: "",
+			birdId: "",
+			isOpen: false
+		},
+	},
 	reducers: {
-		setSearchText: (state,action)=>{
-            state.searchText = action.payload as string
-        },
+		setSearchText: (state, action) => {
+			state.searchText = action.payload as string
+		},
 		setPaginPageNumber: (state, action) => {
 			state.birds.pagination.pageNumber = action.payload as number
 		},
@@ -52,17 +68,36 @@ const birdSlice = createSlice({
 		setPaginTotalRow: (state, action) => {
 			state.birds.pagination.totalRow = action.payload as number
 		},
+		setMealitemsDialog: (state, action) => {
+			state.mealItemDialog.isOpen = action.payload
+		},
+		setBirdId: (state, action) => {
+			state.mealItemDialog.birdId = action.payload
+		},
+		setMealId: (state, action) => {
+			state.mealItemDialog.mealId = action.payload
+		},
+
 	},
 	extraReducers: (builder) => {
 		builder
-            .addCase(getBirdData.fulfilled, (state, action: any) => {
-                state.birds = action.payload;
+			.addCase(getBirdData.fulfilled, (state, action: any) => {
+				state.birds = action.payload;
+			})
+			.addCase(editBird.fulfilled, (state, action: any) => { })
+			.addCase(addBird.fulfilled, (state, action: any) => { })
+			.addCase(createMealItems.fulfilled, (state, action) => {
+                const data = state.birds.data.find(bird => bird.id == action.payload.birdId)
+                const menuMeal = data?.menu?.menuMeals.find(meal => meal?.id == action.meta.arg.data.menuMealId)
+                menuMeal.mealItems.push(action.payload.data)
             })
-            .addCase(editBird.fulfilled, (state, action: any) => {})
-            .addCase(addBird.fulfilled, (state, action: any) => {})
 	}
 });
 
-export const {setSearchText,setPaginPageNumber,setPaginPageSize,setPaginTotalRow} = birdSlice.actions
+export const { setBirdId, setMealId, setMealitemsDialog, setSearchText, setPaginPageNumber, setPaginPageSize, setPaginTotalRow } = birdSlice.actions
+export const selectMealItemsDialog = (state) => state.birdReducer?.birdSlice.mealItemDialog.isOpen
+export const selectBirdId = (state) => state.birdReducer?.birdSlice.mealItemDialog.birdId
+export const selectMealId = (state) => state.birdReducer?.birdSlice.mealItemDialog.mealId
+
 const birdReducer = birdSlice.reducer;
 export default birdReducer

@@ -16,12 +16,9 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useAppDispatch } from 'app/store';
 import { useEffect, useState } from 'react';
-import CustomizedSwitches from '../../component/button/CustomizedSwitches';
-import MealItemDialog from '../../dialogs/MealItemDialog';
-import { addMealBirdId, addMealId, createBirdMenu, createBirdMenuMeal, removeBirdItem, setMealitemsDialog, updateBird, updateMealItem } from '../../store/menusSlice';
-import { BirdType } from '../../type/MenuType';
-import _ from 'lodash';
-import { MenuMealType } from '../../../calendar/types/PlanType';
+import { menuMealSampleType, menuSampleType } from 'src/app/main/meal-plan/meal-plan-detail/type/MenuType';
+import { addMealId, addMenuId, removeMenuItem, setMealitemsDialog, updateMealItem } from '../store/menuSamplesSlice';
+
 const ExpandMore = styled((props: any) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -67,8 +64,8 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
     padding: theme.spacing(2),
     borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
-type BirdProp = {
-    bird: Partial<BirdType>
+type MenuSampleProp = {
+    menuSample: Partial<menuSampleType>
 }
 const menuMeals = [
     {
@@ -92,76 +89,75 @@ const menuMeals = [
         to: "22:00:00"
     }
 ]
-export default function BirdCard(props: BirdProp) {
+export default function MenuSampleCard(props: MenuSampleProp) {
     const [expanded, setExpanded] = useState(false);
     const [accordionExpend, setAccordionExpend] = useState('panel1');
     const [createdMenu, setCreatedMenu] = useState(false);
-    const [sortedMenuMeal, setSortedMenuMeal] = useState<MenuMealType[]>([]);
+    const [sortedMenuMeal, setSortedMenuMeal] = useState<menuMealSampleType[]>([]);
 
     const dispatch = useAppDispatch()
-    const { bird } = props
+    const { menuSample } = props
     const handleExpandClick = () => {
         setExpanded(!expanded);
     }
     useEffect(
         () => {
-            if (bird.menu?.menuMeals.length > 0) {
-                let sorted = [...bird?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
+            if (menuSample?.menuMealSamples.length > 0) {
+                let sorted = [...menuSample?.menuMealSamples].sort((a, b) => a.from.localeCompare(b.from));
                 setSortedMenuMeal(sorted);
             } else
                 setSortedMenuMeal(null);
         },
-        [bird.menu?.menuMeals]
+        [menuSample.menuMealSamples]
     )
 
-    useEffect(() => {
-        if (bird.menu?.id) {
-            if (bird.menu?.menuMeals?.length == 0 || !bird.menu?.menuMeals) {
-                let promises = menuMeals.map((meal, index) => {
-                    const info = {
-                        menuId: bird.menu.id,
-                        name: meal.name,
-                        from: meal.from,
-                        to: meal.to
-                    }
-                    const menuMealData = {
-                        data: info,
-                        birdId: bird.id
-                    }
-                    return dispatch(createBirdMenuMeal(menuMealData));
-                });
+    // useEffect(() => {
+    //     // if (menuSample?.id) {
+    //     //     if (menuSample?.menuMeals?.length == 0 || !menuSample?.menuMeals) {
+    //     //         let promises = menuMeals.map((meal, index) => {
+    //     //             const info = {
+    //     //                 menuId: menuSample.id,
+    //     //                 name: meal.name,
+    //     //                 from: meal.from,
+    //     //                 to: meal.to
+    //     //             }
+    //     //             const menuMealData = {
+    //     //                 data: info,
+    //     //                 birdId: bird.id
+    //     //             }
+    //     //             return dispatch(createBirdMenuMeal(menuMealData));
+    //     //         });
 
-                Promise.all(promises)
-                    .then(() => console.log("All meals have been created"))
-                    .catch((error) => console.error(error))
-            }
-        }
-        if (createdMenu) {
-            let data = new FormData();
-            data.append('menuId', bird.menu?.id);
-            const birdData = {
-                itemId: bird.id,
-                newItem: data
-            }
-            dispatch(updateBird(birdData))
-        }
-    }
-        , [bird.menu?.id])
-    useEffect(() => {
-        if (!bird.menu?.id) {
-            const data = {
-                item: {
-                    name: `${bird.species.name}-${bird.careMode.name} menu`
-                },
-                birdId: bird.id
-            };
-            dispatch(createBirdMenu(data))
-            setCreatedMenu(true)
+    //     //         Promise.all(promises)
+    //     //             .then(() => console.log("All meals have been created"))
+    //     //             .catch((error) => console.error(error))
+    //     //     }
+    //     // }
+    //     // if (createdMenu) {
+    //     //     let data = new FormData();
+    //     //     data.append('menuId', menuSample?.id);
+    //     //     const birdData = {
+    //     //         itemId: bird.id,
+    //     //         newItem: data
+    //     //     }
+    //     //     dispatch(updateBird(birdData))
+    //     // }
+    // }
+    //     , [menuSample?.id])
+    // useEffect(() => {
+    //     if (!menuSample?.id) {
+    //         const data = {
+    //             item: {
+    //                 name: `${bird.species.name}-${bird.careMode.name} menu`
+    //             },
+    //         };
+    //         dispatch(createBirdMenu(data))
+    //         setCreatedMenu(true)
 
-        }
-    }
-        , [])
-    // bird.menu?.menuMeals.sort((a, b) => ('' + a.from).localeCompare(b.from));
+    //     }
+    // }
+    //     , [])
+    // menuSample?.menuMeals.sort((a, b) => ('' + a.from).localeCompare(b.from));
     const handleChange = (panel) => (event, newExpanded) => {
         setAccordionExpend(newExpanded ? panel : false);
     };
@@ -172,27 +168,26 @@ export default function BirdCard(props: BirdProp) {
         >
             <CardHeader
                 avatar={
-                    (<Avatar src={bird.thumbnailUrl} />)
+                    (<Avatar src={menuSample?.species.thumbnailUrl  } />
+                    )
                 }
                 action={
                     <IconButton >
                     </IconButton>
                 }
-                title={bird.name}
+                title={menuSample?.name}
             />
             <Divider variant='inset' />
             <CardContent className="h-52 flex items-center">
                 <Chip
-                    // avatar={<Avatar  src={bird?.species.thumbnailUrl} />}
-                    label={bird?.species.name} variant='filled'>
+                    label={menuSample?.species.name} variant='filled'>
                 </Chip>
-                <Chip label={bird?.careMode.name} variant='filled'
+                <Chip label={menuSample?.careMode.name} variant='filled'
                 >
                 </Chip>
             </CardContent>
             <Divider variant='inset' />
             <CardActions disableSpacing >
-                <CustomizedSwitches bird={bird} />
                 <ExpandMore
                     expand={expanded}
                     onClick={handleExpandClick}
@@ -213,7 +208,7 @@ export default function BirdCard(props: BirdProp) {
                                         <AccordionSummary>
                                             <Typography>{meal.name} </Typography>
                                         </AccordionSummary>
-                                        {meal?.mealItems?.map((item) => {
+                                        {meal?.mealItemSamples?.map((item) => {
                                             return (
                                                 <AccordionDetails key={item.id} className="flex items-center border border-solid rounded-sm shadow-sm justify-between md:flex-row -mx-8 px-16 ">
 
@@ -226,7 +221,7 @@ export default function BirdCard(props: BirdProp) {
                                                                     dispatch(updateMealItem({
                                                                         itemId: item.id,
                                                                         mealId: meal.id,
-                                                                        birdId: bird.id,
+                                                                        menuId: menuSample.id,
                                                                         newItem: {
                                                                             quantity: item.quantity
                                                                         },
@@ -246,7 +241,7 @@ export default function BirdCard(props: BirdProp) {
                                                                         dispatch(updateMealItem({
                                                                             itemId: item.id,
                                                                             mealId: meal.id,
-                                                                            birdId: bird.id,
+                                                                            menuId: menuSample.id,
                                                                             newItem: {
                                                                                 quantity: item.quantity
                                                                             },
@@ -259,10 +254,10 @@ export default function BirdCard(props: BirdProp) {
                                                             className="cursor-pointer"
                                                             onClick={
                                                                 () => {
-                                                                    dispatch(removeBirdItem({
+                                                                    dispatch(removeMenuItem({
                                                                         itemId: item.id,
                                                                         mealId: meal.id,
-                                                                        birdId: bird.id
+                                                                        menuId: menuSample.id
                                                                     }))
                                                                 }
                                                             }
@@ -277,11 +272,10 @@ export default function BirdCard(props: BirdProp) {
                                         <Button
                                             onClick={() => {
                                                 dispatch(addMealId(meal.id))
-                                                dispatch(addMealBirdId(bird.id))
+                                                dispatch(addMenuId(menuSample.id))
                                                 dispatch(setMealitemsDialog(true))
                                             }}
                                         ><AddCircleOutlineRounded /></Button>
-                                        <MealItemDialog />
                                     </Accordion>
                                 )
                             }
