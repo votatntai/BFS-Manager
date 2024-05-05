@@ -106,6 +106,7 @@ import instance from 'src/app/auth/services/api/customAxios';
             </Button>
         </motion.div>
 </div>
-</div>)
+</div>
+)
 }
 export default BirdHeader
