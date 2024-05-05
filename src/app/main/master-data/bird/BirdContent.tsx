@@ -21,9 +21,13 @@ const BirdContent = ()=>{
     const birds  = useAppSelector((state) => state.birdReducer.birdSlice.birds.data)
     const pageNumber  = useAppSelector((state) => state.birdReducer.birdSlice.birds.pagination.pageNumber)
     const pageSize  = useAppSelector((state) => state.birdReducer.birdSlice.birds.pagination.pageSize)
+    const areaValue = useAppSelector(state =>  state.birdReducer.birdSlice.area)
+    const cageValue = useAppSelector(state =>  state.birdReducer.birdSlice.cage)
+    
     useEffect(()=>{
         dispatch(getBirdData({pageNumber: pageNumber, pageSize: pageSize}))
-    },[pageNumber,pageSize])
+        console.log(areaValue, cageValue)
+    },[pageNumber,pageSize,areaValue,cageValue])
     
     return <motion.div
     className="items-center flex grid grid-cols-1  sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-32 mt-32 sm:mt-40 ms-32"

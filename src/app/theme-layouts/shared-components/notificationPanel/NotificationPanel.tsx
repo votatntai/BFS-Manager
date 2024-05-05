@@ -76,7 +76,7 @@ function NotificationPanel() {
 
 		dispatch(addNotification(item));
 	}
-	console.log(notifications)
+	// console.log(notifications)
 	return (
 		<StyledSwipeableDrawer
 			open={state}

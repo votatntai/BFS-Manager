@@ -30,6 +30,8 @@ const birdSlice = createSlice({
 	name: 'birdReducer',
 	initialState: {
 		searchText:'',
+		area: {label: 'All', value:''},
+		cage: {label: 'All', value:''},
         birds: {
 			pagination:{
 				"pageNumber": 0,
@@ -43,6 +45,8 @@ const birdSlice = createSlice({
 		setSearchText: (state,action)=>{
             state.searchText = action.payload as string
         },
+		setArea: (state, action) =>{state.area = action.payload},
+		setCage: (state, action) =>{state.cage = action.payload},
 		setPaginPageNumber: (state, action) => {
 			state.birds.pagination.pageNumber = action.payload as number
 		},
@@ -63,6 +67,6 @@ const birdSlice = createSlice({
 	}
 });
 
-export const {setSearchText,setPaginPageNumber,setPaginPageSize,setPaginTotalRow} = birdSlice.actions
+export const {setSearchText,setArea, setCage,setPaginPageNumber,setPaginPageSize,setPaginTotalRow} = birdSlice.actions
 const birdReducer = birdSlice.reducer;
 export default birdReducer

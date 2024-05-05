@@ -144,16 +144,10 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between'>
       Create
-      <FormControlLabel control={<Checkbox checked={repeat} onChange={(e) => setRepeat(e.target.checked )}  />} label="Repeat" />
       </Stack>
     </DialogTitle>
     <DialogContent>
-      {repeat && <Stack direction='row' spacing={4} className='pt-5 mb-8'>
-      <Autocomplete disablePortal value={repeatObject.type}  onChange={(e, v) => setRepeatObject({ ...repeatObject, type: v })} options={['daily','monthly']} disabled={!repeat} sx={{width: 200}}
-          size='small' clearIcon={null}  renderInput={(params) => <TextField {...params} label="Repeat" />} />  
-      <FormControlLabel control={<TextField value={repeatObject.time} onChange={e => setRepeatObject({ ...repeatObject, time: parseInt(e.target.value)}) }
-     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'6rem', marginRight:'1rem'}}/>} label="time(s)" labelPlacement='end' />
-      </Stack>}
+     
       <Stack direction='row' spacing={2} className='pt-5'>
       <TextField value={taskName} onChange={(e)=> setTaskName(e.target.value)} helperText={checkName ? "This field is required" : false} 
       error={checkName} sx={{width:'40%'}} placeholder='Enter task title' label="Title" variant="outlined"/>
@@ -251,40 +245,6 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
 				</Fab>
     </Stack>
-    
-    <div className="flex items-center mt-16 mb-12">
-							<FuseSvgIcon size={20}>heroicons-outline:annotation</FuseSvgIcon>
-							<Typography className="font-semibold text-16">Feedback</Typography>
-						</div>
-            {feedbacks.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-       {feedbacks.map((item,index) => <ListItem key={index}>
-                    <Stack direction='row' spacing={5} alignItems="center">
-                      <Typography sx={{width:'28rem'}} className="text-14">{item.question}</Typography>
-                      <Typography sx={{width:'15rem'}} className="text-14">{item.positive ? 'Positive question' : 'Negative question'}</Typography>
-                      <Typography sx={{width:'13rem'}} className="text-14">Severity level {item.severity}</Typography>
-                      <IconButton onClick={()=>handleDeleteFeedbakItem(index)}>
-                     <FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
-                    </IconButton>
-                    </Stack>
-      </ListItem>)}
-    </List>}
-    <Stack direction='row' spacing={4}>
-    <TextField sx={{width:'40rem'}} value={inputFeedbackValue.question} onKeyPress={e => {if(e.key === 'Enter' && inputFeedbackValue.question.trim() !== '') handleAddFeedbackItem()}}
-    onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, question: e.target.value })} size='small' placeholder='Add question' variant="outlined" />
-    <FormControlLabel control={<Checkbox checked={inputFeedbackValue.positive} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, positive: e.target.checked })}  />} label="Positive" />
-    <FormControlLabel control={<TextField value={inputFeedbackValue.severity} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, severity: parseInt(e.target.value) })} 
-     type={'number'} size='small' inputProps={{ min: 0, max: 5 }}
-     sx={{width:'6rem', marginRight:'1rem'}}/>} label="Severity" labelPlacement='end' />
-    <Fab
-					className="mx-4"
-					aria-label="Add"
-					size="small"
-					color="secondary" onClick={handleAddFeedbackItem}
-					disabled={inputFeedbackValue.question.trim() === '' ? true : false}
-				>
-					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
-				</Fab>
-    </Stack>
     </div>
     </DialogContent>
     <DialogActions>
@@ -295,6 +255,5 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     </DialogActions>
   </Dialog>
 
-}
-
+       }
 export default CreateModal
