@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFailSnackbar})=>{
   const [assignee, setAssignee] = useState(object.assignStaffs.map(item => item.staff))
@@ -30,7 +31,8 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
     description: object.description,
     deadline: object.deadline,
     status: object.status,
-    startAt: object.startAt
+    startAt: object.startAt,
+    workingHours: object.workingHours
   }) 
   
   const [value, setValue] =useState(object.status)
@@ -68,7 +70,22 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
       }
     }
     useEffect(()=>{loadStaffs()},[])
-    
+    const [warning, setWarning] =useState(false)
+    useEffect(() => {
+      const totalStaff = assignee.length
+      const millisecondsPerDay = 1000 * 60 * 60 * 24; // Số milliseconds trong một ngày
+      const millisecondsBetween = new Date(task.deadline).getTime() - new Date(task.startAt).getTime(); // Số milliseconds giữa hai ngày
+      const daysBetween = Math.ceil(millisecondsBetween / millisecondsPerDay); // Số ngày giữa hai ngày
+      const workingHoursDailyOfTask = Math.ceil(task.workingHours / daysBetween);
+      if ((workingHoursDailyOfTask/totalStaff) > 8) {
+        setWarning(true);
+        // console.log('ổn\'t')
+      } else {
+        setWarning(false);
+        // console.log('ổn')
+      }
+    }, [assignee, task.deadline, task.startAt, task.workingHours]);
+
     return <Dialog classes={{
       paper: 'max-w-lg w-full m-8 sm:m-24'
   }}
@@ -134,7 +151,20 @@ const EditModal = ({show,handleClose,object, setOpenSuccessSnackbar, setOpenFail
 						<div className="flex items-center mt-16 mb-12">
 							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Staffs</Typography>
-						</div>
+              <FormControlLabel className='me-28' control={<TextField  value={task.workingHours} onChange={e => {
+        const value = e.target.value.trim(); // Trim any leading or trailing spaces
+        if (value === '') {
+          setTask(prev => ({...prev, workingHours: 1}))
+        } else {
+          const parsedValue = parseInt(value); // Parse the input value as an integer
+          if (!isNaN(parsedValue)) {
+            setTask(prev => ({...prev, workingHours: parsedValue}))
+          }
+        }
+      }}
+     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'10rem', marginLeft:'1rem'}}/>} label="Working hours" labelPlacement='start' />
+						{assignee.length >0 && (warning ? <Button variant="contained" style={{pointerEvents: "none"}} color='warning'>Staffs overtime</Button> : <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Staffs within schedule</Button>)}
+            </div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs.filter(staff => !assignee.some(a => a.id === staff.id))}
             defaultValue={assignee} getOptionLabel={(option) => option.name}
               filterSelectedOptions

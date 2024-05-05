@@ -1,7 +1,7 @@
 import { AddCircle, AddCircleOutlineRounded, DeleteForever, RemoveCircle } from '@mui/icons-material';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Button } from "@mui/material";
+import { Button, Chip, Divider } from "@mui/material";
 import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
@@ -104,11 +104,11 @@ export default function BirdCard(props: BirdProp) {
         setExpanded(!expanded);
     }
     useEffect(
-        ()=>{
+        () => {
             if (bird.menu?.menuMeals.length > 0) {
                 let sorted = [...bird?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
                 setSortedMenuMeal(sorted);
-              } else
+            } else
                 setSortedMenuMeal(null);
         },
         [bird.menu?.menuMeals]
@@ -180,11 +180,17 @@ export default function BirdCard(props: BirdProp) {
                 }
                 title={bird.name}
             />
-            <CardContent className="h-52 overflow-auto">
-                <Typography variant="body2" color="text.secondary">
-                    {bird?.species.name} - {bird?.careMode.name}
-                </Typography>
+            <Divider variant='inset' />
+            <CardContent className="h-52 flex items-center">
+                <Chip
+                    // avatar={<Avatar  src={bird?.species.thumbnailUrl} />}
+                    label={bird?.species.name} variant='filled'>
+                </Chip>
+                <Chip label={bird?.careMode.name} variant='filled'
+                >
+                </Chip>
             </CardContent>
+            <Divider variant='inset' />
             <CardActions disableSpacing >
                 <CustomizedSwitches bird={bird} />
                 <ExpandMore
@@ -198,7 +204,7 @@ export default function BirdCard(props: BirdProp) {
                 <CardContent>
                     {(sortedMenuMeal && sortedMenuMeal?.length > 0) ? (
                         sortedMenuMeal.map(
-                                (meal, index) => {
+                            (meal, index) => {
                                 return (
                                     <Accordion
                                         key={index}
@@ -248,7 +254,7 @@ export default function BirdCard(props: BirdProp) {
                                                                         }))
                                                                     }
                                                                 }
-                                                            ><AddCircle /></Button></div>   
+                                                            ><AddCircle /></Button></div>
                                                         <Button
                                                             className="cursor-pointer"
                                                             onClick={

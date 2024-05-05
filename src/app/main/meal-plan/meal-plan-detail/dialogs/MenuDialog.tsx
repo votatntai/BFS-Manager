@@ -54,7 +54,7 @@ export default function MenuDialog(props) {
                                                             const newMealItems = {
                                                                 menuMealId: mornigId.id,
                                                                 foodId: meal.mealItemSamples[index].food.id,
-                                                                quantity: 1,
+                                                                quantity: meal.mealItemSamples[index].quantity,
                                                                 order: index
                                                             }
                                                             const mealItemData = {
@@ -70,7 +70,7 @@ export default function MenuDialog(props) {
                                                             const newMealItems = {
                                                                 menuMealId: lunchId.id,
                                                                 foodId: meal.mealItemSamples[index].food.id,
-                                                                quantity: 1,
+                                                                quantity: meal.mealItemSamples[index].quantity,
                                                                 order: index
                                                             }
                                                             const mealItemData = {
@@ -86,7 +86,7 @@ export default function MenuDialog(props) {
                                                             const newMealItems = {
                                                                 menuMealId: afternoonId.id,
                                                                 foodId: meal.mealItemSamples[index].food.id,
-                                                                quantity: 1,
+                                                                quantity: meal.mealItemSamples[index].quantity,
                                                                 order: index
                                                             }
                                                             const mealItemData = {
@@ -102,7 +102,7 @@ export default function MenuDialog(props) {
                                                             const newMealItems = {
                                                                 menuMealId: eveningId.id,
                                                                 foodId: meal.mealItemSamples[index].food.id,
-                                                                quantity: 1,
+                                                                quantity: meal.mealItemSamples[index].quantity,
                                                                 order: index
                                                             }
                                                             const mealItemData = {

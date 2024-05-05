@@ -34,7 +34,7 @@ const TicketHeader = ()=>{
              value={value}
         onChange={(event: any, newValue: string | null) => {
           setValue(newValue);
-        }}
+        }} disableClearable
         options={['Processing','Rejected','Work finished','Done']}
         sx={{ width: '15rem' }}
         renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Status" />}
@@ -43,7 +43,7 @@ const TicketHeader = ()=>{
              value={type}
         onChange={(event: any, newValue: string | null) => {
           setType(newValue);
-        }}
+        }} disableClearable
         options={['All','Food','Bird', 'Cage', 'Personnel']}
         sx={{ width: '15rem' }}
         renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="Type" />}

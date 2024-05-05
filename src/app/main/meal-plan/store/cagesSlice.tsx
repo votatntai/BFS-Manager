@@ -7,7 +7,7 @@ import { CagesType, CageType } from '../cages/type/CageType';
 
 export type AppRootStateType = RootStateType<cagesSliceType>;
 
-export const getCage = createAppAsyncThunk<any,any>('mealPlanReducer/cages/getCage', async (id) => {
+export const getCage = createAppAsyncThunk<any, any>('mealPlanReducer/cages/getCage', async (id) => {
     const response = await axios.get(`/cages/${id}`);
     const data = (await response.data);
     return data;
@@ -20,10 +20,12 @@ export const getCages = createAppAsyncThunk<CagesType>('mealPlanReducer/cages/ge
 
 const cagesAdapter = createEntityAdapter<CageType>({});
 
-export const { selectAll: selectCages, selectById: selectCageByid } = cagesAdapter.getSelectors(
-    (state: AppRootStateType) => state.mealPlanReducer.cages
-
-);
+export const { 
+    selectAll: selectCages,
+    selectById: selectCageByid } =
+     cagesAdapter.getSelectors(
+        (state: AppRootStateType) => state.mealPlanReducer.cages
+    );
 
 const initialState = cagesAdapter.getInitialState({
     searchText: '',
@@ -49,8 +51,8 @@ export const cagesSlice = createSlice({
                 state.searchText = '';
             })
             .addCase(getCage.fulfilled, (state, action) => {
-             state.data=action.payload
-                
+                state.data = action.payload
+
             })
 
 

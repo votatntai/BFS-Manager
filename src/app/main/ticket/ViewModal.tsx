@@ -114,7 +114,7 @@ ticket.priority.toLowerCase() === 'medium' ? 'warning' : 'error'}>{ticket.priori
         </Stack>
         <Typography><b>Solver reply:</b> {ticket.resultDescription === null ? 'A staff is processing' : ticket.resultDescription}</Typography>
         <Typography><b>Solver's picture:</b> {ticket.resultImage === null && 'A staff is processing'}</Typography>
-        {ticket.resultImage !==null && <img src={URL.createObjectURL(ticket.resultImage)} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
+        {ticket.resultImage !== null && <img src={ticket.resultImage} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
         <Typography><b>Problem's picture:</b></Typography>
         {file && <img src={file} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
     </Stack>

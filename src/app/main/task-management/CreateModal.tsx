@@ -26,7 +26,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     const [taskBegin, setTaskBegin] = useState(new Date())
     const [taskDeadline, setTaskDeadline] = useState(() => {
       const deadline = new Date(taskBegin);
-      deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+      deadline.setDate(deadline.getDate() + 1);
       return deadline;
     });
     const [inputChecklistValue, setInputChecklistValue] =useState('')
@@ -35,6 +35,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       "type": "daily",
       "time": 1,
     })
+    const [workingHours, setWorkingHours] = useState(1)
     const [checklists, setChecklists] =useState([])
     const [feedbacks, setFeedbacks] =useState([])
     const [inputFeedbackValue, setInputFeedbackValue] =useState({
@@ -45,6 +46,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     const [staffList, setStaffList] =useState([])
     const [checkName, setCheckName] = useState(false)
     const [checkStaffList, setCheckStaffList] = useState(false)
+    const [checkChecklists, setCheckChecklists]=useState(false)
     const dispatch = useAppDispatch()
     const pageNumber  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageNumber)
     const pageSize  = useAppSelector((state) => state.taskManagementReducer.taskManagement.taskList.pagination.pageSize)    
@@ -52,7 +54,8 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       let check: boolean = true
       if(taskName.trim() === '') {setCheckName(true)} else setCheckName(false)
       if(staffList.length === 0) {setCheckStaffList(true)} else setCheckStaffList(false)
-      if(taskName.trim() === '' || staffList.length === 0){
+      if(checklists.length === 0) {setCheckChecklists(true)} else setCheckChecklists(false)
+      if(taskName.trim() === '' || staffList.length === 0 || checklists.length === 0){
           check = false
       }
       return check;
@@ -64,12 +67,13 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
         await dispatch(addTask({
           "title": taskName,
           "description": taskDescription,
-          "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
+          "managerId": localStorage.getItem("accessToken"),
           "startAt": taskBegin,
           "deadline": taskDeadline,
           "status": "To do",
           "assigneeIds": staffList,
           "checkLists": checklists,
+          "workingHours": workingHours,
           "repeats": [],
         }))
         // console.log({
@@ -120,22 +124,30 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       }
     }
     useEffect(()=>{loadStaffs()},[])
+
+    const [warning, setWarning] =useState(false)
+    useEffect(() => {
+      const totalStaff = staffList.length
+      const millisecondsPerDay = 1000 * 60 * 60 * 24; // Số milliseconds trong một ngày
+      const millisecondsBetween = taskDeadline.getTime() - taskBegin.getTime(); // Số milliseconds giữa hai ngày
+      const daysBetween = Math.ceil(millisecondsBetween / millisecondsPerDay); // Số ngày giữa hai ngày
+      const workingHoursDailyOfTask = Math.ceil(workingHours / daysBetween);
+      if ((workingHoursDailyOfTask/totalStaff) > 8) {
+        setWarning(true);
+      } else {
+        setWarning(false);
+      }
+    }, [staffList, workingHours, taskBegin, taskDeadline]);
     return <Dialog open={show} classes={{
         paper: 'max-w-lg w-full m-8 sm:m-24'
     }} onClose={handleClose} >
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between'>
       Create
-      <FormControlLabel control={<Checkbox checked={repeat} onChange={(e) => setRepeat(e.target.checked )}  />} label="Repeat" />
       </Stack>
     </DialogTitle>
     <DialogContent>
-      {repeat && <Stack direction='row' spacing={4} className='pt-5 mb-8'>
-      <Autocomplete disablePortal value={repeatObject.type}  onChange={(e, v) => setRepeatObject({ ...repeatObject, type: v })} options={['daily','monthly']} disabled={!repeat} sx={{width: 200}}
-          size='small' clearIcon={null}  renderInput={(params) => <TextField {...params} label="Repeat" />} />  
-      <FormControlLabel control={<TextField value={repeatObject.time} onChange={e => setRepeatObject({ ...repeatObject, time: parseInt(e.target.value)}) }
-     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'6rem', marginRight:'1rem'}}/>} label="time(s)" labelPlacement='end' />
-      </Stack>}
+     
       <Stack direction='row' spacing={2} className='pt-5'>
       <TextField value={taskName} onChange={(e)=> setTaskName(e.target.value)} helperText={checkName ? "This field is required" : false} 
       error={checkName} sx={{width:'40%'}} placeholder='Enter task title' label="Title" variant="outlined"/>
@@ -143,7 +155,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 							onChange={(value) => {
                 setTaskBegin(value);
                 const deadline = new Date(value);
-                deadline.setHours(deadline.getHours() + 4); // Set deadline 4 hours later
+                deadline.setDate(deadline.getDate() + 1);
                 setTaskDeadline(deadline);
               }} className="w-full sm:w-auto"
 							slotProps={{
@@ -179,7 +191,20 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 						<div className="flex items-center mt-16 mb-12">
 							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Staffs</Typography>
-						</div>
+              <FormControlLabel className='me-28' control={<TextField  value={workingHours} onChange={e => {
+        const value = e.target.value.trim(); // Trim any leading or trailing spaces
+        if (value === '') {
+          setWorkingHours(1);
+        } else {
+          const parsedValue = parseInt(value); // Parse the input value as an integer
+          if (!isNaN(parsedValue)) {
+            setWorkingHours(parsedValue); // Set the state to the parsed integer value
+          }
+        }
+      }}
+     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'10rem', marginLeft:'1rem'}}/>} label="Working hours" labelPlacement='start' />
+						{staffList.length >0 && (warning ? <Button variant="contained" style={{pointerEvents: "none"}} color='warning'>Staffs overtime</Button> : <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Staffs within schedule</Button>)}
+            </div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs}
               getOptionLabel={(option) => option.name}
               filterSelectedOptions
@@ -207,7 +232,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       </ListItem>) }
     </List>}
     <Stack direction='row' spacing={2}>
-    <TextField value={inputChecklistValue} onKeyPress={e => {if(e.key === 'Enter' && inputChecklistValue.trim() !== '') handleAddChecklistItem()}}
+    <TextField helperText={checkChecklists && 'Checklists cannot be empty'} error={checkChecklists} value={inputChecklistValue} onKeyPress={e => {if(e.key === 'Enter' && inputChecklistValue.trim() !== '') handleAddChecklistItem()}}
     onChange={(e)=>setInputChecklistValue(e.target.value)} size='small'
     fullWidth placeholder='Add checklist' variant="outlined" />
     <Fab
@@ -215,41 +240,7 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 					aria-label="Add"
 					size="small"
 					color="secondary" onClick={handleAddChecklistItem}
-					disabled={inputChecklistValue === '' ? true : false}
-				>
-					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
-				</Fab>
-    </Stack>
-    
-    <div className="flex items-center mt-16 mb-12">
-							<FuseSvgIcon size={20}>heroicons-outline:annotation</FuseSvgIcon>
-							<Typography className="font-semibold text-16">Feedback</Typography>
-						</div>
-            {feedbacks.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-       {feedbacks.map((item,index) => <ListItem key={index}>
-                    <Stack direction='row' spacing={5} alignItems="center">
-                      <Typography sx={{width:'28rem'}} className="text-14">{item.question}</Typography>
-                      <Typography sx={{width:'15rem'}} className="text-14">{item.positive ? 'Positive question' : 'Negative question'}</Typography>
-                      <Typography sx={{width:'13rem'}} className="text-14">Severity level {item.severity}</Typography>
-                      <IconButton onClick={()=>handleDeleteFeedbakItem(index)}>
-                     <FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
-                    </IconButton>
-                    </Stack>
-      </ListItem>)}
-    </List>}
-    <Stack direction='row' spacing={4}>
-    <TextField sx={{width:'40rem'}} value={inputFeedbackValue.question} onKeyPress={e => {if(e.key === 'Enter' && inputFeedbackValue.question.trim() !== '') handleAddFeedbackItem()}}
-    onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, question: e.target.value })} size='small' placeholder='Add question' variant="outlined" />
-    <FormControlLabel control={<Checkbox checked={inputFeedbackValue.positive} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, positive: e.target.checked })}  />} label="Positive" />
-    <FormControlLabel control={<TextField value={inputFeedbackValue.severity} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, severity: parseInt(e.target.value) })} 
-     type={'number'} size='small' inputProps={{ min: 0, max: 5 }}
-     sx={{width:'6rem', marginRight:'1rem'}}/>} label="Severity" labelPlacement='end' />
-    <Fab
-					className="mx-4"
-					aria-label="Add"
-					size="small"
-					color="secondary" onClick={handleAddFeedbackItem}
-					disabled={inputFeedbackValue.question.trim() === '' ? true : false}
+					disabled={inputChecklistValue.trim() === '' ? true : false}
 				>
 					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
 				</Fab>
@@ -264,6 +255,5 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     </DialogActions>
   </Dialog>
 
-}
-
+       }
 export default CreateModal

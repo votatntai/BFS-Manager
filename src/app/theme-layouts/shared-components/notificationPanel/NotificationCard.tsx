@@ -12,25 +12,15 @@ import { MouseEvent } from 'react';
 type NotificationCardProps = {
 	item: NotificationModelType;
 	className?: string;
-	onClose: (T: string) => void;
 };
 
 /**
  * The notification card.
  */
 function NotificationCard(props: NotificationCardProps) {
-	const { item, className, onClose } = props;
+	const { item, className } = props;
 
 	const variant = item?.variant || '';
-
-	const handleClose = (ev: MouseEvent<HTMLButtonElement>) => {
-		ev.preventDefault();
-		ev.stopPropagation();
-
-		if (onClose) {
-			onClose(item.id);
-		}
-	};
 
 	return (
 		<Card
@@ -43,31 +33,7 @@ function NotificationCard(props: NotificationCardProps) {
 				className
 			)}
 			elevation={0}
-			component={item.useRouter ? NavLinkAdapter : 'div'}
-			to={item.link || ''}
-			role={item.link && 'button'}
 		>
-			{item.icon && !item.image && (
-				<Box
-					sx={{ backgroundColor: 'background.default' }}
-					className="mr-12 flex h-32 w-32 shrink-0 items-center justify-center rounded-full"
-				>
-					<FuseSvgIcon
-						className="opacity-75"
-						color="inherit"
-					>
-						{item.icon}
-					</FuseSvgIcon>
-				</Box>
-			)}
-
-			{item.image && (
-				<img
-					className="mr-12 h-32 w-32 shrink-0 overflow-hidden rounded-full object-cover object-center"
-					src={item.image}
-					alt="Notification"
-				/>
-			)}
 
 			<div className="flex flex-auto flex-col">
 				{item.title && <Typography className="line-clamp-1 font-semibold">{item.title}</Typography>}
@@ -89,22 +55,6 @@ function NotificationCard(props: NotificationCardProps) {
 					</Typography>
 				)}
 			</div>
-
-			<IconButton
-				disableRipple
-				className="absolute right-0 top-0 p-8"
-				color="inherit"
-				size="small"
-				onClick={handleClose}
-			>
-				<FuseSvgIcon
-					size={12}
-					className="opacity-75"
-					color="inherit"
-				>
-					heroicons-solid:x
-				</FuseSvgIcon>
-			</IconButton>
 			{item.children}
 		</Card>
 	);
