@@ -43,8 +43,6 @@ const TicketContent = ()=>{
     const pageNumber  = useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.pageNumber)
     const pageSize  = useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.pageSize)
     const totalRow =  useAppSelector((state) => state.ticketReducer.ticketReducer.tickets.pagination.totalRow)
-    // const testState = useAppSelector(state => state)
-    // console.log(testState)
     const sortedTickets = tickets.slice().sort(sortByPriority);
     
     return <div className="w-full flex flex-col min-h-full bg-white">
@@ -64,7 +62,7 @@ const TicketContent = ()=>{
         {sortedTickets.map((item) => (<TableRow key={item.id} >
         <TableCell align='left'>{item.ticketCategory}</TableCell>
         <TableCell align='left'>{item.title}</TableCell>
-        <TableCell align='center'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'medium' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Medium</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
+        <TableCell align='center'>{item.priority.toLowerCase() === 'low' ? <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Low</Button> : item.priority.toLowerCase() === 'moderate' ? <Button style={{pointerEvents: "none"}} variant="contained" color='warning'>Moderate</Button>: <Button style={{pointerEvents: "none"}} variant="contained" color='error'>High</Button>}</TableCell>
         <TableCell align='left'>{item.creator.name}</TableCell>
         <TableCell align='left'>{new Date(item.createAt).toLocaleString('en-GB', {
           day: '2-digit',

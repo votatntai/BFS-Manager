@@ -36,7 +36,7 @@ const TaskManagementHeader = ()=>{
     <motion.div  initial={{ opacity: 0, x: 20 }}  animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}>
         <Stack direction="row" spacing={2}>
 
-         <Autocomplete size='small' value={value}
+         <Autocomplete size='small' value={value} disableClearable
         onChange={(event: any, newValue: string | null) => {
           setValue(newValue);
           dispatch(setFilterStatus(newValue))

@@ -18,10 +18,11 @@ import IconButton from '@mui/material/IconButton';
 import Fab from '@mui/material/Fab';
 import { addTask, getTaskData,setFilterStatus } from './slice/taskManagementSlice';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-
+import jwtDecode from 'jwt-decode';
 const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
-    const [taskName, setTaskName] =useState('')
+  const managerId = jwtDecode(localStorage.getItem('jwt_access_token')).id
+
+  const [taskName, setTaskName] =useState('')
     const [taskDescription, setTaskDescription] = useState('')
     const [taskBegin, setTaskBegin] = useState(new Date())
     const [taskDeadline, setTaskDeadline] = useState(() => {
@@ -30,19 +31,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       return deadline;
     });
     const [inputChecklistValue, setInputChecklistValue] =useState('')
-    const [repeat, setRepeat] =useState(false)
-    const [repeatObject, setRepeatObject] =useState({
-      "type": "daily",
-      "time": 1,
-    })
+   
     const [workingHours, setWorkingHours] = useState(1)
     const [checklists, setChecklists] =useState([])
-    const [feedbacks, setFeedbacks] =useState([])
-    const [inputFeedbackValue, setInputFeedbackValue] =useState({
-      question: '',
-      positive: false,
-      severity: 0
-    })
     const [staffList, setStaffList] =useState([])
     const [checkName, setCheckName] = useState(false)
     const [checkStaffList, setCheckStaffList] = useState(false)
@@ -67,19 +58,14 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
         await dispatch(addTask({
           "title": taskName,
           "description": taskDescription,
-          "managerId": localStorage.getItem("accessToken"),
+          "managerId": managerId,
           "startAt": taskBegin,
           "deadline": taskDeadline,
           "status": "To do",
           "assigneeIds": staffList,
           "checkLists": checklists,
           "workingHours": workingHours,
-          "repeats": [],
         }))
-        // console.log({
-        //   "start": taskBegin,
-        //   "end": taskDeadline
-        // })
         await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status:'To do'}))
         dispatch(setFilterStatus('To do'))
         setOpenSuccessSnackbar(true)
@@ -97,25 +83,11 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       setInputChecklistValue('')
       setOrderCount(prevOrderCount => prevOrderCount + 1)
     }
-    const handleAddFeedbackItem =()=>{
-      setFeedbacks(prevLists => [...prevLists, inputFeedbackValue]);
-      setInputFeedbackValue({
-        question: '',
-        positive: false,
-        severity: 0
-      })
-    }
     const handleDeleteChecklistItem =(indexToRemove)=>{
       setChecklists(prevChecklists =>
         prevChecklists.filter((_, index) => index !== indexToRemove)
       );
     }
-    const handleDeleteFeedbakItem =(indexToRemove)=>{
-      setFeedbacks(prevLists =>
-        prevLists.filter((_, index) => index !== indexToRemove)
-      );
-    }
-
     const [staffs, setStaffs] = useState([])
     const loadStaffs = async() => {
       const res = await axios.get('/staffs')
@@ -191,7 +163,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 						<div className="flex items-center mt-16 mb-12">
 							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Staffs</Typography>
-              <FormControlLabel className='me-28' control={<TextField  value={workingHours} onChange={e => {
+              <FormControlLabel className='me-28' control={<TextField
+      value={workingHours}
+      onChange={e => {
         const value = e.target.value.trim(); // Trim any leading or trailing spaces
         if (value === '') {
           setWorkingHours(1);
@@ -200,9 +174,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
           if (!isNaN(parsedValue)) {
             setWorkingHours(parsedValue); // Set the state to the parsed integer value
           }
-        }
-      }}
-     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'10rem', marginLeft:'1rem'}}/>} label="Working hours" labelPlacement='start' />
+        }}}
+      type={'number'} size='small' inputProps={{ min: 1 }} sx={{ width: '10rem', marginLeft: '1rem' }}
+    />} label="Working hours" labelPlacement='start' />
 						{staffList.length >0 && (warning ? <Button variant="contained" style={{pointerEvents: "none"}} color='warning'>Staffs overtime</Button> : <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Staffs within schedule</Button>)}
             </div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs}
