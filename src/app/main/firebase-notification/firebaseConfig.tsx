@@ -1,6 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {getMessaging,getToken, onMessage} from 'firebase/messaging';
+import instance from "../../auth/services/api/customAxios";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,16 +21,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
-// const VAPID_KEY = 'BMD-t60m8Cky08gYwK1aZi30wmlfeaRLS2UpYMw1_Wzm2ortXm56ww-Hda7Wjfm28ZA_et9mypaazNb7A5jLm38';
-const VAPID_KEY = '';
+const VAPID_KEY = 'BMD-t60m8Cky08gYwK1aZi30wmlfeaRLS2UpYMw1_Wzm2ortXm56ww-Hda7Wjfm28ZA_et9mypaazNb7A5jLm38';
+// const VAPID_KEY = '';
 export const generateToken = async()=>{
   try{
     const permission = await Notification.requestPermission()
-    // console.log(permission)
     if(permission === 'granted'){
       const token = await getToken(messaging, {vapidKey: VAPID_KEY})
-      console.log(token)
-      // return token
+      await instance.post('/device-tokens/managers',{
+        "deviceToken": token
+      }).catch(err => {console.log(err)})
+      localStorage.setItem('notify_device_token',token)
     }
   }catch(err){console.log(err)}
 }
@@ -36,7 +39,6 @@ export const generateToken = async()=>{
 export const onMessageListener = () =>
   new Promise((resolve) => {
     onMessage(messaging, (payload) => {
-      // console.log("payload", payload)
       resolve(payload);
     });
   });

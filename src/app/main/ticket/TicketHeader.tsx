@@ -10,7 +10,6 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useState,useEffect } from 'react';
 import { useAppDispatch,useAppSelector } from 'app/store';
 import { getTicketData } from './slice/ticketSlice';
-import {generateToken, messaging, onMessageListener } from '../../firebase-notification/firebaseConfig'
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -24,23 +23,6 @@ const TicketHeader = ()=>{
     useEffect(()=>{
         dispatch(getTicketData({status: value, ticketCategory: type === 'All' ? '': type, pageNumber:0, pageSize:100}))    
     },[value,type, pageNumber, pageSize])
-    
-    const [showMsg, setShowMsg] = useState(false)
-    const [msg, setMsg] = useState({
-      notification:{title:''}
-    })
-    const loadForegroundNotify = async() => {
-      await generateToken();
-      onMessageListener()
-    .then((payload) => {
-      // setMsg(payload);
-      console.log("Receive foreground message:", payload)     
-    })
-    .catch((err) => console.log('failed: ', err));
-    }
-    useEffect(()=>{
-      loadForegroundNotify()
-    },[])
 
     return <div style={{background:'rgb(241, 245, 249)'}} className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
     <motion.span
@@ -72,16 +54,6 @@ const TicketHeader = ()=>{
     
         </Stack>
         </div>
-        <Snackbar 
-        open={showMsg} 
-        autoHideDuration={3000} 
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        onClose={() => setShowMsg(false)}
-        >
-        <Alert severity="success" sx={{ width: '100%' }} variant='filled'>
-          {msg.notification.title}
-        </Alert>
-        </Snackbar>
 </div>
 }
 export default TicketHeader

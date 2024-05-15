@@ -115,9 +115,9 @@ ticket.priority.toLowerCase() === 'moderate' ? 'warning' : 'error'}>{ticket.prio
             options={combobox} sx={{ width: 300 }} renderInput={(params) => <TextField  sx={{background:'white'}} {...params} label="select a staff" />}
         />
         </Stack>
-        <Typography><b>Solver reply:</b> {ticket.resultDescription === null ? 'A staff is processing' : ticket.resultDescription}</Typography>
+        <Typography><b>Solver reply:</b> {(ticket.resultDescription === null || ticket.resultDescription === "null") ? 'A staff is processing' : ticket.resultDescription}</Typography>
         <Typography><b>Solver's picture:</b> {ticket.resultImage === null && 'A staff is processing'}</Typography>
-        {ticket.resultImage !== null && <img src={ticket.resultImage} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
+        {ticket.resultImage !== null && ticket.resultImage !== "null"  && <img src={ticket.resultImage} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
         <Typography><b>Problem's picture:</b></Typography>
         {file && <img src={file} alt="Selected Image" style={{ marginTop: '10px', maxWidth: '100%' }} />}
     </Stack>

@@ -59,7 +59,7 @@ const ViewModal = ({show,handleClose,object,setOpenSuccessSnackbar})=>{
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between	'>
       Task detail
-      <Autocomplete disablePortal value={task.status} size='small'onChange={(event, newValue) => { setTask({ ...task, status: newValue}); }}
+      <Autocomplete disableClearable disablePortal value={task.status} size='small'onChange={(event, newValue) => { setTask({ ...task, status: newValue}); }}
         options={['In progress', 'Work finished', 'Done']}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Status"/>}
