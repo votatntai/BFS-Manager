@@ -54,7 +54,7 @@ export const createMenu = createAppAsyncThunk<any, any>('mealPlanReducer/menus/c
             ...data,
             actionType: dataItem.actionType
         };
-    });
+    })
 export const createBirdMenu = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createBirdMenu',
     async (dataItem) => {
         const response = await axios.post('/menus', dataItem.item);
@@ -63,13 +63,13 @@ export const createBirdMenu = createAppAsyncThunk<any, any>('mealPlanReducer/men
             data: data,
             birdId: dataItem.birdId
         };
-    });
+    })
 export const createMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMenuMeal',
     async (dataItem) => {
         const response = await axios.post('/menu-meals', dataItem);
         const data = (await response.data);
         return data;
-    });
+    })
 export const createBirdMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createBirdMenuMeal',
     async (dataItem) => {
         const response = await axios.post('/menu-meals', dataItem.data);
@@ -78,13 +78,13 @@ export const createBirdMenuMeal = createAppAsyncThunk<any, any>('mealPlanReducer
             data: data,
             birdId: dataItem.birdId
         };
-    });
+    })
 export const createPlan = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createPlan',
     async (dataItem) => {
         const response = await axios.post('/plans', dataItem);
         const data = (await response.data);
         return data;
-    });
+    })
 export const createMealItems = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createMealItems',
     async (dataItem) => {
         const response = await axios.post('/meal-items', dataItem.data);
@@ -93,13 +93,13 @@ export const createMealItems = createAppAsyncThunk<any, any>('mealPlanReducer/me
             data: data,
             birdId: dataItem.birdId
         };
-    });
+    })
 export const createPFoodNormItem = createAppAsyncThunk<any, any>('mealPlanReducer/menus/createPFoodNormItem',
     async (dataItem) => {
         const response = await axios.post('/meal-items', dataItem);
         const data = (await response.data);
         return data
-    });
+    })
 
 //========== DELETE API ===================
 export const removeMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/menus/removeMealItem',

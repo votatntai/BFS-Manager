@@ -4,10 +4,26 @@ export type NameType = {
     id: string;
     name: string;
 }
+export type SpeciesType = {
+    id: string
+    thumbnailUrl: string
+    name: string
+    createAt: string
+}
+export type CareModeType = {
+    id : string
+    name : string
+    priority : number 
+ }
 export type menuSampleType = {
+    id: string;
+    name: string;
+    species: SpeciesType
+    careMode :CareModeType
     menuMealSamples: menuMealSampleType[]
 }
 export type menuMealSampleType = {
+    id: string;
     from: string;
     to: string;
     mealItemSamples: mealItemSamplesType[];
@@ -15,6 +31,8 @@ export type menuMealSampleType = {
 
 }
 export type mealItemSamplesType = {
+    id: string;
+
     quantity: number;
     food: FoodType;
     order: number;
@@ -48,7 +66,7 @@ export type BirdType = {
         name: string,
     },
     createAt: string,
-    recommend:boolean,
+    recommend: boolean,
     menuId: string,
     menu: MenuType
 
