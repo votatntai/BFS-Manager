@@ -46,7 +46,7 @@ const ViewModal = ({show,handleClose,object,setOpenSuccessSnackbar})=>{
       // console.log(checked)
       await instance.put(`/task-check-lists/${id}`, {"status": checked})
       .then(async()=>{
-        await instance.get(`/tasks/${object.id}`)
+        await instance.get<any, any>(`/tasks/${object.id}`)
         .then((response) => {
           setTask(response)
           setShowSnackbar(true)
