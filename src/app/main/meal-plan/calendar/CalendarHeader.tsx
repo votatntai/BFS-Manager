@@ -80,19 +80,18 @@ function CalendarHeader(props: CalendarHeaderProps) {
 							</motion.div>
 						</div>
 					</Tooltip>
-					<IconButton
+					<span
 						onClick={() => onToggleLeftSidebar()}
 						aria-label="open left sidebar"
-						size="small"
 					>
 						<Button variant='contained'
 							color='primary'
 						>View food norm</Button>
-					</IconButton>
+					</span>
 				</div>
 			</div>
 
-			<motion.div
+			{/* <motion.div
 				className="flex items-center justify-center"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1, transition: { delay: 0.3 } }}
@@ -101,7 +100,7 @@ function CalendarHeader(props: CalendarHeaderProps) {
 					className="mx-8"
 					aria-label="add"
 					onClick={() => {
-						navigate("detail/new")
+						dispatch(openNewPlanDialog())
 					}
 					}
 				>
@@ -112,7 +111,7 @@ function CalendarHeader(props: CalendarHeaderProps) {
 					currentDate={currentDate}
 					calendarApi={calendarApi as unknown as CalendarApi}
 				/>
-			</motion.div>
+			</motion.div> */}
 		</div>
 	);
 }

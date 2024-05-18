@@ -37,6 +37,7 @@ export default function BirdMenus() {
     const cageId = plan?.cage?.id;
     const birds = useAppSelector(selectBirds)
     const birdList: Partial<BirdType>[] = birds.filter(bird => bird.cage.id === cageId);
+
     useEffect(
         () => {
             dispatch(getBirds())
@@ -89,7 +90,6 @@ export default function BirdMenus() {
         const lunchMeal = menuMeals.find(meal => meal.name == "Lunch")
         const EveningMeal = menuMeals.find(meal => meal.name == "Evening")
         const afternoonMeal = menuMeals.find(meal => meal.name == "Afternoon")
-   
         for (let mealItem of groupByFoodId(morning)) {
             const itemData = {
                 menuMealId: morningMeal.id,
@@ -175,7 +175,7 @@ export default function BirdMenus() {
                     color='secondary'
                 > Auto generate menu  </Button></div>
             <MenuDialog birds={birdList} />
-            <div className="grid grid-cols-4 gap-32">
+            <div className="grid grid-cols-3 gap-32 mt-32">
                 {birdList?.map((bird) => (
                     <div key={bird.id}>
                         <BirdCard bird={bird} />

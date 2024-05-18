@@ -10,12 +10,18 @@ export type PlanType = {
 	createAt?: string
 	cage?: CageType;
 	menu?: MenuType
+	planDetails: planDetailType[]
 	// allDay?: boolean | undefined;
 	// extendedProps?: {
 	// 	desc?: string;
 	// 	label?: string;
 	// };
 };
+export type planDetailType = {
+	date: string
+	id: string
+	status: boolean
+}
 export type CageType = {
 	id: string,
 	code: string,

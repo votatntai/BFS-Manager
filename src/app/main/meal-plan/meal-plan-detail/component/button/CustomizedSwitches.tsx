@@ -80,7 +80,7 @@ export default function CustomizedSwitches(props) {
         checked={checked}
         onChange={handleChange}
       />
-      <Typography variant="body1">Recommend</Typography>
+      <Typography className="text-indigo-800" variant="body1">Recommend</Typography>
 
     </div>
   );

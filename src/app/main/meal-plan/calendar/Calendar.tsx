@@ -20,20 +20,18 @@ import CalendarAppEventContent from './CalendarAppPlanContent';
 import CalendarAppSidebar from './CalendarAppSidebar';
 import CalendarHeader from './CalendarHeader';
 import PlanDialog from './dialogs/plan/PlanDialog';
-import LabelsDialog from './dialogs/labels/LabelsDialog';
 import { getLabels } from './store/labelsSlice';
 import {
 	getPlans,
-	openEditPlanDialog,
 	openNewPlanDialog,
 	selectPlans,
-	updatePlan
 } from './store/plansSlice';
 import { PlanType } from './types/PlanType';
 import CalendarAppPlanContent from './CalendarAppPlanContent';
 import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { Navigate, useNavigate, useParams } from 'react-router';
+import { getCage } from '../store/cagesSlice';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& a': {
@@ -114,17 +112,37 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
  * The calendar app.
  */
 function Calendar() {
-	const [currentDate, setCurrentDate] = useState<DatesSetArg>();
-	const dispatch = useAppDispatch();
-	const plans = useAppSelector(selectPlans);
-	const calendarRef = useRef<FullCalendar>(null);
-	const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
-	const { cageId } = useParams();
+	const [currentDate, setCurrentDate] = useState<DatesSetArg>()
+	const dispatch = useAppDispatch()
+	const plans = useAppSelector(selectPlans)
+	const [eventData, setEventData] = useState([])
+	const calendarRef = useRef<FullCalendar>(null)
+	const [leftSidebarOpen, setLeftSidebarOpen] = useState(false)
+	const { cageId } = useParams()
 	useEffect(() => {
-		dispatch(getPlans(cageId));
-	}, [dispatch]);
-	const navigate = useNavigate();
-
+		dispatch(getPlans(cageId))
+		dispatch(getCage(cageId))
+	}, [dispatch])
+	const navigate = useNavigate()
+	useEffect(
+		() => {
+			const arr = plans.map(plan =>
+				plan.planDetails.map(plandetail => ({
+					id: plandetail.id,
+					start: plandetail.date,
+					end: plandetail.date,
+					title: plan.title,
+					status:plandetail.status,
+					extendedProps: { plan: plan },
+					eventOverlap: function (stillEvent, movingEvent) {
+						return stillEvent.allDay && movingEvent.allDay;
+					}
+				}))
+			).flat()
+			setEventData(arr)
+		}
+		, [plans]
+	)
 	// handle size of calendar 
 	useEffect(() => {
 		// Correct calendar dimentions after sidebar toggles
@@ -134,9 +152,8 @@ function Calendar() {
 	}, [leftSidebarOpen]);
 
 	const handleDateSelect = (selectInfo: DateSelectArg) => {
-		dispatch(openNewPlanDialog(selectInfo));
+		dispatch(openNewPlanDialog(selectInfo))
 	};
-
 	const handleEventDrop = (eventDropInfo: EventDropArg): void => {
 		const { id, start, end } = eventDropInfo.event;
 		// dispatch(
@@ -145,19 +162,19 @@ function Calendar() {
 		// 		from: start?.toISOString() ?? '',
 		// 		to: end?.toISOString() ?? '',
 		// 	})
-		// );
+		// )
 	};
 
 	const handleEventClick = (clickInfo: EventClickArg) => {
 		clickInfo.jsEvent.preventDefault();
-		const id = clickInfo.event._def.publicId;
+		const id = clickInfo.event._def.extendedProps.plan.id
 		navigate(`detail/${id}`);
 		// dispatch(openEditPlanDialog(clickInfo));
 	};
 
 	const handleDates = (rangeInfo: DatesSetArg) => {
 		setCurrentDate(rangeInfo);
-	};
+	}
 
 	const handleEventAdd = (addInfo: EventAddArg) => {
 		// eslint-disable-next-line no-console
@@ -221,17 +238,9 @@ function Calendar() {
 						weekends
 						datesSet={handleDates}
 						select={handleDateSelect}
-						events={plans.map(plan => ({
-							id: plan.id,
-							start: plan.from,
-							end: plan.to,
-							title: plan.title,
-							extendedProps: { plan: plan },
-							eventOverlap: function (stillEvent, movingEvent) {
-								return stillEvent.allDay && movingEvent.allDay;
-							}
-						}))}
 
+						events={eventData
+						}
 						// eslint-disable-next-line react/no-unstable-nested-components
 						eventContent={(eventInfo: EventContentArg & { event: PlanType }) => (
 							<CalendarAppPlanContent planInfo={eventInfo} />
@@ -243,7 +252,7 @@ function Calendar() {
 						eventDrop={handleEventDrop}
 						initialDate={new Date()}
 						ref={calendarRef}
-						dayCellContent={renderCellContent}
+					// dayCellContent={renderCellContent}
 
 					/>
 
@@ -255,7 +264,6 @@ function Calendar() {
 				scroll="content"
 			/>
 			<PlanDialog />
-			<LabelsDialog />
 		</>
 	);
 }
