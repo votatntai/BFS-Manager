@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Hidden from '@mui/material/Hidden';
 import Toolbar from '@mui/material/Toolbar';
 import clsx from 'clsx';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectFuseCurrentLayoutConfig, selectToolbarTheme } from 'app/store/fuse/settingsSlice';
 import { selectFuseNavbar } from 'app/store/fuse/navbarSlice';
@@ -17,6 +17,11 @@ import NavigationSearch from '../../shared-components/NavigationSearch';
 import NavbarToggleButton from '../../shared-components/NavbarToggleButton';
 import UserMenu from '../../shared-components/UserMenu';
 import QuickPanelToggleButton from '../../shared-components/quickPanel/QuickPanelToggleButton';
+import { Typography } from '@mui/material';
+import { useAppDispatch } from 'app/store';
+import { getFarms, selectFarms } from 'src/app/main/meal-plan/meal-plan-detail/store/menusSlice';
+import { selectUser } from 'app/store/user/userSlice';
+import { use } from 'i18next';
 
 type ToolbarLayout1Props = {
 	className?: string;
@@ -29,8 +34,26 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
 	const { className } = props;
 	const config = useSelector(selectFuseCurrentLayoutConfig) as Layout1ConfigDefaultsType;
 	const navbar = useSelector(selectFuseNavbar);
+	const farms =useSelector(selectFarms)
+	const user =useSelector(selectUser)
+	const [farmName,setFarmName]= useState("")
+	console.log("farms",farms)
+	console.log("users",user)
+	const dispatch = useAppDispatch()
 	const toolbarTheme = useSelector(selectToolbarTheme);
-
+	useEffect(()=>{
+		dispatch(getFarms())
+	},[])
+	useEffect(
+		()=>
+		{
+		farms.forEach(farm => {
+				if(farm.manager.email==user.data.email)
+				setFarmName(farm.name)
+		});
+		}
+		,[user,farms]
+	)
 	return (
 		<ThemeProvider theme={toolbarTheme}>
 			<AppBar
@@ -49,6 +72,9 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
 					<div className="flex flex-1 px-16">
 						{config.navbar.display && config.navbar.position === 'left' && (
 							<>
+									<Typography variant='h6'>
+										{farmName}
+									</Typography>
 								<Hidden lgDown>
 									{(config.navbar.style === 'style-3' || config.navbar.style === 'style-3-dense') && (
 										<NavbarToggleButton className="mx-0 h-40 w-40 p-0" />
@@ -65,13 +91,9 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
 							</>
 						)}
 
-						{/* <Hidden lgDown>
-							<NavigationShortcuts />
-						</Hidden> */}
 					</div>
 
 					<div className="flex h-full items-center overflow-x-auto px-8">
-						<LanguageSwitcher />
 						<NavigationSearch />
 						{/* <AdjustFontSize />
 						<FullScreenToggle />
