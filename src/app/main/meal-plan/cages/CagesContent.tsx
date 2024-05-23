@@ -115,7 +115,7 @@ export default function CagesContent() {
                         }}
                     />
                 </div>
-
+{/* 
                 <FormControlLabel
                     label="On-off"
                     control={
@@ -127,7 +127,7 @@ export default function CagesContent() {
                             name="hideCompleted"
                         />
                     }
-                />
+                /> */}
             </div>
             {filteredData &&
                 (filteredData.length > 0 ? (

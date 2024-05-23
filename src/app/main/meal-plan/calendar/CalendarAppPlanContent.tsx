@@ -17,7 +17,6 @@ type CalendarAppPlanContentProps = {
  */
 function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 	const { planInfo } = props;
-	// console.log("planInfo",planInfo)
 	const theme = useTheme();
 	const labels = useAppSelector(selectLabels);
 
@@ -27,10 +26,10 @@ function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 	return (
 		<Box
 			sx={{
-				backgroundColor: "black",
-				color: "blue"
+				backgroundColor: !planInfo.event._def.extendedProps.status ? "rgb(214, 62, 99)" : "rgb(65, 147, 136)",
+				color: !planInfo.event._def.extendedProps.status ? "white"  : "white",
 			}}
-			className={clsx('items-center w-full rounded-4 px-8 py-2 h-22 text-white')}
+			className={clsx('items-center w-full rounded-4 px-8 py-2 h-22 ')}
 		>
 			{/* <Typography className="text-12 font-semibold">{planInfo.timeText}</Typography> */}
 			<Typography className="text-12 px-4 truncate">{planInfo.event.title}</Typography>

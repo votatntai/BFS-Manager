@@ -1,58 +1,88 @@
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import FuseUtils from '@fuse/utils/FuseUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from '@lodash';
-import { Autocomplete, Popover } from '@mui/material';
+import { formatISO } from 'date-fns';
+import { Popover, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
-import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { MouseEvent, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import EventLabelSelect, { EventLabelSelectProps } from '../../EventLabelSelect';
 import PlanModel from '../../models/PlanModel';
 import { selectFirstLabelId } from '../../store/labelsSlice';
 import {
 	addPlan,
 	closeEditPlanDialog,
 	closeNewPlanDialog,
-	removePlan,
 	selectPlanDialog,
-	updatePlan
+	selectPlans
 } from '../../store/plansSlice';
-import { PlanType } from '../../types/PlanType';
+import { selectCage } from '../../../store/cagesSlice';
+import { createMenu, createMenuMeal, createPlan } from '../../../meal-plan-detail/store/menusSlice';
+import { showMessage } from 'app/store/fuse/messageSlice';
+import moment from 'moment';
 
 const defaultValues = PlanModel();
 
 /**
  * Form Validation Schema
  */
+const menuMeals = [
+	{
+		name: "Morning",
+		from: "07:00:00",
+		to: "09:00:00"
+	},
+	{
+		name: "Lunch",
+		from: "12:0:00",
+		to: "14:00:00"
+	},
+	{
+		name: "Afternoon",
+		from: "17:00:00",
+		to: "19:00:00"
+	},
+	{
+		name: "Evening",
+		from: "21:00:00",
+		to: "22:00:00"
+	}
+]
 
-const schema = yup.object().shape({
-	from: yup.string().required('Please enter start date'),
-	to: yup.string(),
-	title: yup.string().required('Please enter start date'),
-});
 
 /**
  * The event dialog.
  */
 function PlanDialog() {
+
 	const dispatch = useAppDispatch();
+	const cage = useAppSelector(selectCage)
+	const plans = useAppSelector(selectPlans)
+	const schema = yup.object().shape({
+		from: yup.string().required('Please enter start date')
+			.test('overlap', 'Your time overlaps with existing plans', function (value) {
+				const { from, to } = this.parent;
+				return !plans.some(plan => (
+					(new Date(from) <= new Date(plan.to) && new Date(to) >= new Date(plan.from))
+				));
+			}),
+		to: yup.string().required("Please enter end date"),
+		title: yup.string().required('Please enter title'),
+	})
 	const planDialog = useAppSelector(selectPlanDialog);
 	const firstLabelId = useAppSelector(selectFirstLabelId);
-	console.log("planDialog",planDialog)
 	const { reset, formState, watch, control, getValues } = useForm({
 		//	defaultValues,
 		mode: 'onChange',
 		resolver: yupResolver(schema)
-	});
+	})
 
 	const { isValid, dirtyFields, errors } = formState;
+
 
 	const start = watch('from');
 	const end = watch('to');
@@ -76,7 +106,7 @@ function PlanDialog() {
 				...defaultValues,
 				...planDialog.data,
 
-	//			id: FuseUtils.generateGUID()
+				//			id: FuseUtils.generateGUID()
 			});
 		}
 	}, [planDialog.data, planDialog.type, reset]);
@@ -96,29 +126,57 @@ function PlanDialog() {
 	function closeComposeDialog() {
 		return planDialog.type === 'edit' ? dispatch(closeEditPlanDialog()) : dispatch(closeNewPlanDialog());
 	}
-
+	
 	/**
 	 * Form Submit
 	 */
-	function onSubmit(ev: MouseEvent<HTMLButtonElement>) {
+	const onSubmit = async (ev: MouseEvent<HTMLButtonElement>) => {
 		ev.preventDefault();
-		const data = getValues();
 
-		if (planDialog.type === 'new') {
-			dispatch(addPlan(data));
-		} else {
-			// dispatch(updatePlan({ ...planDialog.data, ...data }));
+		const data = {
+			item: {
+				name: `${cage.name}-${cage.code}`
+			},
+			actionType: "PLAN_MENU"
+		};
+		const menu = await dispatch(createMenu(data))
+		const planData = {
+			title: getValues().title,
+			from: moment(getValues().from).format('YYYY-MM-DDTHH:mm:ss'),
+			to: moment(getValues().to).format('YYYY-MM-DDTHH:mm:ss'),
+			menuId: menu.payload.id,
+			cageId: cage.id
 		}
-		closeComposeDialog();
+		dispatch(addPlan(planData))
+
+		let promises = menuMeals.map((meal, index) => {
+			const info = {
+				menuId: menu.payload.id,
+				name: meal.name,
+				from: meal.from,
+				to: meal.to
+			}
+			return dispatch(createMenuMeal(info));
+		});
+
+		Promise.all(promises)
+			.then(() => {
+				const msg = {
+					variant: 'success',
+					autoHideDuration: 2000,
+					message: `Add new plan successfully`,
+				}
+				dispatch(showMessage(msg))
+			})
+			.catch((error) => console.error(error))
+		closeComposeDialog()
+
 	}
 
 	/**
 	 * Remove Event
 	 */
-	function handleRemove() {
-	//	dispatch(removePlan(id));
-		closeComposeDialog();
-	}
+
 
 	return (
 		<Popover
@@ -137,7 +195,7 @@ function PlanDialog() {
 			component="form"
 		>
 			<div className="flex flex-col max-w-full p-24 pt-32 sm:pt-40 sm:p-32 w-480">
-			
+				<Typography variant="h5" className="flex font-semibold justify-center mb-16">New plan</Typography>
 
 				<div className="flex sm:space-x-24 mb-16">
 					<FuseSvgIcon
@@ -159,14 +217,14 @@ function PlanDialog() {
 										slotProps={{
 											textField: {
 												label: 'Start',
-												variant: 'outlined'
+												variant: 'outlined',
+												error: !!errors.from,
+												helperText: errors.from?.message, 
 											}
 										}}
-										maxDate={end}
 									/>
 								)}
 							/>
-
 							<Controller
 								name="to"
 								control={control}
@@ -178,10 +236,12 @@ function PlanDialog() {
 										slotProps={{
 											textField: {
 												label: 'End',
-												variant: 'outlined'
+												variant: 'outlined',
+												error: !!errors.to,
+												helperText: errors.to?.message, 
 											}
 										}}
-										minDate={start}
+										minDate={new Date(start)}
 									/>
 								)}
 							/>
@@ -215,6 +275,8 @@ function PlanDialog() {
 								autoFocus
 								required
 								fullWidth
+								error={!!errors.title} // will be true if field has error
+								helperText={errors.title && errors.title.message} // 
 							>
 
 							</TextField>
@@ -223,78 +285,20 @@ function PlanDialog() {
 
 				</div>
 
-				<div className="flex sm:space-x-24 mb-16">
-					<FuseSvgIcon
-						className="hidden sm:inline-flex mt-16"
-						color="action"
+
+
+				<div className="flex items-center space-x-8">
+					<div className="flex flex-1" />
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={onSubmit}
+						disabled={_.isEmpty(dirtyFields) || !isValid}
 					>
-						heroicons-outline:menu-alt-2
-					</FuseSvgIcon>
-					{/* {mealSample && <Controller
-                    name="menu"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Autocomplete
-                            className="mt-8 mb-16"
-                            options={speciesList}
-                            getOptionLabel={(options) => {
-                                return options.name || '';
-                            }
-                            }
-                            value={value}
-                            onChange={(event, newValue) => {
-                                onChange(newValue);
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    className="w-[300px] ml-48"
-                                    placeholder="Select one"
-                                    label="Species"
-                                    variant="outlined"
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
-                                />
-                            )}
-                        />
-                    )}
-                />} */}
-
-
+						Add
+					</Button>
 				</div>
 
-				{planDialog.type === 'new' ? (
-					<div className="flex items-center space-x-8">
-						<div className="flex flex-1" />
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={onSubmit}
-							disabled={_.isEmpty(dirtyFields) || !isValid}
-						>
-							Add
-						</Button>
-					</div>
-				) : (
-					<div className="flex items-center space-x-8">
-						<div className="flex flex-1" />
-						<IconButton
-							onClick={handleRemove}
-							size="large"
-						>
-							<FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
-						</IconButton>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={onSubmit}
-							disabled={_.isEmpty(dirtyFields) || !isValid}
-						>
-							Save
-						</Button>
-					</div>
-				)}
 			</div>
 		</Popover>
 	);

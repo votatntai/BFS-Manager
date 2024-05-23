@@ -13,13 +13,7 @@ import { Link } from 'react-router-dom';
 import instance from 'src/app/auth/services/api/customAxios';
  function BirdHeader(){
     const dispatch = useAppDispatch()
-    // const [searchValue, setSearchValue] = useState('')
-    // const pageSize  = useAppSelector((state) => state.areaReducer.areaSlice.areas.pagination.pageSize)
-    // const handleSearch= async()=>{
-    //     dispatch(setSearchText(searchValue))
-    //     await dispatch(getAreaData({name: searchValue, pageNumber: 0, pageSize: pageSize}))
-    //     dispatch(setSearchText(""))
-    // }
+    const searchValue  = useAppSelector((state) => state.birdReducer.birdSlice.searchText)
     const areaValue = useAppSelector(state =>  state.birdReducer.birdSlice.area)
     const cageValue = useAppSelector(state =>  state.birdReducer.birdSlice.cage)
     const [areaOptions, setAreaOptions] = useState([{label: 'All', value:''}])
@@ -79,11 +73,11 @@ import instance from 'src/app/auth/services/api/customAxios';
                 placeholder="Search areas"
                 disableUnderline
                 fullWidth
-                //value={searchValue} onKeyPress={e => {if(e.key==='Enter') handleSearch()}}
+                value={searchValue}
                 inputProps={{
                     'aria-label': 'Search'
                 }}
-                //onChange={e => setSearchValue(e.target.value)}
+                onChange={e => dispatch(setSearchText(e.target.value))}
             />
 
         </Paper>

@@ -167,31 +167,22 @@ export default function BirdCard(props: BirdProp) {
     };
 
     return (
-        <Card
-            className="shadow max-w-[345px]  "
-        >
+        <Card className="shadow-lg max-w-md mx-auto overflow-hidden bg-white">
             <CardHeader
-                avatar={
-                    (<Avatar src={bird.thumbnailUrl} />)
-                }
-                action={
-                    <IconButton >
-                    </IconButton>
-                }
-                title={bird.name}
+                avatar={<Avatar src={bird.thumbnailUrl} alt={bird.name} className="w-12 h-12 " />}
+                title={<Typography className="text-lg font-bold truncate text-indigo-800">{bird.name}</Typography>}
+                className="bg-blue-100 p-4"
+          
             />
-            <Divider variant='inset' />
-            <CardContent className="h-52 flex items-center">
-                <Chip
-                    // avatar={<Avatar  src={bird?.species.thumbnailUrl} />}
-                    label={bird?.species.name} variant='filled'>
-                </Chip>
-                <Chip label={bird?.careMode.name} variant='filled'
-                >
-                </Chip>
+             <Divider />
+            <CardContent className="flex flex-wrap gap-2 p-4 justify-center bg-blue-300">
+                <Chip label={bird?.species.name} className="bg-blue-200 text-indigo-800" variant="outlined" size="small" />
+                <Chip label={bird?.careMode.name} className="bg-green-200 text-green-800" variant="outlined" size="small" />
             </CardContent>
-            <Divider variant='inset' />
-            <CardActions disableSpacing >
+            <Divider />
+            <CardActions
+            className='bg-blue-100'
+            disableSpacing >
                 <CustomizedSwitches bird={bird} />
                 <ExpandMore
                     expand={expanded}
@@ -201,97 +192,100 @@ export default function BirdCard(props: BirdProp) {
                 </ExpandMore>
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    {(sortedMenuMeal && sortedMenuMeal?.length > 0) ? (
-                        sortedMenuMeal.map(
-                            (meal, index) => {
-                                return (
-                                    <Accordion
-                                        key={index}
-                                    // expanded={accordionExpend == `${index}`} onChange={handleChange(index)}
-                                    >
-                                        <AccordionSummary>
-                                            <Typography>{meal.name} </Typography>
-                                        </AccordionSummary>
-                                        {meal?.mealItems?.map((item) => {
-                                            return (
-                                                <AccordionDetails key={item.id} className="flex items-center border border-solid rounded-sm shadow-sm justify-between md:flex-row -mx-8 px-16 ">
-
-                                                    <Typography> {item?.food.name} {" ("}{item?.food.unitOfMeasurement.name}{") "}</Typography>
-                                                    <div className="flex items-center">
-                                                        <div className="flex items-center justify-end">     <Button
-                                                            className="cursor-pointer "
-                                                            onClick={
-                                                                () => {
-                                                                    dispatch(updateMealItem({
-                                                                        itemId: item.id,
-                                                                        mealId: meal.id,
-                                                                        birdId: bird.id,
-                                                                        newItem: {
-                                                                            quantity: item.quantity
-                                                                        },
-                                                                        action: "decrease"
-                                                                    }))
-                                                                }
-                                                            }><RemoveCircle
-                                                                className="cursor-pointer "
-                                                            /></Button>
-                                                            <Typography className="mx-1">
-                                                                {item?.quantity}
-                                                            </Typography>
-                                                            <Button
-                                                                className="cursor-pointer"
-                                                                onClick={
-                                                                    () => {
-                                                                        dispatch(updateMealItem({
-                                                                            itemId: item.id,
-                                                                            mealId: meal.id,
-                                                                            birdId: bird.id,
-                                                                            newItem: {
-                                                                                quantity: item.quantity
-                                                                            },
-                                                                            action: "increase"
-                                                                        }))
-                                                                    }
-                                                                }
-                                                            ><AddCircle /></Button></div>
-                                                        <Button
-                                                            className="cursor-pointer"
-                                                            onClick={
-                                                                () => {
-                                                                    dispatch(removeBirdItem({
-                                                                        itemId: item.id,
-                                                                        mealId: meal.id,
-                                                                        birdId: bird.id
-                                                                    }))
-                                                                }
-                                                            }
-                                                        ><DeleteForever /></Button>
+                <CardContent className="p-4 bg-blue-100">
+                    {sortedMenuMeal && sortedMenuMeal.length > 0 ? (
+                        sortedMenuMeal.map((meal, index) => (
+                            <div key={index} className="mb-4 last:mb-0">
+                                <Accordion className="rounded-lg shadow">
+                                    <AccordionSummary className="flex justify-between items-center p-3 bg-blue-300 text-white">
+                                        <Typography className="text-xl font-semibold">{meal.name}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails className="flex flex-col gap-3 p-4 bg-blue-50">
+                                        {meal.mealItems.map((item) => (
+                                            <div key={item.id} className="flex items-center justify-between bg-white border border-gray-300 p-4 rounded-md shadow-sm">
+                                                {/* Area1 */}
+                                                <div className="flex items-center space-x-3 w-1/2">
+                                                    <Avatar src={item?.food.thumbnailUrl} className="w-12 h-12 rounded-full" alt="Meal Thumbnail" />
+                                                    <div className="flex flex-col min-w-0">
+                                                        <Typography noWrap className="text-lg font-medium truncate text-blue-800">
+                                                            {item.food.name}
+                                                        </Typography>
+                                                        <Typography className="text-sm text-gray-500 truncate">
+                                                            {`${item.quantity} (${item.food.unitOfMeasurement.name})`}
+                                                        </Typography>
                                                     </div>
-                                                </AccordionDetails>
-                                            )
+                                                </div>
+                                                {/* Area2 */}
+                                                <div className="flex items-center space-x-3 w-1/2 justify-end">
+                                                    <IconButton onClick={
+                                                        () => {
+                                                            dispatch(updateMealItem({
+                                                                itemId: item.id,
+                                                                mealId: meal.id,
+                                                                birdId: bird.id,
+                                                                newItem: {
+                                                                    quantity: item.quantity
+                                                                },
+                                                                action: "decrease"
+                                                            }))
+                                                        }
+                                                    }
+
+                                                        className="text-red-600">
+                                                        <RemoveCircle />
+                                                    </IconButton>
+                                                    <Typography className="text-xl font-bold">{item.quantity}</Typography>
+                                                    <IconButton onClick={
+                                                        () => {
+                                                            dispatch(updateMealItem({
+                                                                itemId: item.id,
+                                                                mealId: meal.id,
+                                                                birdId: bird.id,
+                                                                newItem: {
+                                                                    quantity: item.quantity
+                                                                },
+                                                                action: "increase"
+                                                            }))
+                                                        }
+                                                    } className="text-green-600">
+                                                        <AddCircle />
+                                                    </IconButton>
+                                                    <IconButton onClick={
+                                                        () => {
+                                                            dispatch(removeBirdItem({
+                                                                itemId: item.id,
+                                                                mealId: meal.id,
+                                                                birdId: bird.id
+                                                            }))
+                                                        }
+                                                    } className="text-red-800">
+                                                        <DeleteForever />
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Button
+                                    className="mt-3 w-full bg-green-400 text-white py-3 rounded-md shadow hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-500 focus:ring-opacity-50"
+                                    onClick={
+                                        () => {
+                                            dispatch(addMealId(meal.id))
+                                            dispatch(addMealBirdId(bird.id))
+                                            dispatch(setMealitemsDialog(true))
                                         }
-                                        )}
-
-
-                                        <Button
-                                            onClick={() => {
-                                                dispatch(addMealId(meal.id))
-                                                dispatch(addMealBirdId(bird.id))
-                                                dispatch(setMealitemsDialog(true))
-                                            }}
-                                        ><AddCircleOutlineRounded /></Button>
-                                        <MealItemDialog />
-                                    </Accordion>
-                                )
-                            }
-                        )
-
-                    ) :
-                        <div className="flex justify-center m-20 "
-                        >   <Typography> </Typography></div>
-                    }
-
+                                    }
+                                >
+                                    <AddCircleOutlineRounded />
+                                    <span className="ml-2">Add meal item</span>
+                                </Button>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="flex justify-center mt-20">
+                            <Typography className="text-xl font-semibold text-blue-800">No Meals Available</Typography>
+                        </div>
+                    )}
                 </CardContent>
             </Collapse>
         </Card>

@@ -5,8 +5,7 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store';
 import { useLocation } from 'react-router-dom';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import Button from '@mui/material/Button';
@@ -14,9 +13,10 @@ import NotificationTemplate from 'app/theme-layouts/shared-components/notificati
 import NotificationModel from 'app/theme-layouts/shared-components/notificationPanel/models/NotificationModel';
 import withReducer from 'app/store/withReducer';
 import NotificationCard from './NotificationCard';
-import { addNotification, dismissAll, dismissItem, getNotifications, selectNotifications } from './store/dataSlice';
+import { addNotification, getNotifications } from './store/dataSlice';
 import { closeNotificationPanel, selectNotificationPanelState, toggleNotificationPanel } from './store/stateSlice';
 import reducer from './store';
+import { useSelector } from 'react-redux';
 
 const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
 	'& .MuiDrawer-paper': {
@@ -32,7 +32,8 @@ function NotificationPanel() {
 	const location = useLocation();
 	const dispatch = useAppDispatch();
 	const state = useSelector(selectNotificationPanelState);
-	const notifications = useSelector(selectNotifications);
+	const notifications = useAppSelector(state => state.notificationPanel.data.notification.data);
+	const notificationMsg = useAppSelector(state => state.notificationPanel.data.notificationMessage);
 
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -40,7 +41,7 @@ function NotificationPanel() {
 		/*
 		Get Notifications from db
 		 */
-		dispatch(getNotifications());
+		dispatch(getNotifications({pageNumber: 0, pageSize:20}));
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -54,29 +55,18 @@ function NotificationPanel() {
 		dispatch(closeNotificationPanel());
 	}
 
-	function handleDismiss(id: string) {
-		dispatch(dismissItem(id));
-	}
-	function handleDismissAll() {
-		dispatch(dismissAll());
-	}
-
-	function demoNotification() {
-		const item = NotificationModel({ title: 'Great Job! this is awesome.' });
-
-		enqueueSnackbar(item.title, {
-			key: item.id,
+	useEffect(()=>{
+		notificationMsg.title !== "" && enqueueSnackbar(notificationMsg.title, {
+			key: Math.random().toString(),
 			autoHideDuration: 3000,
 			content: (
 				<NotificationTemplate
-					item={item}
+					item={notificationMsg} 
 				/>
 			)
 		});
+	},[notificationMsg])
 
-		dispatch(addNotification(item));
-	}
-	// console.log(notifications)
 	return (
 		<StyledSwipeableDrawer
 			open={state}
@@ -106,7 +96,7 @@ function NotificationPanel() {
 							/>
 						))}
 					</div>
-					<div className="flex items-center justify-center py-16">
+					{/* <div className="flex items-center justify-center py-16">
 						<Button
 							size="small"
 							variant="outlined"
@@ -114,7 +104,7 @@ function NotificationPanel() {
 						>
 							Create a notification example
 						</Button>
-					</div>
+					</div> */}
 				</FuseScrollbars>
 			) : (
 				<div className="flex flex-1 items-center justify-center p-16">

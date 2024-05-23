@@ -16,7 +16,10 @@ import settingsConfig from 'app/configs/settingsConfig';
 import { useAppSelector } from 'app/store';
 import withAppProviders from './withAppProviders';
 import { AuthProvider } from './auth/AuthContext';
-
+import {generateToken, onMessageListener,messaging } from './main/firebase-notification/firebaseConfig'
+import { useState,useEffect } from 'react';
+import { setNotificationMessage } from "app/theme-layouts/shared-components/notificationPanel/store/dataSlice";
+import { useAppDispatch } from "app/store";
 // import axios from 'axios';
 /**
  * Axios HTTP Request defaults
@@ -56,7 +59,26 @@ function App() {
 	 * The main theme from the Redux store.
 	 */
 	const mainTheme = useSelector(selectMainTheme);
+	const notificationMsg = useAppSelector(state => state.notificationPanel.data.notificationMessage);
+	const dispatch = useAppDispatch()
+    const loadForegroundNotify = async() => {
+      onMessageListener().then((payload) => {
+		  console.log("Receive foreground message:", payload)   
+			dispatch(setNotificationMessage({
+			"title": payload.notification.title,
+			"message":payload.notification.body,
+			"createAt": payload.data.createAt
+			}))
+    })
+    .catch((err) => console.log('failed: ', err));
+    }
 
+    useEffect(()=>{
+		generateToken();
+    },[])
+    useEffect(()=>{
+      loadForegroundNotify();
+    },[notificationMsg])
 	return (
 		<CacheProvider value={createCache(emotionCacheOptions[langDirection] as Options)}>
 			<FuseTheme

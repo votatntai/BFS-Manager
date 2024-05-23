@@ -4,7 +4,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Div
 import { DatePicker } from '@mui/x-date-pickers';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { formatISO } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
@@ -16,11 +16,8 @@ import BirdMenus from './menu/BirdMenus';
 import { createMealItems, createMenu, createMenuMeal, createPlan, getCareMode, getMenuSample, getPlanById, getSpecies, removeMenuMeal, resetPlan, selectCareModes, selectMealItemsDialogProp, selectMeals, selectMenuId, selectMenuSample, selectPlanById, selectSpecies, updateMealItem, updatePlan } from './store/menusSlice';
 import { menuSampleType } from './type/MenuType';
 const schema = yup.object().shape({
-    // start: yup.date().required('Start date is required'),
-    // end: yup.date().required('End date is required').when('start', (start, schema) => {
-    //     return start ? schema.min(start, 'End date must be later than start date') : schema;
-    // }),
-    title: yup.string().trim().required("Title is required").max(200,"Maximum 200 characters"),
+
+    title: yup.string().trim().required("Title is required").max(200, "Maximum 200 characters"),
     start: yup.date().required('Start date is required'),
     end: yup.date().test(
         "is-greater",
@@ -33,7 +30,7 @@ const schema = yup.object().shape({
     ).required('End date is required'),
 
     menuName: yup.string()
-});
+})
 const menuMeals = [
     {
         name: "Morning",
@@ -66,6 +63,7 @@ export default function MealPlanDetailContent() {
     const menuSamples = useAppSelector(selectMenuSample)
     const menu: Partial<MenuType> = useAppSelector(selectMenuId)
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
+    console.log("plan", plan)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
     const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
@@ -75,6 +73,7 @@ export default function MealPlanDetailContent() {
     const [openMealDialog, setOpenDialog] = useState(false)
     const [isMenuExist, setIsMenuExist] = useState(false)
     const [isTitleEdited, setIsTitleEdited] = useState(false)
+    const [awaiRender, setAwaitrender] = useState(true)
     const [selectedMenuSample, setSelectedMenuSample] = useState<menuSampleType>();
     const [isButtonApplyDisabled, setIsButtonApplyDisabled] = useState(true);
     // const [isTitleEdited, setIsTitleEdited] = useState(false)
@@ -83,7 +82,8 @@ export default function MealPlanDetailContent() {
             mode: "onChange",
             resolver: yupResolver(schema)
         }
-    );
+    )
+    const start = watch('start');
     const { errors } = formState
     const navigate = useNavigate()
     //useEffet
@@ -93,75 +93,12 @@ export default function MealPlanDetailContent() {
             dispatch(getCage(cageId))
             dispatch(getSpecies())
             dispatch(getCareMode())
+            dispatch(getPlanById(planId))
+
         }
         , [])
 
-    //------- get sample menu --------
-
-    useEffect(
-        () => {
-            const data = {
-                speciesId: null,
-                careModeId: null
-            }
-            dispatch(getMenuSample(data))
-        }
-        , [])
-    // ------  Run after cageLoaded --
-    useEffect(
-        () => {
-            if (planId == "new" && cage.name && !menuCreated) {
-                const data = {
-                    item: {
-                        name: `${cage.name}-${cage.code}`
-                    },
-                    actionType: "PLAN_MENU"
-                };
-                dispatch(createMenu(data))
-                setMenuCreated(true)
-            }
-        }
-        , [cage]
-    )
-    useEffect(
-        () => {
-            if (planId == "new" && !planCreated) {
-                if (menu.name) {
-                    const data = {
-                        title: `${formatDateToDayMonth(getValues().start)} to ${formatDateToDayMonth(getValues().end)}`,
-                        from: formatISO(getValues().start),
-                        to: formatISO(getValues().end),
-                        menuId: menu.id,
-                        cageId: cageId
-                    }
-                    dispatch(createPlan(data))
-                    let promises = menuMeals.map((meal, index) => {
-                        const info = {
-                            menuId: menu.id,
-                            name: meal.name,
-                            from: meal.from,
-                            to: meal.to
-                        }
-                        return dispatch(createMenuMeal(info));
-                    });
-
-                    Promise.all(promises)
-                        .then(() => console.log("All meals have been created"))
-                        .catch((error) => console.error(error))
-                    setPlanCreated(true)
-                }
-            }
-        }
-        , [menu]
-    )
-
-    // ------- Get Plan --------
-    useEffect(
-        () => {
-            if (planId !== "new")
-                dispatch(getPlanById(planId))
-        }
-        , [])
+    useEffect(() => { }, [plan])
     // -------- Insert form ----------
     useEffect(() => {
         if (Object.keys(plan).length !== 0) {
@@ -172,28 +109,27 @@ export default function MealPlanDetailContent() {
                 menuName: plan.menu.name,
             }
             reset(data)
-            if (plan?.menu?.name)
-                setIsMenuExist(true)
+       
         } else
             return;
     }
         , [reset, plan]
     )
- 
+
     useEffect(() => {
-      if (plan?.menu?.menuMeals.length > 0) {
-        let sorted = [...plan?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
-        setSortedMenuMeal(sorted);
-      } else
-        setSortedMenuMeal(null);
+        if (plan?.menu?.menuMeals.length > 0) {
+            let sorted = [...plan?.menu?.menuMeals].sort((a, b) => a.from.localeCompare(b.from));
+            setSortedMenuMeal(sorted);
+        } else
+            setSortedMenuMeal(null);
     }, [plan?.menu?.menuMeals]);
-    
+
     // Sử dụng sortedMenuMeal trong render
     useEffect(() => {
         return () => {
             dispatch(resetPlan());
         };
-    }, [dispatch]);
+    }, [dispatch])
     // Form handler
     function handleApply() {
         const menuMeals = plan.menu.menuMeals
@@ -294,7 +230,7 @@ export default function MealPlanDetailContent() {
                                     control={control}
                                     defaultValue={new Date()}
                                     render={({ field }) => (
-                                        <DatePicker 
+                                        <DatePicker
                                             {...field}
                                             className='my-10'
                                         />
@@ -312,6 +248,7 @@ export default function MealPlanDetailContent() {
                                     render={({ field }) => (
                                         <>
                                             <DatePicker
+                                                minDate={new Date(start)}
                                                 {...field}
                                                 className='my-10'
                                             />
@@ -327,14 +264,14 @@ export default function MealPlanDetailContent() {
                                 name="title"
                                 defaultValue={plan.title ? plan.title : ""}
                                 control={control}
-                                render={({ field }) =>  <TextField
-                                            {...field}
-                                            className="mt-8 mb-16 w-[300px] "
-                                            label="Title"
-                                            variant="outlined"
-                                            error={!!errors.title}
-                                            helperText={errors?.title?.message as string}
-                                        />}
+                                render={({ field }) => <TextField
+                                    {...field}
+                                    className="mt-8 mb-16 w-[300px] "
+                                    label="Title"
+                                    variant="outlined"
+                                    error={!!errors.title}
+                                    helperText={errors?.title?.message as string}
+                                />}
 
                             />
                         </Box>
@@ -363,8 +300,8 @@ export default function MealPlanDetailContent() {
                                         onClick={() => {
                                             const newPlan = {
                                                 "title": getValues().title,
-                                                "from": formatISO(getValues().start),
-                                                "to": formatISO(getValues().end)
+                                                "from": format(getValues().start, "yyyy-MM-dd'T'HH:mm:ss"),
+                                                "to": format(getValues().end, "yyyy-MM-dd'T'HH:mm:ss")
                                             }
                                             const planData = {
                                                 itemId: plan.id,
@@ -393,223 +330,56 @@ export default function MealPlanDetailContent() {
                 <Divider variant='fullWidth' flexItem />
                 {/* Menu */}
                 <>
-                    {/* <div className=" justify-center"> */}
+
                     {/* Memnu sample */}
                     <Box display="flex"  >
-                        {/* <Box display="flex" flexDirection="column" className="flex-1 mt-10">
-                                    <Typography display="inline-block" className="font-oleoScript text-40    ">  Menu sample
-                                    </Typography>
-                                    <Typography variant='h4' className=" text-20 font-400   "> Select your menu sample type
-                                    </Typography>
-                                    <Controller
-                                        name="speciesId"
-                                        control={control}
 
-                                        render={({ field: { onChange, value } }) => (
-                                            <Autocomplete
-                                                className="mt-8 mb-16 w-512"
-                                                fullWidth
-                                                options={specieses}
-                                                getOptionLabel={(options: NameType) => {
-                                                    return options?.name || '';
-                                                }
-                                                }
-                                                onChange={(event, newValue: NameType) => {
-                                                    onChange(newValue?.id);
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-
-                                                        placeholder="Select one "
-                                                        label="Specieses"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        InputLabelProps={{
-                                                            shrink: true
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                        )}
-                                    />
-                                    <Controller
-                                        name="careModeId"
-                                        control={control}
-
-                                        render={({ field: { onChange, value } }) => (
-                                            <Autocomplete
-                                                className="mt-8 mb-16 w-512"
-                                                fullWidth
-                                                options={careModes ? careModes : []}
-                                                getOptionLabel={(options: NameType) => {
-                                                    return options?.name || '';
-                                                }
-                                                }
-                                                onChange={(event, newValue: NameType) => {
-                                                    onChange(newValue?.id);
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="Caremode"
-                                                        placeholder="Select one "
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        InputLabelProps={{
-                                                            shrink: true
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                        )}
-                                    />
-                                    <Typography variant='h4' className=" text-20 font-400   "> Menu sample
-                                    </Typography>
-                                    <Autocomplete
-                                        className="mt-8 mb-16 w-512"
-                                        fullWidth
-                                        options={menuSamples}
-                                        getOptionLabel={(options: NameType) => {
-                                            return options?.name || null;
-                                        }
-                                        }
-
-                                        onChange={(event, newValue) => {
-                                            setSelectedMenuSample(newValue);
-                                            setIsButtonApplyDisabled(!newValue);
-                                        }}
-
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-
-                                                placeholder="Select one "
-                                                variant="outlined"
-                                                fullWidth
-                                                InputLabelProps={{
-                                                    shrink: true
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                    <Box display="flex" justifyContent="end">
-                                        <Button
-                                            disabled={isButtonApplyDisabled}
-                                            onClick={handleApply}
-                                            className='w-160' variant='contained' color='secondary'>Apply to menu</Button>
-                                    </Box>
-
-                                </Box> */}
                         <div className='mt-10 mx-40 flex-1'>
-                                <Typography className="font-oleoScript text-40 justify-center flex">Menu</Typography>
-                            <Typography variant='h4' className=" text-20 font-400   "> Menu name
+                            <Typography className="font-oleoScript text-40 justify-center flex">Menu</Typography>
+                            <Typography variant='h4' className=" text-20 font-400   "> Menu: {plan?.menu?.name}
                             </Typography>
-                            <Controller
-                                name="menuName"
-                                defaultValue={menu.name}
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <TextField
-                                            {...field}
-                                            className="mt-8 mb-16 w-[300px] "
-                                            required
-                                            disabled
-                                            label=""
-                                            id="name"
-                                            variant="outlined"
-                                        // error={!!errors.name}
-                                        // helperText={errors?.name?.message as string}
-                                        />
-                                    </>
-                                )}
-                            />
 
-                            <div className="flex justify-between items-center">
-                                <Typography variant='h4' className=" text-20 font-400  "> Meal
-                                </Typography>
-                            </div>
                             {(sortedMenuMeal && sortedMenuMeal?.length > 0) ? (
-                                sortedMenuMeal.map(
-                                    (meal) => {
-                                        return (
-                                            <Accordion
-                                                key={meal.id}
-                                                className="shadow-2  border rounded-16 my-20 overflow-hidden"
+                                sortedMenuMeal.map((meal) => {
+                                    return (
+                                        <Accordion key={meal.id} className="shadow-lg rounded-lg my-8 overflow-hidden">
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                classes={{ root: 'mb-4 p-4' }}
                                             >
-                                                <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    classes={{ root: 'mb-16  ' }}
-                                                >
-                                                    <Grid container direction="column">
-                                                        <Typography className="font-bold">{meal.name}</Typography>
-                                                        <Typography color="blue">
-                                                            From: {meal.from}
-                                                            <br />    To: {meal.to}
-                                                        </Typography>
-
-                                                    </Grid>
-
-                                                </AccordionSummary>
-                                                {meal?.mealItems?.map((item) => {
-                                                    return (
-                                                        <AccordionDetails key={item.id}
-                                                            className="flex p-20 items-center border border-solid rounded-sm shadow-sm  md:flex-row   ">
-                                                            <Avatar
-                                                                src={item?.food.thumbnailUrl}>
-                                                            </Avatar>
-                                                            <Typography
-                                                                className="ml-10"
-                                                            >
-                                                                {item?.food.name} {" "}
-                                                                {item?.quantity}
-                                                                {" ("}{item?.food.unitOfMeasurement.name}{") "}
-                                                            </Typography>
-
-                                                        </AccordionDetails>
-                                                    )
-                                                }
-                                                )}
-
-                                                <MealItemDialog />
-                                            </Accordion>
-                                        )
-                                    }
-                                )
-
-                            ) :
-                                <div className="flex justify-center m-20 "
-                                >   <Typography> There is no meal available !</Typography></div>
-                            }
+                                                <div className="flex flex-col">
+                                                    <Typography className="font-bold text-lg">{meal.name}</Typography>
+                                                    <Typography className="text-blue-500">
+                                                        From: {meal.from}<br />To: {meal.to}
+                                                    </Typography>
+                                                </div>
+                                            </AccordionSummary>
+                                            {meal?.mealItems?.map((item) => (
+                                                <AccordionDetails key={item.id} className="flex items-center p-4 shadow-sm border-b border-solid">
+                                                    <Avatar src={item?.food.thumbnailUrl}></Avatar>
+                                                    <Typography className="ml-4">
+                                                        {item?.food.name} {item?.quantity} ({item?.food.unitOfMeasurement.name})
+                                                    </Typography>
+                                                </AccordionDetails>
+                                            ))}
+                                            <MealItemDialog />
+                                        </Accordion>
+                                    );
+                                })
+                            ) : (
+                                <div className="flex justify-center m-20">
+                                    <Typography>There is no meal available!</Typography>
+                                </div>
+                            )}
 
                         </div>
 
                     </Box>
-                    {/* </div> */}
-                    {/* <div className="flex justify-end w-full ">
-                            <Button type="submit" variant="contained" color="secondary"> Save</Button>
-                        </div> */}
+
                 </>
 
 
-                {/* ======================== Total food norm  ========================                           */}
-                {/* <div className="">
-                    <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Total food norm (menu of cage)
-                    </Typography>
-                    <Typography variant='h4' className=" text-20 font-400 my-20  "> Menu meal table
-                    </Typography>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                    >
-                        Auto generate menu
-                    </Button>
 
-                    <div className="flex justify-around">
-                        <FoodNormTab />
-                    </div>
-                </div> */}
                 <div className="">
 
                     <Typography display="inline-block" className="font-oleoScript text-40  border-b-2  ">  Birds in cage

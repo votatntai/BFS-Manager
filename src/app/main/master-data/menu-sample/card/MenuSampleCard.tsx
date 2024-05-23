@@ -111,53 +111,7 @@ export default function MenuSampleCard(props: MenuSampleProp) {
         [menuSample.menuMealSamples]
     )
 
-    // useEffect(() => {
-    //     // if (menuSample?.id) {
-    //     //     if (menuSample?.menuMeals?.length == 0 || !menuSample?.menuMeals) {
-    //     //         let promises = menuMeals.map((meal, index) => {
-    //     //             const info = {
-    //     //                 menuId: menuSample.id,
-    //     //                 name: meal.name,
-    //     //                 from: meal.from,
-    //     //                 to: meal.to
-    //     //             }
-    //     //             const menuMealData = {
-    //     //                 data: info,
-    //     //                 birdId: bird.id
-    //     //             }
-    //     //             return dispatch(createBirdMenuMeal(menuMealData));
-    //     //         });
 
-    //     //         Promise.all(promises)
-    //     //             .then(() => console.log("All meals have been created"))
-    //     //             .catch((error) => console.error(error))
-    //     //     }
-    //     // }
-    //     // if (createdMenu) {
-    //     //     let data = new FormData();
-    //     //     data.append('menuId', menuSample?.id);
-    //     //     const birdData = {
-    //     //         itemId: bird.id,
-    //     //         newItem: data
-    //     //     }
-    //     //     dispatch(updateBird(birdData))
-    //     // }
-    // }
-    //     , [menuSample?.id])
-    // useEffect(() => {
-    //     if (!menuSample?.id) {
-    //         const data = {
-    //             item: {
-    //                 name: `${bird.species.name}-${bird.careMode.name} menu`
-    //             },
-    //         };
-    //         dispatch(createBirdMenu(data))
-    //         setCreatedMenu(true)
-
-    //     }
-    // }
-    //     , [])
-    // menuSample?.menuMeals.sort((a, b) => ('' + a.from).localeCompare(b.from));
     const handleChange = (panel) => (event, newExpanded) => {
         setAccordionExpend(newExpanded ? panel : false);
     };

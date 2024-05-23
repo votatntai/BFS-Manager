@@ -10,6 +10,8 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useState,useEffect } from 'react';
 import { useAppDispatch,useAppSelector } from 'app/store';
 import { getTicketData } from './slice/ticketSlice';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const TicketHeader = ()=>{
     const dispatch = useAppDispatch()   
@@ -21,6 +23,7 @@ const TicketHeader = ()=>{
     useEffect(()=>{
         dispatch(getTicketData({status: value, ticketCategory: type === 'All' ? '': type, pageNumber:0, pageSize:100}))    
     },[value,type, pageNumber, pageSize])
+
     return <div style={{background:'rgb(241, 245, 249)'}} className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
     <motion.span
         initial={{ x: -20 }}

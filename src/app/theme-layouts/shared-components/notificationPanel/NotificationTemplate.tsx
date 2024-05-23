@@ -1,21 +1,15 @@
 import { ForwardedRef, forwardRef } from 'react';
 import { SnackbarContent } from 'notistack';
-import { NotificationModelType } from 'app/theme-layouts/shared-components/notificationPanel/models/NotificationModel';
 import NotificationCard from './NotificationCard';
 import { toggleNotificationPanel } from './store/stateSlice';
 import { useAppDispatch } from 'app/store';
 
-type NotificationTemplateProps = {
-	item: NotificationModelType;
-};
-
 /**
  * The notification template.
  */
-const NotificationTemplate = forwardRef((props: NotificationTemplateProps, ref: ForwardedRef<HTMLDivElement>) => {
+const NotificationTemplate = forwardRef((props:any, ref: ForwardedRef<HTMLDivElement>) => {
 	const { item } = props;
 	const dispatch = useAppDispatch();
-
 	return (
 		<SnackbarContent
 			ref={ref} onClick={()=>{dispatch(toggleNotificationPanel())}}

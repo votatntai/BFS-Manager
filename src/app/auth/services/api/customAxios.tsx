@@ -8,7 +8,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   function (config) {
     // Lấy accessToken từ local storage
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem("jwt_access_token");
     // Kiểm tra xem accessToken có tồn tại không
     if (accessToken) {
       // Thêm accessToken vào header của request

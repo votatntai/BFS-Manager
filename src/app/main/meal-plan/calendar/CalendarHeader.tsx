@@ -80,15 +80,14 @@ function CalendarHeader(props: CalendarHeaderProps) {
 							</motion.div>
 						</div>
 					</Tooltip>
-					<IconButton
+					<span
 						onClick={() => onToggleLeftSidebar()}
 						aria-label="open left sidebar"
-						size="small"
 					>
 						<Button variant='contained'
 							color='primary'
 						>View food norm</Button>
-					</IconButton>
+					</span>
 				</div>
 			</div>
 
@@ -97,21 +96,23 @@ function CalendarHeader(props: CalendarHeaderProps) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1, transition: { delay: 0.3 } }}
 			>
-				<IconButton
-					className="mx-8"
-					aria-label="add"
-					onClick={() => {
-						navigate("detail/new")
-					}
-					}
+				<motion.div
+					initial={{ opacity: 0, x: 20 }}
+					animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
 				>
-					<FuseSvgIcon>heroicons-outline:plus-circle</FuseSvgIcon>
-				</IconButton>
+					<Button 
+						className='mx-8'
+						onClick={() => { navigate(-1) }}
+						variant="contained"
+						color="primary"
+						startIcon={<FuseSvgIcon>heroicons-outline:arrow-left</FuseSvgIcon>}
+					>Back</Button>
+				</motion.div>
 
-				<CalendarViewMenu
+				{/* <CalendarViewMenu
 					currentDate={currentDate}
 					calendarApi={calendarApi as unknown as CalendarApi}
-				/>
+				/> */}
 			</motion.div>
 		</div>
 	);
