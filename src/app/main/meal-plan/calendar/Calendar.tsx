@@ -32,6 +32,7 @@ import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { getCage } from '../store/cagesSlice';
+import moment from 'moment';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& a': {
@@ -132,7 +133,7 @@ function Calendar() {
 					start: plandetail.date,
 					end: plandetail.date,
 					title: plan.title,
-					status:plandetail.status,
+					status: plandetail.status,
 					extendedProps: { plan: plan },
 					eventOverlap: function (stillEvent, movingEvent) {
 						return stillEvent.allDay && movingEvent.allDay;
@@ -152,7 +153,14 @@ function Calendar() {
 	}, [leftSidebarOpen]);
 
 	const handleDateSelect = (selectInfo: DateSelectArg) => {
-		dispatch(openNewPlanDialog(selectInfo))
+		const calendarApi = calendarRef.current.getApi();
+		const dateHasEvents = !!calendarApi.getEvents().filter(e => moment(e.start).isSame(selectInfo.start, 'day')).length;
+		
+		if (!dateHasEvents) {
+			dispatch(openNewPlanDialog(selectInfo));
+		} else {
+			window.alert("There is already a plan on this date!");
+		}
 	};
 	const handleEventDrop = (eventDropInfo: EventDropArg): void => {
 		const { id, start, end } = eventDropInfo.event;

@@ -23,6 +23,7 @@ import {
 import { selectCage } from '../../../store/cagesSlice';
 import { createMenu, createMenuMeal, createPlan } from '../../../meal-plan-detail/store/menusSlice';
 import { showMessage } from 'app/store/fuse/messageSlice';
+import moment from 'moment';
 
 const defaultValues = PlanModel();
 
@@ -66,16 +67,14 @@ function PlanDialog() {
 			.test('overlap', 'Your time overlaps with existing plans', function (value) {
 				const { from, to } = this.parent;
 				return !plans.some(plan => (
-					(new Date(from) < new Date(plan.to) && new Date(to) > new Date(plan.from))
+					(new Date(from) <= new Date(plan.to) && new Date(to) >= new Date(plan.from))
 				));
 			}),
 		to: yup.string().required("Please enter end date"),
 		title: yup.string().required('Please enter title'),
 	})
-	// console.log("cage", cage)
 	const planDialog = useAppSelector(selectPlanDialog);
 	const firstLabelId = useAppSelector(selectFirstLabelId);
-	// console.log("planDialog", planDialog)
 	const { reset, formState, watch, control, getValues } = useForm({
 		//	defaultValues,
 		mode: 'onChange',
@@ -127,7 +126,7 @@ function PlanDialog() {
 	function closeComposeDialog() {
 		return planDialog.type === 'edit' ? dispatch(closeEditPlanDialog()) : dispatch(closeNewPlanDialog());
 	}
-
+	
 	/**
 	 * Form Submit
 	 */
@@ -143,8 +142,8 @@ function PlanDialog() {
 		const menu = await dispatch(createMenu(data))
 		const planData = {
 			title: getValues().title,
-			from: getValues().from,
-			to: getValues().to,
+			from: moment(getValues().from).format('YYYY-MM-DDTHH:mm:ss'),
+			to: moment(getValues().to).format('YYYY-MM-DDTHH:mm:ss'),
 			menuId: menu.payload.id,
 			cageId: cage.id
 		}
@@ -170,7 +169,8 @@ function PlanDialog() {
 				dispatch(showMessage(msg))
 			})
 			.catch((error) => console.error(error))
-		closeComposeDialog();
+		closeComposeDialog()
+
 	}
 
 	/**
