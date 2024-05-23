@@ -4,7 +4,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Div
 import { DatePicker } from '@mui/x-date-pickers';
 import { useAppDispatch, useAppSelector } from 'app/store';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { formatISO } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
@@ -63,6 +63,7 @@ export default function MealPlanDetailContent() {
     const menuSamples = useAppSelector(selectMenuSample)
     const menu: Partial<MenuType> = useAppSelector(selectMenuId)
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
+    console.log("plan", plan)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
     const [sortedMenuMeals, setSortedMenuMeals] = useState([]);
@@ -72,6 +73,7 @@ export default function MealPlanDetailContent() {
     const [openMealDialog, setOpenDialog] = useState(false)
     const [isMenuExist, setIsMenuExist] = useState(false)
     const [isTitleEdited, setIsTitleEdited] = useState(false)
+    const [awaiRender, setAwaitrender] = useState(true)
     const [selectedMenuSample, setSelectedMenuSample] = useState<menuSampleType>();
     const [isButtonApplyDisabled, setIsButtonApplyDisabled] = useState(true);
     // const [isTitleEdited, setIsTitleEdited] = useState(false)
@@ -91,75 +93,12 @@ export default function MealPlanDetailContent() {
             dispatch(getCage(cageId))
             dispatch(getSpecies())
             dispatch(getCareMode())
+            dispatch(getPlanById(planId))
+
         }
         , [])
 
-    //------- get sample menu --------
-
-    useEffect(
-        () => {
-            const data = {
-                speciesId: null,
-                careModeId: null
-            }
-            dispatch(getMenuSample(data))
-        }
-        , [])
-    // ------  Run after cageLoaded --
-    useEffect(
-        () => {
-            if (planId == "new" && cage.name && !menuCreated) {
-                const data = {
-                    item: {
-                        name: `${cage.name}-${cage.code}`
-                    },
-                    actionType: "PLAN_MENU"
-                };
-                dispatch(createMenu(data))
-                setMenuCreated(true)
-            }
-        }
-        , [cage]
-    )
-    useEffect(
-        () => {
-            if (planId == "new" && !planCreated) {
-                if (menu.name) {
-                    const data = {
-                        title: `${formatDateToDayMonth(getValues().start)} to ${formatDateToDayMonth(getValues().end)}`,
-                        from: formatISO(getValues().start),
-                        to: formatISO(getValues().end),
-                        menuId: menu.id,
-                        cageId: cageId
-                    }
-                    dispatch(createPlan(data))
-                    let promises = menuMeals.map((meal, index) => {
-                        const info = {
-                            menuId: menu.id,
-                            name: meal.name,
-                            from: meal.from,
-                            to: meal.to
-                        }
-                        return dispatch(createMenuMeal(info));
-                    });
-
-                    Promise.all(promises)
-                        .then(() => console.log("All meals have been created"))
-                        .catch((error) => console.error(error))
-                    setPlanCreated(true)
-                }
-            }
-        }
-        , [menu]
-    )
-
-    // ------- Get Plan --------
-    useEffect(
-        () => {
-            if (planId !== "new")
-                dispatch(getPlanById(planId))
-        }
-        , [])
+    useEffect(() => { }, [plan])
     // -------- Insert form ----------
     useEffect(() => {
         if (Object.keys(plan).length !== 0) {
@@ -170,8 +109,7 @@ export default function MealPlanDetailContent() {
                 menuName: plan.menu.name,
             }
             reset(data)
-            if (plan?.menu?.name)
-                setIsMenuExist(true)
+       
         } else
             return;
     }
@@ -191,7 +129,7 @@ export default function MealPlanDetailContent() {
         return () => {
             dispatch(resetPlan());
         };
-    }, [dispatch]);
+    }, [dispatch])
     // Form handler
     function handleApply() {
         const menuMeals = plan.menu.menuMeals
@@ -362,8 +300,8 @@ export default function MealPlanDetailContent() {
                                         onClick={() => {
                                             const newPlan = {
                                                 "title": getValues().title,
-                                                "from": formatISO(getValues().start),
-                                                "to": formatISO(getValues().end)
+                                                "from": format(getValues().start, "yyyy-MM-dd'T'HH:mm:ss"),
+                                                "to": format(getValues().end, "yyyy-MM-dd'T'HH:mm:ss")
                                             }
                                             const planData = {
                                                 itemId: plan.id,

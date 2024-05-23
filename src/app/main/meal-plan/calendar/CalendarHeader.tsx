@@ -91,27 +91,29 @@ function CalendarHeader(props: CalendarHeaderProps) {
 				</div>
 			</div>
 
-			{/* <motion.div
+			<motion.div
 				className="flex items-center justify-center"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1, transition: { delay: 0.3 } }}
 			>
-				<IconButton
-					className="mx-8"
-					aria-label="add"
-					onClick={() => {
-						dispatch(openNewPlanDialog())
-					}
-					}
+				<motion.div
+					initial={{ opacity: 0, x: 20 }}
+					animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
 				>
-					<FuseSvgIcon>heroicons-outline:plus-circle</FuseSvgIcon>
-				</IconButton>
+					<Button 
+						className='mx-8'
+						onClick={() => { navigate(-1) }}
+						variant="contained"
+						color="primary"
+						startIcon={<FuseSvgIcon>heroicons-outline:arrow-left</FuseSvgIcon>}
+					>Back</Button>
+				</motion.div>
 
 				<CalendarViewMenu
 					currentDate={currentDate}
 					calendarApi={calendarApi as unknown as CalendarApi}
 				/>
-			</motion.div> */}
+			</motion.div>
 		</div>
 	);
 }
