@@ -40,6 +40,11 @@ export const getFoods = createAppAsyncThunk('mealPlanReducer/menus/getFoods', as
     const data = (await response.data);
     return data;
 });
+export const getFarms = createAppAsyncThunk('mealPlanReducer/menus/getFarms', async () => {
+    const response = await axios.get('/farms');
+    const data = (await response.data);
+    return data;
+});
 export const getPlanById = createAppAsyncThunk<any, any>('mealPlanReducer/plans/getPlanById', async (planId) => {
     const response = await axios.get(`/plans/${planId}`);
     const data = (await response.data);
@@ -133,7 +138,7 @@ export const updateMealItem = createAppAsyncThunk<any, any>('mealPlanReducer/pla
                 const data = (await response.data);
                 return data
             }
-          
+
         }
         if (action == "increase") {
             newItem.quantity += 1
@@ -173,6 +178,7 @@ const initialState = menusAdapter.getInitialState({
     species: [],
     careMode: [],
     menuSample: [],
+    farms: [],
     mealDialog: {
         data: [],
         isOpen: false,
@@ -234,10 +240,10 @@ export const menusSlice = createSlice({
         setBirdRecommend: (state, action) => {
             const bird = state.birds?.find(bird => bird?.id == action.payload.birdId)
             if (bird) {
-                bird.recommend=action.payload.checked
+                bird.recommend = action.payload.checked
             }
         },
-  
+
 
     },
     extraReducers: (builder) => {
@@ -260,6 +266,9 @@ export const menusSlice = createSlice({
             })
             .addCase(getMenuSample.fulfilled, (state, action) => {
                 state.menuSample = action.payload.data
+            })
+            .addCase(getFarms.fulfilled, (state, action) => {
+                state.farms = action.payload.data
             })
             //=================== POST Reducer ========================
             .addCase(createMenu.fulfilled, (state, action) => {
@@ -350,13 +359,14 @@ export const menusSlice = createSlice({
     }
 });
 
-export const {  setBirdRecommend,addMealBirdId , resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
+export const { setBirdRecommend, addMealBirdId, resetPlan, addMealId, setDialogState, setMealitemsDialog, setMenuDialog, addMealItems } = menusSlice.actions;
 
 export const selectCageSearchText = (state: AppRootStateType) => state.mealPlanReducer?.menus
 export const selectBirds = (state: AppRootStateType) => state.mealPlanReducer.menus.birds
 export const selectSpecies = (state) => state.mealPlanReducer?.menus.species;
 export const selectCareModes = (state) => state.mealPlanReducer?.menus.careMode;
 export const selectMeals = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealDialog.data
+export const selectFarms = (state: AppRootStateType) => state.mealPlanReducer?.menus.farms
 export const selectFoods = (state: AppRootStateType) => state.mealPlanReducer?.menus.mealItemDialogState.foods
 export const selectMenuId = (state: AppRootStateType) => state.mealPlanReducer?.menus.menus
 export const selectPlanById = (state: AppRootStateType) => state.mealPlanReducer?.menus.plans

@@ -26,8 +26,8 @@ function CalendarAppPlanContent(props: CalendarAppPlanContentProps) {
 	return (
 		<Box
 			sx={{
-				backgroundColor: planInfo.event._def.extendedProps.status ? "yellow" : "black",
-				color: planInfo.event._def.extendedProps.status ? "black" : "white",
+				backgroundColor: planInfo.event._def.extendedProps.status ? "rgb(214, 62, 99)" : "rgb(65, 147, 136)",
+				color: planInfo.event._def.extendedProps.status ? "white="  : "white",
 			}}
 			className={clsx('items-center w-full rounded-4 px-8 py-2 h-22 ')}
 		>
