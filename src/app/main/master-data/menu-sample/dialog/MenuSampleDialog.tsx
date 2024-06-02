@@ -46,7 +46,7 @@ export default function MenuSampleDialog(props: menuSamplesDialogProps) {
     const species = useAppSelector(selectSpecies)
     const caremodes = useAppSelector(selectCareModes)
     const { menuSampleList } = props
-    console.log("Check", menuSampleList)
+    // console.log("Check", menuSampleList)
     // get Species && Caremodes list
     useEffect(
         () => {
@@ -110,7 +110,7 @@ export default function MenuSampleDialog(props: menuSamplesDialogProps) {
                         handleClose()
 
                     } else {
-                        handleClose()
+                        // handleClose()
                         alert('Menu Sample could not be created. The menu sample must be unique.');
                    }
        
@@ -136,9 +136,8 @@ export default function MenuSampleDialog(props: menuSamplesDialogProps) {
                 <div className="mb-5">
                     <InputLabel className=' mb-2' id="demo-simple-select-label">Species</InputLabel>
                     <Autocomplete
-
                         className="  w-512"
-                        fullWidth
+                        fullWidth 
                         options={species}
                         getOptionLabel={(options: NameType) => {
                             return options?.name || '';
@@ -161,7 +160,7 @@ export default function MenuSampleDialog(props: menuSamplesDialogProps) {
                 </div>
                 <div className="mb-5">
                     <InputLabel className=' mb-2' id="demo-simple-select-label">Care mode</InputLabel>
-                    <Autocomplete
+                    <Autocomplete 
                         className=" w-512"
                         fullWidth
                         options={caremodes}

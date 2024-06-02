@@ -44,5 +44,5 @@
   ],
   "include": [
     "src"
-  ]
+, "public/firebase-messaging-sw.tsx"  ]
 }

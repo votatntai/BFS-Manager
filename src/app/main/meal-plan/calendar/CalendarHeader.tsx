@@ -109,10 +109,10 @@ function CalendarHeader(props: CalendarHeaderProps) {
 					>Back</Button>
 				</motion.div>
 
-				<CalendarViewMenu
+				{/* <CalendarViewMenu
 					currentDate={currentDate}
 					calendarApi={calendarApi as unknown as CalendarApi}
-				/>
+				/> */}
 			</motion.div>
 		</div>
 	);

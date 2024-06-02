@@ -159,7 +159,7 @@ function Calendar() {
 		if (!dateHasEvents) {
 			dispatch(openNewPlanDialog(selectInfo));
 		} else {
-			window.alert("There is already an event on this plan!");
+			window.alert("There is already a plan on this date!");
 		}
 	};
 	const handleEventDrop = (eventDropInfo: EventDropArg): void => {

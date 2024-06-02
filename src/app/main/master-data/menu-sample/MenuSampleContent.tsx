@@ -8,7 +8,7 @@ import MealItemDialog from './dialog/MealItemDialog';
 export default function MenuSampleContent() {
     const dispatch = useAppDispatch()
     const menuSamples = useAppSelector(selectMenuSamplesList)
-    console.log("menuSample", menuSamples)
+    // console.log("menuSample", menuSamples)
     useEffect(() => {
         dispatch(getMenuSamples({}))
     }

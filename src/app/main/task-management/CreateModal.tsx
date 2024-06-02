@@ -18,10 +18,11 @@ import IconButton from '@mui/material/IconButton';
 import Fab from '@mui/material/Fab';
 import { addTask, getTaskData,setFilterStatus } from './slice/taskManagementSlice';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-
+import jwtDecode from 'jwt-decode';
 const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackbar})=>{
-    const [taskName, setTaskName] =useState('')
+  const managerId = jwtDecode(localStorage.getItem('jwt_access_token')).id
+
+  const [taskName, setTaskName] =useState('')
     const [taskDescription, setTaskDescription] = useState('')
     const [taskBegin, setTaskBegin] = useState(new Date())
     const [taskDeadline, setTaskDeadline] = useState(() => {
@@ -30,19 +31,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       return deadline;
     });
     const [inputChecklistValue, setInputChecklistValue] =useState('')
-    const [repeat, setRepeat] =useState(false)
-    const [repeatObject, setRepeatObject] =useState({
-      "type": "daily",
-      "time": 1,
-    })
+   
     const [workingHours, setWorkingHours] = useState(1)
     const [checklists, setChecklists] =useState([])
-    const [feedbacks, setFeedbacks] =useState([])
-    const [inputFeedbackValue, setInputFeedbackValue] =useState({
-      question: '',
-      positive: false,
-      severity: 0
-    })
     const [staffList, setStaffList] =useState([])
     const [checkName, setCheckName] = useState(false)
     const [checkStaffList, setCheckStaffList] = useState(false)
@@ -67,18 +58,14 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
         await dispatch(addTask({
           "title": taskName,
           "description": taskDescription,
-          "managerId": "bb0eede3-f1d3-4f82-b992-a167f6e0ee21",
+          "managerId": managerId,
           "startAt": taskBegin,
           "deadline": taskDeadline,
           "status": "To do",
           "assigneeIds": staffList,
           "checkLists": checklists,
-          "repeats": [],
+          "workingHours": workingHours,
         }))
-        // console.log({
-        //   "start": taskBegin,
-        //   "end": taskDeadline
-        // })
         await dispatch(getTaskData({pageNumber: pageNumber, pageSize: pageSize, status:'To do'}))
         dispatch(setFilterStatus('To do'))
         setOpenSuccessSnackbar(true)
@@ -96,25 +83,11 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       setInputChecklistValue('')
       setOrderCount(prevOrderCount => prevOrderCount + 1)
     }
-    const handleAddFeedbackItem =()=>{
-      setFeedbacks(prevLists => [...prevLists, inputFeedbackValue]);
-      setInputFeedbackValue({
-        question: '',
-        positive: false,
-        severity: 0
-      })
-    }
     const handleDeleteChecklistItem =(indexToRemove)=>{
       setChecklists(prevChecklists =>
         prevChecklists.filter((_, index) => index !== indexToRemove)
       );
     }
-    const handleDeleteFeedbakItem =(indexToRemove)=>{
-      setFeedbacks(prevLists =>
-        prevLists.filter((_, index) => index !== indexToRemove)
-      );
-    }
-
     const [staffs, setStaffs] = useState([])
     const loadStaffs = async() => {
       const res = await axios.get('/staffs')
@@ -133,10 +106,8 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
       const workingHoursDailyOfTask = Math.ceil(workingHours / daysBetween);
       if ((workingHoursDailyOfTask/totalStaff) > 8) {
         setWarning(true);
-        // console.log('overtime')
       } else {
         setWarning(false);
-        // console.log('ổn')
       }
     }, [staffList, workingHours, taskBegin, taskDeadline]);
     return <Dialog open={show} classes={{
@@ -145,16 +116,10 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     <DialogTitle id="alert-dialog-title">
       <Stack direction='row' className='justify-between'>
       Create
-      <FormControlLabel control={<Checkbox checked={repeat} onChange={(e) => setRepeat(e.target.checked )}  />} label="Repeat" />
       </Stack>
     </DialogTitle>
     <DialogContent>
-      {repeat && <Stack direction='row' spacing={4} className='pt-5 mb-8'>
-      <Autocomplete disablePortal value={repeatObject.type}  onChange={(e, v) => setRepeatObject({ ...repeatObject, type: v })} options={['daily','monthly']} disabled={!repeat} sx={{width: 200}}
-          size='small' clearIcon={null}  renderInput={(params) => <TextField {...params} label="Repeat" />} />  
-      <FormControlLabel control={<TextField value={repeatObject.time} onChange={e => setRepeatObject({ ...repeatObject, time: parseInt(e.target.value)}) }
-     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'6rem', marginRight:'1rem'}}/>} label="time(s)" labelPlacement='end' />
-      </Stack>}
+     
       <Stack direction='row' spacing={2} className='pt-5'>
       <TextField value={taskName} onChange={(e)=> setTaskName(e.target.value)} helperText={checkName ? "This field is required" : false} 
       error={checkName} sx={{width:'40%'}} placeholder='Enter task title' label="Title" variant="outlined"/>
@@ -198,7 +163,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 						<div className="flex items-center mt-16 mb-12">
 							<FuseSvgIcon size={20}>heroicons-outline:users</FuseSvgIcon>
 							<Typography className="font-semibold text-16">Staffs</Typography>
-              <FormControlLabel className='me-28' control={<TextField  value={workingHours} onChange={e => {
+              <FormControlLabel className='me-28' control={<TextField
+      value={workingHours}
+      onChange={e => {
         const value = e.target.value.trim(); // Trim any leading or trailing spaces
         if (value === '') {
           setWorkingHours(1);
@@ -207,9 +174,9 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
           if (!isNaN(parsedValue)) {
             setWorkingHours(parsedValue); // Set the state to the parsed integer value
           }
-        }
-      }}
-     type={'number'} size='small' inputProps={{ min: 1 }} sx={{width:'10rem', marginLeft:'1rem'}}/>} label="Working hours" labelPlacement='start' />
+        }}}
+      type={'number'} size='small' inputProps={{ min: 1 }} sx={{ width: '10rem', marginLeft: '1rem' }}
+    />} label="Working hours" labelPlacement='start' />
 						{staffList.length >0 && (warning ? <Button variant="contained" style={{pointerEvents: "none"}} color='warning'>Staffs overtime</Button> : <Button variant="contained" style={{pointerEvents: "none"}} color='success'>Staffs within schedule</Button>)}
             </div>
 						{staffs.length>0 && <Autocomplete multiple options={staffs}
@@ -252,40 +219,6 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
 					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
 				</Fab>
     </Stack>
-    
-    <div className="flex items-center mt-16 mb-12">
-							<FuseSvgIcon size={20}>heroicons-outline:annotation</FuseSvgIcon>
-							<Typography className="font-semibold text-16">Feedback</Typography>
-						</div>
-            {feedbacks.length > 0 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-       {feedbacks.map((item,index) => <ListItem key={index}>
-                    <Stack direction='row' spacing={5} alignItems="center">
-                      <Typography sx={{width:'28rem'}} className="text-14">{item.question}</Typography>
-                      <Typography sx={{width:'15rem'}} className="text-14">{item.positive ? 'Positive question' : 'Negative question'}</Typography>
-                      <Typography sx={{width:'13rem'}} className="text-14">Severity level {item.severity}</Typography>
-                      <IconButton onClick={()=>handleDeleteFeedbakItem(index)}>
-                     <FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
-                    </IconButton>
-                    </Stack>
-      </ListItem>)}
-    </List>}
-    <Stack direction='row' spacing={4}>
-    <TextField sx={{width:'40rem'}} value={inputFeedbackValue.question} onKeyPress={e => {if(e.key === 'Enter' && inputFeedbackValue.question.trim() !== '') handleAddFeedbackItem()}}
-    onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, question: e.target.value })} size='small' placeholder='Add question' variant="outlined" />
-    <FormControlLabel control={<Checkbox checked={inputFeedbackValue.positive} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, positive: e.target.checked })}  />} label="Positive" />
-    <FormControlLabel control={<TextField value={inputFeedbackValue.severity} onChange={(e) => setInputFeedbackValue({ ...inputFeedbackValue, severity: parseInt(e.target.value) })} 
-     type={'number'} size='small' inputProps={{ min: 0, max: 5 }}
-     sx={{width:'6rem', marginRight:'1rem'}}/>} label="Severity" labelPlacement='end' />
-    <Fab
-					className="mx-4"
-					aria-label="Add"
-					size="small"
-					color="secondary" onClick={handleAddFeedbackItem}
-					disabled={inputFeedbackValue.question.trim() === '' ? true : false}
-				>
-					<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>
-				</Fab>
-    </Stack>
     </div>
     </DialogContent>
     <DialogActions>
@@ -296,6 +229,5 @@ const CreateModal=({handleClose, show,setOpenFailSnackbar, setOpenSuccessSnackba
     </DialogActions>
   </Dialog>
 
-}
-
+       }
 export default CreateModal
