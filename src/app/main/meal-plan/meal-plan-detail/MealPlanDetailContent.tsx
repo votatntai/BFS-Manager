@@ -63,7 +63,6 @@ export default function MealPlanDetailContent() {
     const menuSamples = useAppSelector(selectMenuSample)
     const menu: Partial<MenuType> = useAppSelector(selectMenuId)
     const plan: Partial<PlanType> = useAppSelector(selectPlanById)
-    console.log("plan", plan)
     const isExistMealItem = useAppSelector(selectMealItemsDialogProp)
     // useState
     const [sortedMenuMeals, setSortedMenuMeals] = useState([]);

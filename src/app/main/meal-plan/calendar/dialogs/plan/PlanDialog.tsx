@@ -68,7 +68,7 @@ function PlanDialog() {
 				const { from, to } = this.parent;
 				return !plans.some(plan => (
 					(new Date(from) <= new Date(plan.to) && new Date(to) >= new Date(plan.from))
-				));
+	 			));
 			}),
 		to: yup.string().required("Please enter end date"),
 		title: yup.string().required('Please enter title'),
