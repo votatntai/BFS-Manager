@@ -58,6 +58,7 @@ export default function MealPlanDetailContent() {
     const { cageId, planId } = useParams()
     const cage = useAppSelector(selectCage)
     const meals = useAppSelector(selectMeals)
+    console.log("meals",meals)
     const specieses = useAppSelector(selectSpecies)
     const careModes = useAppSelector(selectCareModes)
     const menuSamples = useAppSelector(selectMenuSample)
@@ -93,7 +94,11 @@ export default function MealPlanDetailContent() {
             dispatch(getSpecies())
             dispatch(getCareMode())
             dispatch(getPlanById(planId))
-
+            const data = {
+                speciesId: null,
+                careModeId: null
+            }
+            dispatch(getMenuSample(data))
         }
         , [])
 
